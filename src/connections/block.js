@@ -61,6 +61,7 @@ const $http2 = {
 const debug = false;
 
 const integrateToFns = require("../integrateToFns");
+const restore = require("../restore");
 
 function integrateToObject(name, origin, backup, allowList) {
 
@@ -203,19 +204,6 @@ function integrateToHttp2(tryPass) {
 	$http2.status = true;
 
 	return true;
-
-}
-
-function restore(propsArray, origin, backup) {
-
-	for(let i = 0; i < propsArray.length; ++i) {
-
-		const el = propsArray[i];
-
-		origin[el] = backup[el];
-		backup[el] = null;
-
-	}
 
 }
 
