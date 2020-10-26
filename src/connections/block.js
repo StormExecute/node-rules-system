@@ -58,10 +58,9 @@ const $http2 = {
 
 };
 
-const debug = false;
-
 const integrateToFns = require("../integrateFunctionality/toFns");
 const integrateToObject = require("../integrateFunctionality/toObject");
+const integrateToProtoFn = require("../integrateFunctionality/toProtoFn");
 
 const restore = require("../restore");
 
@@ -76,45 +75,11 @@ function integrateToNet(tryPass) {
 
 	["Socket", "Stream"].forEach(el => {
 
-		$net[el + "PrototypeConnect"] = net[el].prototype.connect;
-
-		net[el].prototype.connect = function (...args) {
-
-			const callerPaths = getCallerPaths();
-
-			debug && console.log(0.5, callerPaths, el);
-
-			if(!callerPaths) return returnProxy;
-
-			const [callerFile, dependencyPath] = callerPaths;
-
-			debug && console.log(1.5, el, callerFile, dependencyPath);
-
-			if(callerFile == "net.js" || callerFile == "_tls_wrap.js") return $net[el + "PrototypeConnect"].apply(this, args);
-
-			for(let i = 0; i < whiteList.length; ++i) {
-
-				if(
-					callerFile.startsWith(whiteList[i][0])
-					&&
-					dependencyPath.startsWith(whiteList[i][1])
-				) {
-
-					return $net[el + "PrototypeConnect"].apply(this, args);
-
-				}
-
-			}
-
-			return returnProxy;
-
-		};
+		integrateToProtoFn(whiteList, "connect", net[el], $net, el + "PrototypeConnect", ["net.js", "_tls_wrap.js"]);
 
 	});
 
-	$net.status = true;
-
-	return true;
+	return $net.status = true;
 
 }
 
@@ -129,9 +94,7 @@ function integrateToHttp(tryPass) {
 
 	integrateToObject("globalAgent", http, $http, ["_http_client.js", "_http_agent.js"]);
 
-	$http.status = true;
-
-	return true;
+	return $http.status = true;
 
 }
 
@@ -146,9 +109,7 @@ function integrateToHttps(tryPass) {
 
 	integrateToObject("globalAgent", https, $https, ["_http_client.js", "_http_agent.js", "https.js"]);
 
-	$https.status = true;
-
-	return true;
+	return $https.status = true;
 
 }
 
@@ -161,9 +122,7 @@ function integrateToHttp2(tryPass) {
 
 	integrateToFns(whiteList, ["connect"], http2, $http2);
 
-	$http2.status = true;
-
-	return true;
+	return $http2.status = true;
 
 }
 
@@ -183,9 +142,7 @@ function restoreNet(tryPass) {
 
 	});
 
-	$net.status = false;
-
-	return true;
+	return $net.status = false;
 
 }
 
@@ -198,9 +155,7 @@ function restoreHttp(tryPass) {
 
 	restore(["Agent", "globalAgent", "ClientRequest", "get", "request"], http, $http);
 
-	$http.status = false;
-
-	return true;
+	return $http.status = false;
 
 }
 
@@ -213,9 +168,7 @@ function restoreHttps(tryPass) {
 
 	restore(["Agent", "globalAgent", "get", "request"], https, $https)
 
-	$https.status = false;
-
-	return true;
+	return $https.status = false;
 
 }
 
@@ -228,9 +181,7 @@ function restoreHttp2(tryPass) {
 
 	restore(["connect"], http2, $http2)
 
-	$http2.status = false;
-
-	return true;
+	return $http2.status = false;
 
 }
 
