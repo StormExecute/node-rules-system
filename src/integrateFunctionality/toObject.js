@@ -14,13 +14,17 @@ function integrateToObject(name, origin, backup, allowList) {
 
 			const callerPaths = getCallerPaths();
 
-			debug && console.log("toObj->first", callerPaths, name);
+			if(!callerPaths) {
 
-			if(!callerPaths) return returnProxy;
+				debug && console.log("toObj->false", callerPaths, name);
+
+				return returnProxy;
+
+			}
 
 			const [callerFile, dependencyPath] = callerPaths;
 
-			debug && console.log("toObj->second", name, callerFile, dependencyPath);
+			debug && console.log("toObj->true", name, callerFile, dependencyPath);
 
 			if(~allowList.indexOf(callerFile)) return backup[name][prop];
 

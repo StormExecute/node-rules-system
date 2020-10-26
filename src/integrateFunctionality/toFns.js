@@ -16,13 +16,17 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList) {
 
 			const callerPaths = getCallerPaths();
 
-			debug && console.log("toFns->first", callerPaths, el);
+			if(!callerPaths) {
 
-			if(!callerPaths) return returnProxy;
+				debug && console.log("toFns->false", callerPaths, el);
+
+				return returnProxy;
+
+			}
 
 			const [callerFile, dependencyPath] = callerPaths;
 
-			debug && console.log("toFns->second", el, callerFile, dependencyPath);
+			debug && console.log("toFns->true", el, callerFile, dependencyPath);
 
 			if(~allowList.indexOf(callerFile)) {
 
