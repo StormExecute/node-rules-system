@@ -4,12 +4,35 @@ const getCallerPaths = require("../getCallerPaths");
 
 const { whiteList } = require("./addToWhiteList");
 
+const tls = require('tls');
 const net = require("net");
 const http = require("http");
 const http2 = require("http2");
 const https = require("https");
 
+const _tls_wrap = require("_tls_wrap");
+const _http_agent = require("_http_agent");
+const _http_client = require("_http_client");
+
 const returnProxy = require("../returnProxy");
+
+const $tls = {
+
+	status: false,
+
+	connect: null,
+	socketProtoConnect: null,
+
+};
+
+const _tls = {
+
+	status: false,
+
+	connect: null,
+	socketProtoConnect: null,
+
+};
 
 const $net = {
 
@@ -34,6 +57,23 @@ const $http = {
 
 	get: null,
 	request: null,
+
+};
+
+const _httpAgent = {
+
+	status: false,
+
+	Agent: null,
+	globalAgent: null,
+
+};
+
+const _httpClient = {
+
+	status: false,
+
+	ClientRequest: null,
 
 };
 
@@ -64,6 +104,36 @@ const integrateToProtoFn = require("../integrateFunctionality/toProtoFn");
 
 const restore = require("../restore");
 
+function integrateToTls(tryPass) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) throw new Error(wrongPass);
+
+	if($tls.status == true) return false;
+
+	integrateToFns(whiteList, ["connect"], tls, $tls);
+
+	integrateToProtoFn(whiteList, "connect", tls.TLSSocket, $tls, "socketProtoConnect", ["net.js", "_tls_wrap.js"]);
+
+	return $tls.status = true;
+
+}
+
+function integrateToTlsWrap(tryPass) {
+
+	if (password.value === null) throw new Error(needToSetPassword);
+	if (tryPass != password.value) throw new Error(wrongPass);
+
+	if (_tls.status == true) return false;
+
+	integrateToFns(whiteList, ["connect"], _tls_wrap, _tls);
+
+	integrateToProtoFn(whiteList, "connect", _tls_wrap.TLSSocket, _tls, "socketProtoConnect", ["net.js", "_tls_wrap.js"]);
+
+	return _tls.status = true;
+
+}
+
 function integrateToNet(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
@@ -80,6 +150,34 @@ function integrateToNet(tryPass) {
 	});
 
 	return $net.status = true;
+
+}
+
+function integrateToHttpAgent(tryPass) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) throw new Error(wrongPass);
+
+	if(_httpAgent.status == true) return false;
+
+	integrateToFns(whiteList, ["Agent"], _http_agent, _httpAgent);
+
+	integrateToObject("globalAgent", _http_agent, _httpAgent, ["_http_client.js", "_http_agent.js"])
+
+	return _httpAgent.status = true;
+
+}
+
+function integrateToHttpClient(tryPass) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) throw new Error(wrongPass);
+
+	if(_httpClient.status == true) return false;
+
+	integrateToFns(["ClientRequest"], _http_client, _httpClient)
+
+	return _httpClient.status = true;
 
 }
 
@@ -197,7 +295,13 @@ function blockConnections(tryPass) {
 		integrateToHttp(tryPass),
 		integrateToHttps(tryPass),
 
-		integrateToHttp2(tryPass)
+		integrateToHttp2(tryPass),
+
+		integrateToHttpAgent(tryPass),
+		integrateToHttpClient(tryPass),
+
+		integrateToTls(tryPass),
+		integrateToTlsWrap(tryPass),
 
 	];
 
@@ -236,6 +340,11 @@ module.exports = {
 	integrateToHttp,
 	integrateToHttps,
 	integrateToHttp2,
+
+	integrateToHttpAgent,
+	integrateToHttpClient,
+	integrateToTls,
+	integrateToTlsWrap,
 
 	restoreNet,
 	restoreHttp,
