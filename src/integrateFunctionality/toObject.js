@@ -2,7 +2,7 @@ const getCallerPaths = require("../getCallerPaths");
 
 const returnProxy = require("../returnProxy");
 
-const debug = false;
+const debug = require("./debugThisFn");
 
 function integrateToObject(name, origin, backup, allowList) {
 
@@ -14,13 +14,13 @@ function integrateToObject(name, origin, backup, allowList) {
 
 			const callerPaths = getCallerPaths();
 
-			debug && console.log(0.8, callerPaths, name);
+			debug && console.log("toObj->first", callerPaths, name);
 
 			if(!callerPaths) return returnProxy;
 
 			const [callerFile, dependencyPath] = callerPaths;
 
-			debug && console.log(2, name, callerFile, dependencyPath);
+			debug && console.log("toObj->second", name, callerFile, dependencyPath);
 
 			if(~allowList.indexOf(callerFile)) return backup[name][prop];
 

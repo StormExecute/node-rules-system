@@ -2,7 +2,7 @@ const getCallerPaths = require("../getCallerPaths");
 
 const returnProxy = require("../returnProxy");
 
-const debug = false;
+const debug = require("./debugThisFn");
 
 function integrateToFns(whiteList, fnArray, origin, backup, allowList) {
 
@@ -16,13 +16,13 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList) {
 
 			const callerPaths = getCallerPaths();
 
-			debug && console.log(0, callerPaths, el);
+			debug && console.log("toFns->first", callerPaths, el);
 
 			if(!callerPaths) return returnProxy;
 
 			const [callerFile, dependencyPath] = callerPaths;
 
-			debug && console.log(1, el, callerFile, dependencyPath);
+			debug && console.log("toFns->second", el, callerFile, dependencyPath);
 
 			if(~allowList.indexOf(callerFile)) {
 
