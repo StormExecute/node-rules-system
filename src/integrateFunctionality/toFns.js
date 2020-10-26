@@ -1,6 +1,6 @@
-const getCallerPaths = require("./getCallerPaths");
+const getCallerPaths = require("../getCallerPaths");
 
-const returnProxy = require("./returnProxy");
+const returnProxy = require("../returnProxy");
 
 const debug = false;
 
@@ -51,3 +51,5 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList) {
 	});
 
 }
+
+module.exports = integrateToFns;
