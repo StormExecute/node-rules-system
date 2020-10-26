@@ -224,6 +224,42 @@ function integrateToHttp2(tryPass) {
 
 }
 
+function restoreTls(tryPass) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) throw new Error(wrongPass);
+
+	if($tls.status == false) return false;
+
+	restore(["connect"], tls, $tls);
+
+	tls.TLSSocket.prototype.connect = $tls.socketProtoConnect;
+	$tls.socketProtoConnect = null;
+
+	$tls.status = false;
+
+	return true;
+
+}
+
+function restoreTlsWrap(tryPass) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) throw new Error(wrongPass);
+
+	if(_tls.status == false) return false;
+
+	restore(["connect"], _tls_wrap, _tls);
+
+	_tls_wrap.TLSSocket.prototype.connect = _tls.socketProtoConnect;
+	_tls.socketProtoConnect = null;
+
+	_tls.status = false;
+
+	return true;
+
+}
+
 function restoreNet(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
@@ -240,7 +276,39 @@ function restoreNet(tryPass) {
 
 	});
 
-	return $net.status = false;
+	$net.status = false;
+
+	return true;
+
+}
+
+function restoreHttpAgent(tryPass) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) throw new Error(wrongPass);
+
+	if(_httpAgent.status == false) return false;
+
+	restore(["Agent", "globalAgent"], _http_agent, _httpAgent);
+
+	_httpAgent.status = false;
+
+	return true;
+
+}
+
+function restoreHttpClient(tryPass) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) throw new Error(wrongPass);
+
+	if(_httpClient.status == false) return false;
+
+	restore(["ClientRequest"], _http_client, _httpClient)
+
+	_httpClient.status = false;
+
+	return true;
 
 }
 
@@ -253,7 +321,9 @@ function restoreHttp(tryPass) {
 
 	restore(["Agent", "globalAgent", "ClientRequest", "get", "request"], http, $http);
 
-	return $http.status = false;
+	$http.status = false;
+
+	return true;
 
 }
 
@@ -266,7 +336,9 @@ function restoreHttps(tryPass) {
 
 	restore(["Agent", "globalAgent", "get", "request"], https, $https)
 
-	return $https.status = false;
+	$https.status = false;
+
+	return true;
 
 }
 
@@ -279,7 +351,9 @@ function restoreHttp2(tryPass) {
 
 	restore(["connect"], http2, $http2)
 
-	return $http2.status = false;
+	$http2.status = false;
+
+	return true;
 
 }
 
@@ -321,7 +395,13 @@ function allowConnections(tryPass) {
 		restoreHttp(tryPass),
 		restoreHttps(tryPass),
 
-		restoreHttp2(tryPass)
+		restoreHttp2(tryPass),
+
+		restoreHttpAgent(tryPass),
+		restoreHttpClient(tryPass),
+
+		restoreTls(tryPass),
+		restoreTlsWrap(tryPass),
 
 	];
 
@@ -350,6 +430,11 @@ module.exports = {
 	restoreHttp,
 	restoreHttps,
 	restoreHttp2,
+
+	restoreHttpAgent,
+	restoreHttpClient,
+	restoreTls,
+	restoreTlsWrap,
 
 	blockConnections,
 	allowConnections,
