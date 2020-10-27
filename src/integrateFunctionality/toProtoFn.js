@@ -6,7 +6,7 @@ const debug = require("./debugThisFn");
 
 function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, allowList) {
 
-	backup[backupProp] = origin[fnName];
+	backup[backupProp] = origin.prototype[fnName];
 
 	origin.prototype[fnName] = function (...args) {
 
