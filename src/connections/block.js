@@ -58,6 +58,9 @@ const $http = {
 	get: null,
 	request: null,
 
+	Client: null,
+	createClient: null,
+
 };
 
 const _httpAgent = {
@@ -141,7 +144,7 @@ function integrateToNet(tryPass) {
 
 	if($net.status == true) return false;
 
-	integrateToFns(whiteList, ["connect", "createConnection", "Stream", "createQuicSocket"], net, $net);
+	integrateToFns(whiteList, ["connect", "createConnection", "createQuicSocket"], net, $net);
 
 	["Socket", "Stream"].forEach(el => {
 
@@ -175,7 +178,7 @@ function integrateToHttpClient(tryPass) {
 
 	if(_httpClient.status == true) return false;
 
-	integrateToFns(["ClientRequest"], _http_client, _httpClient)
+	integrateToFns(whiteList, ["ClientRequest"], _http_client, _httpClient)
 
 	return _httpClient.status = true;
 
@@ -188,7 +191,7 @@ function integrateToHttp(tryPass) {
 
 	if($http.status == true) return false;
 
-	integrateToFns(whiteList, ["Agent", "ClientRequest", "get", "request"], http, $http);
+	integrateToFns(whiteList, ["Agent", "ClientRequest", "get", "request", "Client", "createClient"], http, $http);
 
 	integrateToObject("globalAgent", http, $http, ["_http_client.js", "_http_agent.js"]);
 
