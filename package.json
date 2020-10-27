@@ -1,0 +1,22 @@
+{
+  "name": "node-rules-system",
+  "version": "1.0.0",
+  "author": "cotenochek",
+  "license": "MIT",
+  "description": "Rights Manager, focused mainly on controlling HTTP requests and the file system, so that malicious modules do not cause damage to Your application!",
+  "homepage": "https://github.com/StormExecute/node-rules-system/#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StormExecute/node-rules-system.git"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node tests/index.js"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "request": "^2.88.2",
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1"
+  }
+}
