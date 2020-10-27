@@ -6,5 +6,5 @@ const returnProxy = require("../../src/returnProxy");
 const options = { host };
 const callback = require("../functionality/httpCallback");
 
-const test = http.request(options, callback).end();
+const test = http.request(options, callback("block")).end();
 if(test === returnProxy) process.thenTest(true);

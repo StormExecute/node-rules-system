@@ -1,17 +1,22 @@
-module.exports = function(response) {
+module.exports = function make(should) {
 
-	let str = '';
+	return function(response) {
 
-	//another chunk of data has been received, so append it to `str`
-	response.on('data', function (chunk) {
-		str += chunk;
-	});
+		let str = '';
 
-	//the whole response has been received, so we just print it out here
-	response.on('end', function () {
+		//another chunk of data has been received, so append it to `str`
+		response.on('data', function (chunk) {
+			str += chunk;
+		});
 
-		process.thenTest(true);
+		//the whole response has been received, so we just print it out here
+		response.on('end', function () {
 
-	});
+			if(should == "allow") return process.thenTest(true);
+			else return process.thenTest("must be blocked!")
+
+		});
+
+	}
 
 };
