@@ -9,27 +9,27 @@ const {
 
 const connectionsWhiteList = [];
 
-function addFullPathToWhiteList(tryPass, path) {
+function addFullPathToWhiteList(tryPass, wrapPath, nativePath) {
 
-	return mainAddFullPathToWhiteList(connectionsWhiteList, tryPass, path);
-
-}
-
-function addProjectPathToWhiteList(tryPass, projectPath) {
-
-	return mainAddProjectPathToWhiteList(connectionsWhiteList, tryPass, projectPath);
+	return mainAddFullPathToWhiteList(connectionsWhiteList, tryPass, wrapPath, nativePath);
 
 }
 
-function addDependencyToWhiteList(tryPass, dependencyName, projectPath) {
+function addProjectPathToWhiteList(tryPass, wrapPath, nativePath) {
 
-	return mainAddDependencyToWhiteList(connectionsWhiteList, tryPass, dependencyName, projectPath);
+	return mainAddProjectPathToWhiteList(connectionsWhiteList, tryPass, wrapPath, nativePath);
 
 }
 
-function addDependencyPathToWhiteList(tryPass, dependencyName, projectPath) {
+function addDependencyToWhiteList(tryPass, dependencyNativePath, projectWrapPath) {
 
-	return mainAddDependencyPathToWhiteList(connectionsWhiteList, tryPass, dependencyName, projectPath);
+	return mainAddDependencyToWhiteList(connectionsWhiteList, tryPass, dependencyNativePath, projectWrapPath);
+
+}
+
+function addDependencyPathToWhiteList(tryPass, dependencyNativePath, projectWrapPath) {
+
+	return mainAddDependencyPathToWhiteList(connectionsWhiteList, tryPass, dependencyNativePath, projectWrapPath);
 
 }
 
