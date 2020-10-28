@@ -36,50 +36,54 @@ function findCWD(path, lastPath) {
 
 }
 
-function addFullPathToWhiteList(whiteList, tryPass, path) {
+function addFullPathToWhiteList(whiteList, tryPass, wrapPath, nativePath) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
-	if(typeof path != "string") return false;
+	if(!nativePath) nativePath = wrapPath;
 
-	whiteList.push([path, path]);
+	if(typeof wrapPath != "string" || typeof nativePath != "string") return false;
+
+	whiteList.push([nativePath, wrapPath]);
 
 	return true;
 
 }
 
-function addProjectPathToWhiteList(whiteList, tryPass, projectPath) {
+function addProjectPathToWhiteList(whiteList, tryPass, wrapPath, nativePath) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
-	if(typeof projectPath != "string") return false;
+	if(!nativePath) nativePath = wrapPath;
+
+	if(typeof wrapPath != "string" || typeof nativePath != "string") return false;
 
 	if(!$cwd) $cwd = findCWD();
 
 	whiteList.push([
-		$cwd + projectPath,
-		$cwd + projectPath
+		$cwd + nativePath,
+		$cwd + wrapPath
 	]);
 
 	return true;
 
 }
 
-function addDependencyToWhiteList(whiteList, tryPass, dependencyName, projectPath) {
+function addDependencyToWhiteList(whiteList, tryPass, dependencyNativePath, projectWrapPath) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
-	if(typeof dependencyName != "string" || typeof projectPath != "string") return false;
+	if(typeof dependencyNativePath != "string" || typeof projectWrapPath != "string") return false;
 
 	if(!$cwd) $cwd = findCWD();
 
 	whiteList.push([
 
-		$cwd + projectPath,
-		$cwd + "node_modules" + pathDelimiter + withLastDelimiter(dependencyName)
+		$cwd + "node_modules" + pathDelimiter + withLastDelimiter(dependencyNativePath),
+		$cwd + projectWrapPath,
 
 	]);
 
@@ -87,19 +91,19 @@ function addDependencyToWhiteList(whiteList, tryPass, dependencyName, projectPat
 
 }
 
-function addDependencyPathToWhiteList(whiteList, tryPass, dependencyName, projectPath) {
+function addDependencyPathToWhiteList(whiteList, tryPass, dependencyNativePath, projectWrapPath) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
-	if(typeof dependencyName != "string" || typeof projectPath != "string") return false;
+	if(typeof dependencyNativePath != "string" || typeof projectWrapPath != "string") return false;
 
 	if(!$cwd) $cwd = findCWD();
 
 	whiteList.push([
 
-		$cwd + projectPath,
-		$cwd + "node_modules" + pathDelimiter + dependencyName
+		$cwd + "node_modules" + pathDelimiter + withLastDelimiter(dependencyNativePath),
+		$cwd + projectWrapPath,
 
 	]);
 
