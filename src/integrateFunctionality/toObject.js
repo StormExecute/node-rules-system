@@ -22,18 +22,18 @@ function integrateToObject(whiteList, name, origin, backup, allowList) {
 
 			}
 
-			const [callerFile, dependencyPath] = callerPaths;
+			const [nativePath, wrapPath] = callerPaths;
 
-			debug && console.log("toObj->true", name, callerFile, dependencyPath);
+			debug && console.log("toObj->true", name, prop, nativePath, wrapPath);
 
-			if(~allowList.indexOf(callerFile)) return backup[name][prop];
+			if(~allowList.indexOf(nativePath)) return backup[name][prop];
 
 			for(let i = 0; i < whiteList.length; ++i) {
 
 				if(
-					callerFile.startsWith(whiteList[i][0])
+					nativePath.startsWith(whiteList[i][0])
 					&&
-					dependencyPath.startsWith(whiteList[i][1])
+					wrapPath.startsWith(whiteList[i][1])
 				) {
 
 					return backup[name][prop];
@@ -41,6 +41,8 @@ function integrateToObject(whiteList, name, origin, backup, allowList) {
 				}
 
 			}
+
+			debug && console.log("toObj->", false);
 
 			return returnProxy;
 

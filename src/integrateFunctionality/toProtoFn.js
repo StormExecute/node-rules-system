@@ -20,11 +20,11 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 
 		}
 
-		const [callerFile, dependencyPath] = callerPaths;
+		const [nativePath, wrapPath] = callerPaths;
 
-		debug && console.log("toProtoFn->true", callerFile, dependencyPath);
+		debug && console.log("toProtoFn->true", nativePath, wrapPath);
 
-		if(~allowList.indexOf(callerFile)) {
+		if(~allowList.indexOf(nativePath)) {
 
 			return backup[backupProp].apply(this, args);
 
@@ -33,9 +33,9 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 		for(let i = 0; i < whiteList.length; ++i) {
 
 			if(
-				callerFile.startsWith(whiteList[i][0])
+				nativePath.startsWith(whiteList[i][0])
 				&&
-				dependencyPath.startsWith(whiteList[i][1])
+				wrapPath.startsWith(whiteList[i][1])
 			) {
 
 				return backup[backupProp].apply(this, args);
@@ -43,6 +43,8 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 			}
 
 		}
+
+		debug && console.log("toProtoFn->", false);
 
 		return returnProxy;
 

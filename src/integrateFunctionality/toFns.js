@@ -24,11 +24,11 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList) {
 
 			}
 
-			const [callerFile, dependencyPath] = callerPaths;
+			const [nativePath, wrapPath] = callerPaths;
 
-			debug && console.log("toFns->true", el, callerFile, dependencyPath);
+			debug && console.log("toFns->true", el, nativePath, wrapPath);
 
-			if(~allowList.indexOf(callerFile)) {
+			if(~allowList.indexOf(nativePath)) {
 
 				return new.target ? new backup[el](...args) : backup[el].apply(this, args);
 
@@ -37,9 +37,9 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList) {
 			for(let i = 0; i < whiteList.length; ++i) {
 
 				if(
-					callerFile.startsWith(whiteList[i][0])
+					nativePath.startsWith(whiteList[i][0])
 					&&
-					dependencyPath.startsWith(whiteList[i][1])
+					wrapPath.startsWith(whiteList[i][1])
 				) {
 
 					return new.target ? new backup[el](...args): backup[el].apply(this, args);
@@ -47,6 +47,8 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList) {
 				}
 
 			}
+
+			debug && console.log("toFns->", false);
 
 			return returnProxy;
 
