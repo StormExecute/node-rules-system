@@ -4,7 +4,7 @@ const returnProxy = require("../returnProxy");
 
 const debug = require("./debugThisFn");
 
-function integrateToObject(name, origin, backup, allowList) {
+function integrateToObject(whiteList, name, origin, backup, allowList) {
 
 	backup[name] = origin[name];
 

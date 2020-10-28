@@ -165,7 +165,7 @@ function integrateToHttpAgent(tryPass) {
 
 	integrateToFns(whiteList, ["Agent"], _http_agent, _httpAgent);
 
-	integrateToObject("globalAgent", _http_agent, _httpAgent, ["_http_client.js", "_http_agent.js"])
+	integrateToObject(whiteList, "globalAgent", _http_agent, _httpAgent, ["_http_client.js", "_http_agent.js"])
 
 	return _httpAgent.status = true;
 
@@ -193,7 +193,7 @@ function integrateToHttp(tryPass) {
 
 	integrateToFns(whiteList, ["Agent", "ClientRequest", "get", "request", "Client", "createClient"], http, $http);
 
-	integrateToObject("globalAgent", http, $http, ["_http_client.js", "_http_agent.js"]);
+	integrateToObject(whiteList, "globalAgent", http, $http, ["_http_client.js", "_http_agent.js"]);
 
 	return $http.status = true;
 
@@ -208,7 +208,7 @@ function integrateToHttps(tryPass) {
 
 	integrateToFns(whiteList, ["Agent", "get", "request"], https, $https);
 
-	integrateToObject("globalAgent", https, $https, ["_http_client.js", "_http_agent.js", "https.js"]);
+	integrateToObject(whiteList, "globalAgent", https, $https, ["_http_client.js", "_http_agent.js", "_https.js"]);
 
 	return $https.status = true;
 
