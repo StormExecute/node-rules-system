@@ -114,9 +114,9 @@ function integrateToTls(tryPass) {
 
 	if($tls.status == true) return false;
 
-	integrateToFns(whiteList, ["connect"], tls, $tls);
+	integrateToFns(whiteList, ["connect"], tls, $tls, ["https.js"]);
 
-	integrateToProtoFn(whiteList, "connect", tls.TLSSocket, $tls, "socketProtoConnect", ["net.js", "_tls_wrap.js"]);
+	integrateToProtoFn(whiteList, "connect", tls.TLSSocket, $tls, "socketProtoConnect", ["net.js", "_tls_wrap.js", "https.js"]);
 
 	return $tls.status = true;
 
@@ -129,9 +129,9 @@ function integrateToTlsWrap(tryPass) {
 
 	if (_tls.status == true) return false;
 
-	integrateToFns(whiteList, ["connect"], _tls_wrap, _tls);
+	integrateToFns(whiteList, ["connect"], _tls_wrap, _tls, ["https.js"]);
 
-	integrateToProtoFn(whiteList, "connect", _tls_wrap.TLSSocket, _tls, "socketProtoConnect", ["net.js", "_tls_wrap.js"]);
+	integrateToProtoFn(whiteList, "connect", _tls_wrap.TLSSocket, _tls, "socketProtoConnect", ["net.js", "_tls_wrap.js", "https.js"]);
 
 	return _tls.status = true;
 
@@ -208,7 +208,7 @@ function integrateToHttps(tryPass) {
 
 	integrateToFns(whiteList, ["Agent", "get", "request"], https, $https);
 
-	integrateToObject(whiteList, "globalAgent", https, $https, ["_http_client.js", "_http_agent.js", "_https.js"]);
+	integrateToObject(whiteList, "globalAgent", https, $https, ["_http_client.js", "_http_agent.js", "_https.js", "https.js"]);
 
 	return $https.status = true;
 
