@@ -3,7 +3,7 @@ const { password, needToSetPassword, wrongPass } = require("./password");
 const fs = require("fs");
 const nodePath = require("path");
 
-const isWindows = process.platform.startsWith("win");
+const isWindows = require("./isWindows");
 const pathDelimiter = isWindows ? "\\" : "/";
 
 let $cwd = null;
