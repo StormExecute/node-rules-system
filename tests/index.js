@@ -7,11 +7,17 @@ NRS.init(NRS_PASSWORD);
 NRS.connections.block(NRS_PASSWORD);
 
 NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/http.js")
+NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/https.js", "tests/middle/httpsTest")
 
 const tests = [
 
 	"./blocked/http",
 	"./allowed/http",
+
+	1000,
+
+	"./blocked/https",
+	"./allowed/https",
 
 ];
 
@@ -19,14 +25,17 @@ process.thenTest = function (result) {
 
 	if(result != true) {
 
-		console.log(`TEST ${thisTest} FAILED: ${result}!\n`);
-		process.exit(1);
+		console.log(`TEST ${thisTest} FAILED: ${result}\n`);
+
+	} else {
+
+		console.log(`TEST ${thisTest} COMPLETED SUCCESSFULLY!\n`);
 
 	}
 
-	console.log(`TEST ${thisTest} COMPLETED SUCCESSFULLY!\n`)
-
+	clearTimeout(timer);
 	timer = timeOut();
+
 	test();
 
 };
@@ -51,6 +60,20 @@ function test() {
 	if(!tests.length) return process.exit(0);
 
 	thisTest = tests.shift();
+
+	if(typeof thisTest == "number") {
+
+		clearTimeout(timer);
+
+		return setTimeout(function () {
+
+			timer = timeOut();
+
+			test();
+
+		}, thisTest);
+
+	}
 
 	require(thisTest);
 
