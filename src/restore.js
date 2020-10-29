@@ -4,8 +4,12 @@ function restore(propsArray, origin, backup) {
 
 		const el = propsArray[i];
 
-		origin[el] = backup[el];
-		backup[el] = null;
+		if(backup[el]) {
+
+			origin[el] = backup[el];
+			backup[el] = null;
+
+		}
 
 	}
 
