@@ -6,15 +6,55 @@ NRS.init(NRS_PASSWORD);
 
 NRS.connections.block(NRS_PASSWORD);
 
-NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/http.js")
-NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/https.js", "tests/middle/httpsTest")
-
 const tests = [
+
+	() => NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/http.js"),
 
 	"./blocked/http",
 	"./allowed/http",
 
-	1000,
+	700,
+
+	() => NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/index.js", "tests/allowed/httpSecond"),
+
+	"./blocked/httpSecond",
+	"./allowed/httpSecond",
+
+	700,
+
+	"./middle/httpByNRSGet",
+
+	700,
+
+	() => {
+
+		NRS.connections.allow(NRS_PASSWORD);
+		NRS.connections.block(NRS_PASSWORD, "fullBlock" || true);
+		NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/blocked/httpFullBlocked_allowed.js")
+
+	},
+
+	"./blocked/httpFullBlocked_blocked",
+	"./blocked/httpFullBlocked_allowed",
+
+	() => {
+
+		NRS.connections.allow(NRS_PASSWORD);
+
+	},
+
+	"./allowed/httpAllowByRestore",
+
+	700,
+
+	() => {
+
+		NRS.connections.block(NRS_PASSWORD, false);
+		NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/https.js", "tests/middle/httpsTest")
+
+	},
+
+	700,
 
 	"./blocked/https",
 	"./allowed/https",
@@ -61,6 +101,14 @@ function test() {
 
 	thisTest = tests.shift();
 
+	if(typeof thisTest == "function") {
+
+		thisTest();
+
+		return test();
+
+	}
+
 	if(typeof thisTest == "number") {
 
 		clearTimeout(timer);
@@ -75,7 +123,13 @@ function test() {
 
 	}
 
-	require(thisTest);
+	const _test = require(thisTest);
+
+	if(typeof _test == "function") {
+
+		_test();
+
+	}
 
 }
 
