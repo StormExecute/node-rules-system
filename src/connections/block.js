@@ -107,121 +107,139 @@ const integrateToProtoFn = require("../integrateFunctionality/toProtoFn");
 
 const restore = require("../restore");
 
-function integrateToTls(tryPass) {
+function integrateToTls(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
 	if($tls.status == true) return false;
 
-	integrateToFns(whiteList, ["connect"], tls, $tls, ["https.js"]);
+	integrateToFns(whiteList, ["connect"], tls, $tls, ["https.js"], fullBlock);
 
-	integrateToProtoFn(whiteList, "connect", tls.TLSSocket, $tls, "socketProtoConnect", ["net.js", "_tls_wrap.js", "https.js"]);
+	if(!tls.TLSSocket.prototype.connect.toString().match(/\/\/NODE-RULES-SYSTEM-SIGNATURE/)) {
+
+		integrateToProtoFn(whiteList, "connect", tls.TLSSocket, $tls, "socketProtoConnect", ["net.js", "_tls_wrap.js", "https.js"], fullBlock);
+
+	}
 
 	return $tls.status = true;
 
 }
 
-function integrateToTlsWrap(tryPass) {
+function integrateToTlsWrap(tryPass, fullBlock) {
 
 	if (password.value === null) throw new Error(needToSetPassword);
 	if (tryPass != password.value) throw new Error(wrongPass);
 
 	if (_tls.status == true) return false;
 
-	integrateToFns(whiteList, ["connect"], _tls_wrap, _tls, ["https.js"]);
+	integrateToFns(whiteList, ["connect"], _tls_wrap, _tls, ["https.js"], fullBlock);
 
-	integrateToProtoFn(whiteList, "connect", _tls_wrap.TLSSocket, _tls, "socketProtoConnect", ["net.js", "_tls_wrap.js", "https.js"]);
+	if(!_tls_wrap.TLSSocket.prototype.connect.toString().match(/\/\/NODE-RULES-SYSTEM-SIGNATURE/)) {
+
+		integrateToProtoFn(whiteList, "connect", _tls_wrap.TLSSocket, _tls, "socketProtoConnect", ["net.js", "_tls_wrap.js", "https.js"], fullBlock);
+
+	}
 
 	return _tls.status = true;
 
 }
 
-function integrateToNet(tryPass) {
+function integrateToNet(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
 	if($net.status == true) return false;
 
-	integrateToFns(whiteList, ["connect", "createConnection", "createQuicSocket"], net, $net);
+	integrateToFns(whiteList, ["connect", "createConnection", "createQuicSocket"], net, $net, [], fullBlock);
 
-	["Socket", "Stream"].forEach(el => {
+	integrateToProtoFn(whiteList, "connect", net.Socket, $net, "SocketPrototypeConnect", ["net.js", "_tls_wrap.js"], fullBlock);
 
-		integrateToProtoFn(whiteList, "connect", net[el], $net, el + "PrototypeConnect", ["net.js", "_tls_wrap.js"]);
+	if(!net.Stream.prototype.connect.toString().match(/\/\/NODE-RULES-SYSTEM-SIGNATURE/)) {
 
-	});
+		integrateToProtoFn(whiteList, "connect", net.Stream, $net, "StreamPrototypeConnect", ["net.js", "_tls_wrap.js"], fullBlock);
+
+	}
 
 	return $net.status = true;
 
 }
 
-function integrateToHttpAgent(tryPass) {
+function integrateToHttpAgent(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
 	if(_httpAgent.status == true) return false;
 
-	integrateToFns(whiteList, ["Agent"], _http_agent, _httpAgent);
+	integrateToFns(whiteList, ["Agent"], _http_agent, _httpAgent, [], fullBlock);
 
-	integrateToObject(whiteList, "globalAgent", _http_agent, _httpAgent, ["_http_client.js", "_http_agent.js"])
+	if($http.status == false) {
+
+		integrateToObject(whiteList, "globalAgent", _http_agent, _httpAgent, ["_http_client.js", "_http_agent.js"], fullBlock);
+
+	} else {
+
+		_httpAgent.globalAgent = $http.globalAgent;
+
+	}
 
 	return _httpAgent.status = true;
 
 }
 
-function integrateToHttpClient(tryPass) {
+function integrateToHttpClient(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
 	if(_httpClient.status == true) return false;
 
-	integrateToFns(whiteList, ["ClientRequest"], _http_client, _httpClient)
+	integrateToFns(whiteList, ["ClientRequest"], _http_client, _httpClient, [], fullBlock);
 
 	return _httpClient.status = true;
 
 }
 
-function integrateToHttp(tryPass) {
+function integrateToHttp(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
 	if($http.status == true) return false;
 
-	integrateToFns(whiteList, ["Agent", "ClientRequest", "get", "request", "Client", "createClient"], http, $http);
+	integrateToFns(whiteList, ["Agent", "ClientRequest", "get", "request", "Client", "createClient"], http, $http, [], fullBlock);
 
-	integrateToObject(whiteList, "globalAgent", http, $http, ["_http_client.js", "_http_agent.js"]);
+	integrateToObject(whiteList, "globalAgent", http, $http, ["_http_client.js", "_http_agent.js"], fullBlock);
 
 	return $http.status = true;
 
 }
 
-function integrateToHttps(tryPass) {
+function integrateToHttps(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
 	if($https.status == true) return false;
 
-	integrateToFns(whiteList, ["Agent", "get", "request"], https, $https);
+	integrateToFns(whiteList, ["Agent", "get", "request"], https, $https, [], fullBlock);
 
-	integrateToObject(whiteList, "globalAgent", https, $https, ["_http_client.js", "_http_agent.js", "_https.js", "https.js"]);
+	integrateToObject(whiteList, "globalAgent", https, $https, ["_http_client.js", "_http_agent.js", "_https.js", "https.js"], fullBlock);
 
 	return $https.status = true;
 
 }
 
-function integrateToHttp2(tryPass) {
+function integrateToHttp2(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
 	if($http2.status == true) return false;
 
-	integrateToFns(whiteList, ["connect"], http2, $http2);
+	integrateToFns(whiteList, ["connect"], http2, $http2, [], fullBlock);
 
 	return $http2.status = true;
 
@@ -236,8 +254,12 @@ function restoreTls(tryPass) {
 
 	restore(["connect"], tls, $tls);
 
-	tls.TLSSocket.prototype.connect = $tls.socketProtoConnect;
-	$tls.socketProtoConnect = null;
+	if($tls.socketProtoConnect) {
+
+		tls.TLSSocket.prototype.connect = $tls.socketProtoConnect;
+		$tls.socketProtoConnect = null;
+
+	}
 
 	$tls.status = false;
 
@@ -254,8 +276,12 @@ function restoreTlsWrap(tryPass) {
 
 	restore(["connect"], _tls_wrap, _tls);
 
-	_tls_wrap.TLSSocket.prototype.connect = _tls.socketProtoConnect;
-	_tls.socketProtoConnect = null;
+	if(_tls.socketProtoConnect) {
+
+		_tls_wrap.TLSSocket.prototype.connect = _tls.socketProtoConnect;
+		_tls.socketProtoConnect = null;
+
+	}
 
 	_tls.status = false;
 
@@ -270,12 +296,16 @@ function restoreNet(tryPass) {
 
 	if($net.status == false) return false;
 
-	restore(["connect", "createConnection", "Stream", "createQuicSocket"], net, $net);
+	restore(["connect", "createConnection", "createQuicSocket"], net, $net);
 
 	["Socket", "Stream"].forEach(el => {
 
-		net[el].prototype.connect = $net[el + "PrototypeConnect"];
-		$net[el + "PrototypeConnect"] = null;
+		if($net[el + "PrototypeConnect"]) {
+
+			net[el].prototype.connect = $net[el + "PrototypeConnect"];
+			$net[el + "PrototypeConnect"] = null;
+
+		}
 
 	});
 
@@ -360,25 +390,25 @@ function restoreHttp2(tryPass) {
 
 }
 
-function blockConnections(tryPass) {
+function blockConnections(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
 	const result = [
 
-		integrateToNet(tryPass),
+		integrateToNet(tryPass, fullBlock),
 
-		integrateToHttp(tryPass),
-		integrateToHttps(tryPass),
+		integrateToHttp(tryPass, fullBlock),
+		integrateToHttps(tryPass, fullBlock),
 
-		integrateToHttp2(tryPass),
+		integrateToHttp2(tryPass, fullBlock),
 
-		integrateToHttpAgent(tryPass),
-		integrateToHttpClient(tryPass),
+		integrateToHttpAgent(tryPass, fullBlock),
+		integrateToHttpClient(tryPass, fullBlock),
 
-		integrateToTls(tryPass),
-		integrateToTlsWrap(tryPass),
+		integrateToTls(tryPass, fullBlock),
+		integrateToTlsWrap(tryPass, fullBlock),
 
 	];
 
