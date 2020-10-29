@@ -444,6 +444,7 @@ function allowConnections(tryPass) {
 
 module.exports = {
 
+	$tls,
 	$net,
 	$http,
 	$https,
