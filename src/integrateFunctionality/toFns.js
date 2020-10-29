@@ -4,7 +4,7 @@ const returnProxy = require("../returnProxy");
 
 const debug = require("./debugThisFn");
 
-function integrateToFns(whiteList, fnArray, origin, backup, allowList) {
+function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock) {
 
 	allowList = allowList || [];
 
@@ -13,6 +13,8 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList) {
 		backup[el] = origin[el];
 
 		origin[el] = function (...args) {
+
+			if(fullBlock) return returnProxy;
 
 			const callerPaths = getCallerPaths();
 

@@ -4,11 +4,15 @@ const returnProxy = require("../returnProxy");
 
 const debug = require("./debugThisFn");
 
-function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, allowList) {
+function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, allowList, fullBlock) {
 
 	backup[backupProp] = origin.prototype[fnName];
 
 	origin.prototype[fnName] = function (...args) {
+
+		//NODE-RULES-SYSTEM-SIGNATURE
+
+		if(fullBlock) return returnProxy;
 
 		const callerPaths = getCallerPaths();
 

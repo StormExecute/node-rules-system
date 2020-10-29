@@ -1,16 +1,20 @@
+const { password } = require("../password");
+
 const getCallerPaths = require("../getCallerPaths");
 
 const returnProxy = require("../returnProxy");
 
 const debug = require("./debugThisFn");
 
-function integrateToObject(whiteList, name, origin, backup, allowList) {
+function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock) {
 
 	backup[name] = origin[name];
 
 	origin[name] = new Proxy({}, {
 
 		get(target,prop) {
+
+			if(fullBlock) return returnProxy;
 
 			const callerPaths = getCallerPaths();
 
