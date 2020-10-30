@@ -3,7 +3,7 @@ const { password, needToSetPassword, wrongPass } = require("./password");
 const fs = require("fs");
 const nodePath = require("path");
 
-const isWindows = require("./isWindows");
+const isWindows = require("../dependencies/isWindows");
 const pathDelimiter = isWindows ? "\\" : "/";
 
 let $cwd = null;
@@ -36,78 +36,134 @@ function findCWD(path, lastPath) {
 
 }
 
-function addFullPathToWhiteList(whiteList, tryPass, wrapPath, nativePath) {
+function addToWhiteList(whiteList, preFn, nextArgsArray) {
 
-	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(!nextArgsArray.length) return false;
 
-	if(!nativePath) nativePath = wrapPath;
+	let result = false;
 
-	if(typeof wrapPath != "string" || typeof nativePath != "string") return false;
+	if(Array.isArray(nextArgsArray[0])) {
 
-	whiteList.push([nativePath, wrapPath]);
+		for(let i = 0; i < nextArgsArray.length; ++i) {
 
-	return true;
+			const arr = nextArgsArray[i];
+
+			if(arr.length == 1 && typeof arr[0] == "string") {
+
+				const [nativePath, wrapPath] = preFn(arr[0], arr[0]);
+
+				whiteList.push([nativePath, wrapPath]);
+
+				!result && (result = true);
+
+			} else if(arr.length == 2 && typeof arr[1] == "string") {
+
+				const [nativePath, wrapPath] = preFn(arr[1], arr[0]);
+
+				whiteList.push([nativePath, wrapPath]);
+
+				!result && (result = true);
+
+			}
+
+		}
+
+	} else if(typeof nextArgsArray[0] == "string") {
+
+		if(nextArgsArray.length == 1) {
+
+			const [nativePath, wrapPath] = preFn(nextArgsArray[0], nextArgsArray[0]);
+
+			whiteList.push([nativePath, wrapPath]);
+
+			!result && (result = true);
+
+		} else if(nextArgsArray.length == 2 && typeof nextArgsArray[1] == "string") {
+
+			const [nativePath, wrapPath] = preFn(nextArgsArray[1], nextArgsArray[0]);
+
+			whiteList.push([nativePath, wrapPath]);
+
+			!result && (result = true);
+
+		}
+
+	} else return false;
+
+	return result;
 
 }
 
-function addProjectPathToWhiteList(whiteList, tryPass, wrapPath, nativePath) {
+function addFullPathToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
-	if(!nativePath) nativePath = wrapPath;
+	return addToWhiteList(whiteList, (nativePath, wrapPath) => {
 
-	if(typeof wrapPath != "string" || typeof nativePath != "string") return false;
+		return [nativePath, wrapPath];
 
-	if(!$cwd) $cwd = findCWD();
-
-	whiteList.push([
-		$cwd + nativePath,
-		$cwd + wrapPath
-	]);
-
-	return true;
+	}, argsArray);
 
 }
 
-function addDependencyToWhiteList(whiteList, tryPass, dependencyNativePath, projectWrapPath) {
+function addProjectPathToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
-	if(typeof dependencyNativePath != "string" || typeof projectWrapPath != "string") return false;
+	return addToWhiteList(whiteList, (nativePath, wrapPath) => {
 
-	if(!$cwd) $cwd = findCWD();
+		if(!$cwd) $cwd = findCWD();
 
-	whiteList.push([
+		return [
 
-		$cwd + "node_modules" + pathDelimiter + withLastDelimiter(dependencyNativePath),
-		$cwd + projectWrapPath,
+			$cwd + nativePath,
+			$cwd + wrapPath
 
-	]);
+		];
 
-	return true;
+	}, argsArray);
 
 }
 
-function addDependencyPathToWhiteList(whiteList, tryPass, dependencyNativePath, projectWrapPath) {
+function addDependencyToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
-	if(typeof dependencyNativePath != "string" || typeof projectWrapPath != "string") return false;
+	return addToWhiteList(whiteList, (projectWrapPath, dependencyNativePath) => {
 
-	if(!$cwd) $cwd = findCWD();
+		if(!$cwd) $cwd = findCWD();
 
-	whiteList.push([
+		return [
 
-		$cwd + "node_modules" + pathDelimiter + withLastDelimiter(dependencyNativePath),
-		$cwd + projectWrapPath,
+			$cwd + "node_modules" + pathDelimiter + withLastDelimiter(dependencyNativePath),
+			$cwd + projectWrapPath,
 
-	]);
+		];
 
-	return true;
+	}, argsArray);
+
+}
+
+function addDependencyPathToWhiteList(whiteList, tryPass, argsArray) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) throw new Error(wrongPass);
+
+	return addToWhiteList(whiteList, (projectWrapPath, dependencyNativePath) => {
+
+		if(!$cwd) $cwd = findCWD();
+
+		return [
+
+			$cwd + "node_modules" + pathDelimiter + dependencyNativePath,
+			$cwd + projectWrapPath,
+
+		];
+
+	}, argsArray);
 
 }
 
