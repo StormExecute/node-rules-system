@@ -1,10 +1,12 @@
 const NRS = require("../src/index");
 
-const { NRS_PASSWORD, MAX_WAIT_INTERVAL } = require("./_settings");
+const { NRS_PASSWORD, MAX_WAIT_INTERVAL_BEFORE_THROW, MAX_WAIT_INTERVAL_BEFORE_NEXT_TEST: waitBeforeNext } = require("./_settings");
 
 NRS.init(NRS_PASSWORD);
 
 NRS.connections.block(NRS_PASSWORD);
+
+let NRS_SESSION = null;
 
 const tests = [
 
@@ -13,24 +15,27 @@ const tests = [
 	"./blocked/http",
 	"./allowed/http",
 
-	700,
+	waitBeforeNext,
 
-	() => NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/index.js", "tests/allowed/httpSecond"),
+	() => NRS.connections.addProjectPathToWhiteList(
+		NRS_PASSWORD,
+		["tests/index.js", "tests/allowed/httpSecond"],
+		["tests/blocked/httpFullBlocked_allowed.js"]
+	),
 
 	"./blocked/httpSecond",
 	"./allowed/httpSecond",
 
-	700,
+	waitBeforeNext,
 
 	"./middle/httpByNRSGet",
 
-	700,
+	waitBeforeNext,
 
 	() => {
 
 		NRS.connections.allow(NRS_PASSWORD);
 		NRS.connections.block(NRS_PASSWORD, "fullBlock" || true);
-		NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/blocked/httpFullBlocked_allowed.js")
 
 	},
 
@@ -45,7 +50,7 @@ const tests = [
 
 	"./allowed/httpAllowByRestore",
 
-	700,
+	waitBeforeNext,
 
 	() => {
 
@@ -54,22 +59,65 @@ const tests = [
 
 	},
 
-	700,
-
 	"./blocked/https",
 	"./allowed/https",
 
+	waitBeforeNext,
+
+	() => {
+
+		NRS_SESSION = NRS.session(NRS_PASSWORD);
+
+		NRS_SESSION.connections.allow();
+
+		delete require.cache[require.resolve("./allowed/httpAllowByRestore")];
+
+	},
+
+	"./allowed/httpAllowByRestore",
+
+	waitBeforeNext,
+
+	() => {
+
+		NRS_SESSION.connections.block(true);
+
+		delete require.cache[require.resolve("./blocked/httpFullBlocked_allowed")];
+
+	},
+
+	"./blocked/httpFullBlocked_allowed",
+
+	() => {
+
+		NRS_SESSION.connections.allow();
+		NRS_SESSION.connections.block();
+
+		delete require.cache[require.resolve("./blocked/httpFullBlocked_blocked")];
+
+	},
+
+	"./blocked/httpFullBlocked_blocked",
+
 ];
+
+function getRemainingTestsCount() {
+
+	const copy = Object.assign([], tests);
+
+	return copy.filter(t => typeof t == "string").length;
+
+}
 
 process.thenTest = function (result) {
 
 	if(result != true) {
 
-		console.log(`TEST ${thisTest} FAILED: ${result}\n`);
+		console.log("\x1b[31m%s\x1b[0m", `TEST #${thisTestId++}(Remaining: ${getRemainingTestsCount()}) ${thisTest} FAILED: ${result}\n`);
 
 	} else {
 
-		console.log(`TEST ${thisTest} COMPLETED SUCCESSFULLY!\n`);
+		console.log(`TEST #${thisTestId++}(Remaining: ${getRemainingTestsCount()}) ${thisTest} COMPLETED SUCCESSFULLY!\n`);
 
 	}
 
@@ -84,16 +132,16 @@ function timeOut() {
 
 	return setTimeout(function () {
 
-		console.log(`TEST ${thisTest} FAILED: TIMEOUT!\n`);
+		console.log("\x1b[31m%s\x1b[0m", `TEST #${thisTestId}(Remaining: ${getRemainingTestsCount()}) ${thisTest} FAILED: TIMEOUT!\n`);
 		process.exit(1);
 
-	}, MAX_WAIT_INTERVAL);
+	}, MAX_WAIT_INTERVAL_BEFORE_THROW);
 
 }
 
 let timer = timeOut();
-
-let thisTest = tests[0];
+let thisTestId = 1;
+let thisTest = null;
 
 function test() {
 
