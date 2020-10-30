@@ -99,6 +99,11 @@ const tests = [
 
 	"./blocked/httpFullBlocked_blocked",
 
+	() => NRS_SESSION.connections.addProjectPathToWhiteList("tests/allowed/net.js"),
+
+	"./blocked/net",
+	"./allowed/net",
+
 ];
 
 function getRemainingTestsCount() {
