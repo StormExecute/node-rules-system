@@ -82,11 +82,15 @@ connections.restoreTlsWrap = restoreTlsWrap;
 
 const { setPassword: init, changePassword: reInit } = require("./password");
 
+const makeSession = require("./session");
+
 module.exports = {
 
 	init,
 	reInit,
 
+	session: makeSession(connections),
+
 	connections,
 
-}
+};
