@@ -1,6 +1,11 @@
 const NRS = require("../src/index");
 
-const { NRS_PASSWORD, MAX_WAIT_INTERVAL_BEFORE_THROW, MAX_WAIT_INTERVAL_BEFORE_NEXT_TEST: waitBeforeNext } = require("./_settings");
+const {
+	NRS_PASSWORD,
+	MAX_WAIT_INTERVAL_BEFORE_THROW,
+	MAX_WAIT_INTERVAL_BEFORE_NEXT_TEST: waitBeforeNext,
+	BLOCK_CONSOLE_LOG_DASH_REPEATS: repeats,
+} = require("./_settings");
 
 NRS.init(NRS_PASSWORD);
 
@@ -202,11 +207,11 @@ function test() {
 
 }
 
-const repeats = 15;
+const blockLogDash = text => console.log("-".repeat(repeats) + text + "-".repeat(repeats) + "\n");
 
 console.log("");
-console.log("-".repeat(repeats) + "Tests started" + "-".repeat(repeats) + "\n");
+blockLogDash("Tests started");
 
-process.on("exit", () => console.log("-".repeat(repeats) + "Tests finished" + "-".repeat(repeats) + "\n"));
+process.on("exit", () => blockLogDash("Tests finished"));
 
 test();

@@ -11,6 +11,8 @@ const options = {
 	MAX_WAIT_INTERVAL_BEFORE_THROW: 5500,
 	MAX_WAIT_INTERVAL_BEFORE_NEXT_TEST: 700,
 
+	BLOCK_CONSOLE_LOG_DASH_REPEATS: 15,
+
 };
 
 module.exports = options;
