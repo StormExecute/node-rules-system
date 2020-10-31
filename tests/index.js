@@ -99,10 +99,26 @@ const tests = [
 
 	"./blocked/httpFullBlocked_blocked",
 
+	//to slow down the fast pace
+	waitBeforeNext,
+
 	() => NRS_SESSION.connections.addProjectPathToWhiteList("tests/allowed/net.js"),
 
 	"./blocked/net",
 	"./allowed/net",
+
+	waitBeforeNext,
+
+	() => {
+
+		global.NRS_SECURE_SESSION = NRS.secureSession(NRS_PASSWORD, [
+			"tests/allowed/http2WithSecureSession"
+		]);
+
+	},
+
+	"./blocked/http2WithSecureSession",
+	"./allowed/http2WithSecureSession",
 
 ];
 
