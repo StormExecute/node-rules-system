@@ -6,7 +6,7 @@ const returnProxy = require("../../src/returnProxy");
 const preTest = NRS_SECURE_SESSION.connections.addProjectPathToWhiteList("tests/allowed/http2WithSecureSession");
 if(preTest == false) process.thenTest("NRS_SECURE_SESSION.connections.addProjectPathToWhiteList must be ALLOWED in tests/allowed/http2WithSecureSession!");
 
-const client = http2.connect("http://" + TEST_SITE);
+const client = http2.connect("https://" + TEST_SITE);
 
 const http2Fn = require("../functionality/http2Fn");
 
