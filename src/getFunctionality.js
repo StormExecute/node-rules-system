@@ -1,6 +1,7 @@
-const { password, needToSetPassword, wrongPass } = require("../password");
+const { password, needToSetPassword, wrongPass } = require("./password");
 
-//NRS.connections.$http.get(propName)
+//NRS.connections.$http.get(pass, propName)
+//NRS.fs.$fs.get(pass, propName)
 
 function make(object) {
 
