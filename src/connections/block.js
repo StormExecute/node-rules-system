@@ -114,7 +114,7 @@ function integrateToTls(tryPass, fullBlock) {
 
 	if($tls.status == true) return false;
 
-	integrateToFns(whiteList, ["connect"], tls, $tls, ["https.js"], fullBlock);
+	integrateToFns(whiteList, ["connect"], tls, $tls, ["https.js", "internal/http2/core.js"], fullBlock);
 
 	if(!tls.TLSSocket.prototype.connect.toString().match(/\/\/NODE-RULES-SYSTEM-SIGNATURE/)) {
 
@@ -133,7 +133,7 @@ function integrateToTlsWrap(tryPass, fullBlock) {
 
 	if (_tls.status == true) return false;
 
-	integrateToFns(whiteList, ["connect"], _tls_wrap, _tls, ["https.js"], fullBlock);
+	integrateToFns(whiteList, ["connect"], _tls_wrap, _tls, ["https.js", "internal/http2/core.js"], fullBlock);
 
 	if(!_tls_wrap.TLSSocket.prototype.connect.toString().match(/\/\/NODE-RULES-SYSTEM-SIGNATURE/)) {
 
@@ -152,7 +152,7 @@ function integrateToNet(tryPass, fullBlock) {
 
 	if($net.status == true) return false;
 
-	integrateToFns(whiteList, ["connect", "createConnection", "createQuicSocket"], net, $net, [], fullBlock);
+	integrateToFns(whiteList, ["connect", "createConnection", "createQuicSocket"], net, $net, ["internal/http2/core.js"], fullBlock);
 
 	integrateToProtoFn(whiteList, "connect", net.Socket, $net, "SocketPrototypeConnect", ["net.js", "_tls_wrap.js"], fullBlock);
 
