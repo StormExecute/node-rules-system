@@ -38,34 +38,39 @@ const makeSession = function (connections) {
 
 			connections: {
 
-				$tls: { get(){} },
-				$net: { get(){} },
-				$http: { get(){} },
-				$https: { get(){} },
-				$http2: {get(){} },
+				addFullPathToWhiteList(...args){},
+				addProjectPathToWhiteList(...args){},
+				addDependencyToWhiteList(...args){},
+				addDependencyPathToWhiteList(...args){},
 
-				integrateToNet(){},
-				integrateToHttp(){},
-				integrateToHttps(){},
-				integrateToHttp2(){},
+				$tls: { get(propName){} },
+				$net: { get(propName){} },
+				$http: { get(propName){} },
+				$https: { get(propName){} },
+				$http2: {get(propName){} },
 
-				integrateToHttpAgent(){},
-				integrateToHttpClient(){},
-				integrateToTls(){},
-				integrateToTlsWrap(){},
+				integrateToNet(fullBlock){},
+				integrateToHttp(fullBlock){},
+				integrateToHttps(fullBlock){},
+				integrateToHttp2(fullBlock){},
 
-				restoreNet(){},
-				restoreHttp(){},
-				restoreHttps(){},
-				restoreHttp2(){},
+				integrateToHttpAgent(fullBlock){},
+				integrateToHttpClient(fullBlock){},
+				integrateToTls(fullBlock){},
+				integrateToTlsWrap(fullBlock){},
 
-				restoreHttpAgent(){},
-				restoreHttpClient(){},
-				restoreTls(){},
-				restoreTlsWrap(){},
+				restoreNet(fullBlock){},
+				restoreHttp(fullBlock){},
+				restoreHttps(fullBlock){},
+				restoreHttp2(fullBlock){},
 
-				block(){},
-				allow(){},
+				restoreHttpAgent(fullBlock){},
+				restoreHttpClient(fullBlock){},
+				restoreTls(fullBlock){},
+				restoreTlsWrap(fullBlock){},
+
+				block(fullBlock){},
+				allow(fullBlock){},
 
 			},
 
