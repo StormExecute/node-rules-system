@@ -20,6 +20,8 @@ module.exports = (unlinkSync) => {
 
 		for (const file of files) {
 
+			if(file == ".gitignore") continue;
+
 			unlinkSync(
 				nodePath.join(directory, file)
 			);
