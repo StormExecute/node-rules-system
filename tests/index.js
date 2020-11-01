@@ -3,7 +3,8 @@ const NRS = require("../src/index");
 const {
 	NRS_PASSWORD,
 	MAX_WAIT_INTERVAL_BEFORE_THROW,
-	MAX_WAIT_INTERVAL_BEFORE_NEXT_TEST: waitBeforeNext,
+	MAX_WAIT_INTERVAL_BEFORE_NEXT_CONNECTION_TEST: waitBeforeNextConnection,
+	MAX_WAIT_INTERVAL_BEFORE_NEXT_FS_TEST: waitBeforeNextFs,
 	BLOCK_CONSOLE_LOG_DASH_REPEATS: repeats,
 } = require("./_settings");
 
@@ -13,9 +14,7 @@ NRS.connections.block(NRS_PASSWORD);
 NRS.fs.block(NRS_PASSWORD);
 
 const clearFsTempBeforeRun = require("./clearFsTempBeforeRun");
-
 const $unlinkSync = NRS.fs.$fs.get(NRS_PASSWORD, "unlinkSync");
-
 clearFsTempBeforeRun($unlinkSync);
 
 let NRS_SESSION = null;
@@ -23,16 +22,21 @@ let NRS_SESSION = null;
 const runOnlyConnectionTests = !!process.argv.filter(el => el == "-c" || el == "--connections").length || process.env.debugP;
 const runOnlyFsTests = !!process.argv.filter(el => el == "-s" || el == "--fs").length || process.env.debugP;
 
+const bConn = filename => "./blocked/connections/" + filename;
+const bFs = filename => "./blocked/fs/" + filename;
+const aConn = filename => "./allowed/connections/" + filename;
+const aFs = filename => "./allowed/fs/" + filename;
+
 const connectionTests = [
 
 	() => blockLogDash("Connection Tests started"),
 
 	() => NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/connections/http.js"),
 
-	"./blocked/connections/http",
-	"./allowed/connections/http",
+	bConn("http"),
+	aConn("http"),
 
-	waitBeforeNext,
+	waitBeforeNextConnection,
 
 	() => NRS.connections.addProjectPathToWhiteList(
 		NRS_PASSWORD,
@@ -40,14 +44,14 @@ const connectionTests = [
 		["tests/blocked/connections/httpFullBlocked_allowed.js"]
 	),
 
-	"./blocked/connections/httpSecond",
-	"./allowed/connections/httpSecond",
+	bConn("httpSecond"),
+	aConn("httpSecond"),
 
-	waitBeforeNext,
+	waitBeforeNextConnection,
 
 	"./middle/httpByNRSGet",
 
-	waitBeforeNext,
+	waitBeforeNextConnection,
 
 	() => {
 
@@ -56,8 +60,8 @@ const connectionTests = [
 
 	},
 
-	"./blocked/connections/httpFullBlocked_blocked",
-	"./blocked/connections/httpFullBlocked_allowed",
+	bConn("httpFullBlocked_blocked"),
+	bConn("httpFullBlocked_allowed"),
 
 	() => {
 
@@ -65,9 +69,9 @@ const connectionTests = [
 
 	},
 
-	"./allowed/connections/httpAllowByRestore",
+	aConn("httpAllowByRestore"),
 
-	waitBeforeNext,
+	waitBeforeNextConnection,
 
 	() => {
 
@@ -76,10 +80,10 @@ const connectionTests = [
 
 	},
 
-	"./blocked/connections/https",
-	"./allowed/connections/https",
+	bConn("https"),
+	aConn("https"),
 
-	waitBeforeNext,
+	waitBeforeNextConnection,
 
 	() => {
 
@@ -91,9 +95,9 @@ const connectionTests = [
 
 	},
 
-	"./allowed/connections/httpAllowByRestore",
+	aConn("httpAllowByRestore"),
 
-	waitBeforeNext,
+	waitBeforeNextConnection,
 
 	() => {
 
@@ -103,7 +107,7 @@ const connectionTests = [
 
 	},
 
-	"./blocked/connections/httpFullBlocked_allowed",
+	bConn("httpFullBlocked_allowed"),
 
 	() => {
 
@@ -114,17 +118,17 @@ const connectionTests = [
 
 	},
 
-	"./blocked/connections/httpFullBlocked_blocked",
+	bConn("httpFullBlocked_blocked"),
 
 	//to slow down the fast pace
-	waitBeforeNext,
+	waitBeforeNextConnection,
 
 	() => NRS_SESSION.connections.addProjectPathToWhiteList("tests/allowed/connections/net.js"),
 
-	"./blocked/connections/net",
-	"./allowed/connections/net",
+	bConn("net"),
+	aConn("net"),
 
-	waitBeforeNext,
+	waitBeforeNextConnection,
 
 	() => {
 
@@ -134,8 +138,8 @@ const connectionTests = [
 
 	},
 
-	"./blocked/connections/http2WithSecureSession",
-	"./allowed/connections/http2WithSecureSession",
+	bConn("http2WithSecureSession"),
+	aConn("http2WithSecureSession"),
 
 ];
 
@@ -149,8 +153,15 @@ const fsTests = [
 
 	},
 
-	"./blocked/fs/fsWriteSimple",
-	"./allowed/fs/fsWriteSimple"
+	bFs("fsWriteSimple"),
+	aFs("fsWriteSimple"),
+
+	waitBeforeNextFs,
+
+	() => NRS.fs.addProjectPathToWhiteList(NRS_PASSWORD, ["tests/allowed/fs/appendFile.js"]),
+
+	bFs("appendFile"),
+	aFs("appendFile"),
 
 ];
 
@@ -160,7 +171,7 @@ const tests = runOnlyConnectionTests
 		? fsTests
 		: connectionTests.concat([
 			() => blockLogDash("Connection Tests finished"),
-			waitBeforeNext,
+			waitBeforeNextFs,
 		]).concat(fsTests);
 
 function getRemainingTestsCount() {
