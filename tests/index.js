@@ -10,10 +10,22 @@ const {
 NRS.init(NRS_PASSWORD);
 
 NRS.connections.block(NRS_PASSWORD);
+NRS.fs.block(NRS_PASSWORD);
+
+const clearFsTempBeforeRun = require("./clearFsTempBeforeRun");
+
+const $unlinkSync = NRS.fs.$fs.get(NRS_PASSWORD, "unlinkSync");
+
+clearFsTempBeforeRun($unlinkSync);
 
 let NRS_SESSION = null;
 
-const tests = [
+const runOnlyConnectionTests = !!process.argv.filter(el => el == "-c" || el == "--connections").length || process.env.debugP;
+const runOnlyFsTests = !!process.argv.filter(el => el == "-s" || el == "--fs").length || process.env.debugP;
+
+const connectionTests = [
+
+	() => blockLogDash("Connection Tests started"),
 
 	() => NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/http.js"),
 
@@ -127,6 +139,30 @@ const tests = [
 
 ];
 
+const fsTests = [
+
+	() => {
+
+		NRS.fs.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/fsWriteSimple.js");
+
+		blockLogDash("FS Tests started");
+
+	},
+
+	"./blocked/fsWriteSimple",
+	"./allowed/fsWriteSimple"
+
+];
+
+const tests = runOnlyConnectionTests
+	? connectionTests
+	: runOnlyFsTests
+		? fsTests
+		: connectionTests.concat([
+			() => blockLogDash("Connection Tests finished"),
+			waitBeforeNext,
+		]).concat(fsTests);
+
 function getRemainingTestsCount() {
 
 	const copy = Object.assign([], tests);
@@ -207,11 +243,10 @@ function test() {
 
 }
 
-const blockLogDash = text => console.log("-".repeat(repeats) + text + "-".repeat(repeats) + "\n");
+const blockLogDash = text => console.log("\x1b[34m%s\x1b[0m", "-".repeat(repeats) + text + "-".repeat(repeats) + "\n");
 
 console.log("");
-blockLogDash("Tests started");
 
-process.on("exit", () => blockLogDash("Tests finished"));
+process.on("exit", () => blockLogDash("All Tests finished"));
 
 test();
