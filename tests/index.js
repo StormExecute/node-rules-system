@@ -27,21 +27,21 @@ const connectionTests = [
 
 	() => blockLogDash("Connection Tests started"),
 
-	() => NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/http.js"),
+	() => NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/connections/http.js"),
 
-	"./blocked/http",
-	"./allowed/http",
+	"./blocked/connections/http",
+	"./allowed/connections/http",
 
 	waitBeforeNext,
 
 	() => NRS.connections.addProjectPathToWhiteList(
 		NRS_PASSWORD,
-		["tests/index.js", "tests/allowed/httpSecond"],
-		["tests/blocked/httpFullBlocked_allowed.js"]
+		["tests/index.js", "tests/allowed/connections/httpSecond"],
+		["tests/blocked/connections/httpFullBlocked_allowed.js"]
 	),
 
-	"./blocked/httpSecond",
-	"./allowed/httpSecond",
+	"./blocked/connections/httpSecond",
+	"./allowed/connections/httpSecond",
 
 	waitBeforeNext,
 
@@ -56,8 +56,8 @@ const connectionTests = [
 
 	},
 
-	"./blocked/httpFullBlocked_blocked",
-	"./blocked/httpFullBlocked_allowed",
+	"./blocked/connections/httpFullBlocked_blocked",
+	"./blocked/connections/httpFullBlocked_allowed",
 
 	() => {
 
@@ -65,19 +65,19 @@ const connectionTests = [
 
 	},
 
-	"./allowed/httpAllowByRestore",
+	"./allowed/connections/httpAllowByRestore",
 
 	waitBeforeNext,
 
 	() => {
 
 		NRS.connections.block(NRS_PASSWORD, false);
-		NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/https.js", "tests/middle/httpsTest")
+		NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/connections/https.js", "tests/middle/httpsTest")
 
 	},
 
-	"./blocked/https",
-	"./allowed/https",
+	"./blocked/connections/https",
+	"./allowed/connections/https",
 
 	waitBeforeNext,
 
@@ -87,11 +87,11 @@ const connectionTests = [
 
 		NRS_SESSION.connections.allow();
 
-		delete require.cache[require.resolve("./allowed/httpAllowByRestore")];
+		delete require.cache[require.resolve("./allowed/connections/httpAllowByRestore")];
 
 	},
 
-	"./allowed/httpAllowByRestore",
+	"./allowed/connections/httpAllowByRestore",
 
 	waitBeforeNext,
 
@@ -99,43 +99,43 @@ const connectionTests = [
 
 		NRS_SESSION.connections.block(true);
 
-		delete require.cache[require.resolve("./blocked/httpFullBlocked_allowed")];
+		delete require.cache[require.resolve("./blocked/connections/httpFullBlocked_allowed")];
 
 	},
 
-	"./blocked/httpFullBlocked_allowed",
+	"./blocked/connections/httpFullBlocked_allowed",
 
 	() => {
 
 		NRS_SESSION.connections.allow();
 		NRS_SESSION.connections.block();
 
-		delete require.cache[require.resolve("./blocked/httpFullBlocked_blocked")];
+		delete require.cache[require.resolve("./blocked/connections/httpFullBlocked_blocked")];
 
 	},
 
-	"./blocked/httpFullBlocked_blocked",
+	"./blocked/connections/httpFullBlocked_blocked",
 
 	//to slow down the fast pace
 	waitBeforeNext,
 
-	() => NRS_SESSION.connections.addProjectPathToWhiteList("tests/allowed/net.js"),
+	() => NRS_SESSION.connections.addProjectPathToWhiteList("tests/allowed/connections/net.js"),
 
-	"./blocked/net",
-	"./allowed/net",
+	"./blocked/connections/net",
+	"./allowed/connections/net",
 
 	waitBeforeNext,
 
 	() => {
 
 		global.NRS_SECURE_SESSION = NRS.secureSession(NRS_PASSWORD, [
-			"tests/allowed/http2WithSecureSession"
+			"tests/allowed/connections/http2WithSecureSession"
 		]);
 
 	},
 
-	"./blocked/http2WithSecureSession",
-	"./allowed/http2WithSecureSession",
+	"./blocked/connections/http2WithSecureSession",
+	"./allowed/connections/http2WithSecureSession",
 
 ];
 
@@ -143,14 +143,14 @@ const fsTests = [
 
 	() => {
 
-		NRS.fs.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/fsWriteSimple.js");
+		NRS.fs.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/fs/fsWriteSimple.js");
 
 		blockLogDash("FS Tests started");
 
 	},
 
-	"./blocked/fsWriteSimple",
-	"./allowed/fsWriteSimple"
+	"./blocked/fs/fsWriteSimple",
+	"./allowed/fs/fsWriteSimple"
 
 ];
 

@@ -1,4 +1,4 @@
-const test = require("../middle/httpsTest");
+const test = require("../../middle/httpsTest");
 
 test(status => {
 

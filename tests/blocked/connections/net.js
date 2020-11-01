@@ -1,7 +1,7 @@
 var net = require("net");
 
-const { TEST_SITE: host} = require("../_settings");
-const returnProxy = require("../../src/returnProxy");
+const { TEST_SITE: host} = require("../../_settings");
+const returnProxy = require("../../../src/returnProxy");
 
 const test = net.connect(
 	80,
@@ -20,7 +20,7 @@ if(test === returnProxy) {
 
 } else {
 
-	const callback = require("../functionality/netCallback");
+	const callback = require("../../functionality/netCallback");
 
 	test.on("data", callback("block"));
 
