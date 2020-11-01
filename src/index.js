@@ -1,3 +1,18 @@
+const makeGet = require("./getFunctionality");
+
+const getWhiteListFunctionality = function (fns) {
+
+	return {
+
+		addFullPathToWhiteList: fns.addFullPathToWhiteList,
+		addProjectPathToWhiteList: fns.addProjectPathToWhiteList,
+		addDependencyToWhiteList: fns.addDependencyToWhiteList,
+		addDependencyPathToWhiteList: fns.addDependencyPathToWhiteList,
+
+	};
+
+};
+
 const {
 
 	$tls,
@@ -31,31 +46,13 @@ const {
 
 } = require("./connections/block");
 
-const getConnections = require("./connections/get");
+const connections = getWhiteListFunctionality(require("./connections/addToWhiteList"));
 
-const {
-
-	addFullPathToWhiteList,
-	addProjectPathToWhiteList,
-	addDependencyToWhiteList,
-	addDependencyPathToWhiteList,
-
-} = require("./connections/addToWhiteList");
-
-const connections = {
-
-	addFullPathToWhiteList,
-	addProjectPathToWhiteList,
-	addDependencyToWhiteList,
-	addDependencyPathToWhiteList,
-
-};
-
-connections.$tls = { get: getConnections($tls) };
-connections.$net = { get: getConnections($net) };
-connections.$http = { get: getConnections($http) };
-connections.$https = { get: getConnections($https) };
-connections.$http2 = { get: getConnections($http2) };
+connections.$tls = { get: makeGet($tls) };
+connections.$net = { get: makeGet($net) };
+connections.$http = { get: makeGet($http) };
+connections.$https = { get: makeGet($https) };
+connections.$http2 = { get: makeGet($http2) };
 
 connections.block = blockConnections;
 connections.allow = allowConnections;
@@ -80,6 +77,24 @@ connections.restoreHttpClient = restoreHttpClient;
 connections.restoreTls = restoreTls;
 connections.restoreTlsWrap = restoreTlsWrap;
 
+const {
+
+	$fs,
+	$fsPromises,
+
+	fsBlockWriteAndChange,
+	fsAllowWriteAndChange,
+
+} = require("./fs/block");
+
+const fs = getWhiteListFunctionality(require("./fs/addToWhiteList"));
+
+fs.block = fsBlockWriteAndChange;
+fs.allow = fsAllowWriteAndChange;
+
+fs.$fs = { get: makeGet($fs) };
+fs.$fsPromises = { get: makeGet($fsPromises) };
+
 const { setPassword: init, changePassword: reInit } = require("./password");
 
 const makeSession = require("./session");
@@ -94,5 +109,6 @@ module.exports = {
 	secureSession: makeSecureSession(connections),
 
 	connections,
+	fs,
 
 };
