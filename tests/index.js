@@ -158,10 +158,24 @@ const fsTests = [
 
 	waitBeforeNextFs,
 
-	() => NRS.fs.addProjectPathToWhiteList(NRS_PASSWORD, ["tests/allowed/fs/appendFile.js"]),
+	() => NRS.fs.addProjectPathToWhiteList(NRS_PASSWORD,
+		["tests/allowed/fs/appendFile.js"],
+		["tests/allowed/fs/copyFile.js"],
+		["tests/allowed/fs/createWriteStream.js"],
+	),
 
 	bFs("appendFile"),
 	aFs("appendFile"),
+
+	waitBeforeNextFs,
+
+	bFs("copyFile"),
+	aFs("copyFile"),
+
+	waitBeforeNextFs,
+
+	bFs("createWriteStream"),
+	aFs("createWriteStream"),
 
 ];
 
