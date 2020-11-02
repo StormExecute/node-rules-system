@@ -244,7 +244,7 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 	if($fs.status == false) {
 
-		integrateToFns(whiteList, $fsList, fs, $fs, ["fs.js"], fullBlock);
+		integrateToFns(whiteList, $fsList, fs, $fs, ["fs.js", "internal/fs/streams.js"], fullBlock);
 
 		fsStatus = true;
 		$fs.status = true;
