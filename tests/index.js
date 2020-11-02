@@ -17,6 +17,10 @@ const clearFsTempBeforeRun = require("./clearFsTempBeforeRun");
 const $unlinkSync = NRS.fs.$fs.get(NRS_PASSWORD, "unlinkSync");
 clearFsTempBeforeRun($unlinkSync);
 
+const mustStayFile = require("./mustStayFile");
+const $writeFileSync = NRS.fs.$fs.get(NRS_PASSWORD, "writeFileSync");
+mustStayFile($writeFileSync);
+
 let NRS_SESSION = null;
 
 const runOnlyConnectionTests = !!process.argv.filter(el => el == "-c" || el == "--connections").length || process.env.debugP;

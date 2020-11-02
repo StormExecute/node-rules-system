@@ -1,0 +1,2 @@
+This file was created for reading in ./blocked/* .
+The original content should not be affected.
