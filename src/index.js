@@ -95,6 +95,15 @@ fs.allow = fsAllowWriteAndChange;
 fs.$fs = { get: makeGet($fs) };
 fs.$fsPromises = { get: makeGet($fsPromises) };
 
+const blockBindings = require("./process/blockBindings");
+
+const process = {
+
+	blockBinding: blockBindings["binding"],
+	blockLinkedBinding: blockBindings["_linkedBinding"],
+
+};
+
 const { setPassword: init, changePassword: reInit } = require("./password");
 
 const makeSession = require("./session");
@@ -110,5 +119,7 @@ module.exports = {
 
 	connections,
 	fs,
+
+	process,
 
 };
