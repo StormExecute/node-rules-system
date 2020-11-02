@@ -28,6 +28,7 @@ const $fs = {
 	copyFileSync: null,
 
 	createWriteStream: null,
+	SyncWriteStream: null,
 
 	fchmod: null,
 	fchmodSync: null,
