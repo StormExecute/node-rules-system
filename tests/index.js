@@ -166,6 +166,7 @@ const fsTests = [
 		["tests/allowed/fs/appendFile.js"],
 		["tests/allowed/fs/copyFile.js"],
 		["tests/allowed/fs/createWriteStream.js"],
+		["tests/allowed/fs/ftruncate.js"],
 	),
 
 	bFs("appendFile"),
@@ -180,6 +181,11 @@ const fsTests = [
 
 	bFs("createWriteStream"),
 	aFs("createWriteStream"),
+
+	waitBeforeNextFs,
+
+	bFs("ftruncate"),
+	aFs("ftruncate"),
 
 ];
 
