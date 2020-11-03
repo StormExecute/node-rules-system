@@ -4,7 +4,7 @@ const getCallerPaths = require("./getCallerPaths");
 
 const { addProjectPathToWhiteList } = require("./whiteListFunctionality");
 
-const makeSession = function (connections) {
+const makeSession = function (connections, fs, process) {
 
 	const whiteList = [];
 
@@ -45,7 +45,7 @@ const makeSession = function (connections) {
 				$net: { get(propName){} },
 				$http: { get(propName){} },
 				$https: { get(propName){} },
-				$http2: {get(propName){} },
+				$http2: { get(propName){} },
 
 				integrateToNet(fullBlock){},
 				integrateToHttp(fullBlock){},
@@ -69,6 +69,28 @@ const makeSession = function (connections) {
 
 				block(fullBlock){},
 				allow(fullBlock){},
+
+			},
+
+			fs: {
+
+				addFullPathToWhiteList(...args){},
+				addProjectPathToWhiteList(...args){},
+				addDependencyToWhiteList(...args){},
+				addDependencyPathToWhiteList(...args){},
+
+				$fs: { $get(propName){} },
+				$fsPromises: { $get(propName){} },
+
+				block(fullBlock){},
+				allow(fullBlock){},
+
+			},
+
+			process: {
+
+				blockBinding(options){},
+				blockLinkedBinding(options){},
 
 			},
 
@@ -121,49 +143,33 @@ const makeSession = function (connections) {
 
 		});
 
-		const setSecureSessionConnectionsProperty = function (prop, fn) {
-
-			$session.connections[prop] = makeSecureWrapper(fn);
-
-		};
-
-		const setSecureSessionConnections$Property = function (prop, fn) {
-
-			$session.connections[prop] = {
-
-				get: makeSecureWrapper(fn)
-
-			}
-
-		};
-
-		const standartWrapper = function (fnProp, ...args) {
+		const standartWrapper = function (fnProp, factory, ...args) {
 
 			if($sessionConfigs.returnSession) {
 
-				connections[fnProp](password, ...args);
+				factory[fnProp](password, ...args);
 
 				return Object.assign({}, $session);
 
 			} else {
 
-				return connections[fnProp](password, ...args);
+				return factory[fnProp](password, ...args);
 
 			}
 
 		};
 
-		const getWrapper = function (fnProp, propName) {
+		const getWrapper = function (fnProp, factory, propName) {
 
 			if($sessionConfigs.returnSession) {
 
-				connections[fnProp].get(password, propName);
+				factory[fnProp].get(password, propName);
 
 				return Object.assign({}, $session);
 
 			} else {
 
-				return connections[fnProp].get(password, propName);
+				return factory[fnProp].get(password, propName);
 
 			}
 
@@ -201,9 +207,44 @@ const makeSession = function (connections) {
 
 		].forEach(fnProp => {
 
-			setSecureSessionConnectionsProperty(fnProp, function (...args) {
+			$session.connections[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, ...args);
+				return standartWrapper(fnProp, connections, ...args);
+
+			});
+
+		});
+
+		[
+
+			"addFullPathToWhiteList",
+			"addProjectPathToWhiteList",
+			"addDependencyToWhiteList",
+			"addDependencyPathToWhiteList",
+
+			"block",
+			"allow",
+
+		].forEach(fnProp => {
+
+			$session.fs[fnProp] = makeSecureWrapper(function (...args) {
+
+				return standartWrapper(fnProp, fs, ...args);
+
+			});
+
+		});
+
+		[
+
+			"blockBinding",
+			"blockLinkedBinding",
+
+		].forEach(fnProp => {
+
+			$session.process[fnProp] = makeSecureWrapper(function (...args) {
+
+				return standartWrapper(fnProp, process, ...args);
 
 			});
 
@@ -219,11 +260,34 @@ const makeSession = function (connections) {
 
 		].forEach(fnProp => {
 
-			setSecureSessionConnections$Property(fnProp, function (propName) {
+			$session.connections[fnProp] = {
 
-				return getWrapper(fnProp, propName);
+				get: makeSecureWrapper(function (propName) {
 
-			});
+					return getWrapper(fnProp, connections, propName);
+
+				})
+
+			};
+
+		});
+
+		[
+
+			"$fs",
+			"$fsPromises",
+
+		].forEach(fnProp => {
+
+			$session.fs[fnProp] = {
+
+				get: makeSecureWrapper(function (propName) {
+
+					return getWrapper(fnProp, fs, propName);
+
+				})
+
+			}
 
 		});
 

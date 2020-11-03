@@ -114,8 +114,8 @@ module.exports = {
 	init,
 	reInit,
 
-	session: makeSession(connections),
-	secureSession: makeSecureSession(connections),
+	session: makeSession(connections, fs, process),
+	secureSession: makeSecureSession(connections, fs, process),
 
 	connections,
 	fs,
