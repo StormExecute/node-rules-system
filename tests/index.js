@@ -18,6 +18,8 @@ NRS.init(NRS_PASSWORD);
 
 NRS.connections.block(NRS_PASSWORD);
 NRS.fs.block(NRS_PASSWORD);
+NRS.fs.allow(NRS_PASSWORD);
+NRS.fs.block(NRS_PASSWORD);
 
 const clearFsTempBeforeRun = require("./clearFsTempBeforeRun");
 const $unlinkSync = NRS.fs.$fs.get(NRS_PASSWORD, "unlinkSync");
