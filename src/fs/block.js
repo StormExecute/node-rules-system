@@ -228,7 +228,6 @@ function breakFileHandleProto(filehandle) {
 	].forEach(el => {
 
 		filehandle[el] = returnProxy;
-		filehandle.__proto__[el] = returnProxy;
 
 	});
 
