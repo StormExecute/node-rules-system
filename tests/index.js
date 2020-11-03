@@ -31,10 +31,12 @@ const runOnlyOtherTests = !!process.argv.filter(el => el == "-o" || el == "--oth
 
 const bConn = filename => "./blocked/connections/" + filename;
 const bFs = filename => "./blocked/fs/" + filename;
+const bFPs = filename => "./blocked/fs/promises/" + filename;
 const bOth = filename => "./blocked/others/" + filename;
 
 const aConn = filename => "./allowed/connections/" + filename;
 const aFs = filename => "./allowed/fs/" + filename;
+const aFPs = filename => "./allowed/fs/promises/" + filename;
 const aOth = filename => "./allowed/others/" + filename;
 
 const connectionTests = [
@@ -198,6 +200,7 @@ const fsTests = [
 		["tests/allowed/fs/rename.js"],
 		["tests/allowed/fs/symLink.js"],
 		["tests/allowed/fs/unlink.js"],
+		["tests/allowed/fs/writeSync.js"],
 	),
 
 	waitBeforeNextFs,
@@ -229,6 +232,20 @@ const fsTests = [
 
 	bFs("unlink"),
 	aFs("unlink"),
+
+	waitBeforeNextFs,
+
+	bFs("writeSync"),
+	aFs("writeSync"),
+
+	waitBeforeNextFs,
+
+	() => NRS_SESSION.fs.addProjectPathToWhiteList(
+		["tests/allowed/fs/promises/appendFile.js"],
+	),
+
+	bFPs("appendFile"),
+	aFPs("appendFile"),
 
 ];
 
