@@ -47,6 +47,8 @@ function main(callerPaths, errStack) {
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/secureSession.js")
 				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/process/blockBindings.js")
+				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/connections/block.js")
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/fs/block.js")
