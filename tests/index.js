@@ -5,6 +5,7 @@ const {
 	MAX_WAIT_INTERVAL_BEFORE_THROW,
 	MAX_WAIT_INTERVAL_BEFORE_NEXT_CONNECTION_TEST: waitBeforeNextConnection,
 	MAX_WAIT_INTERVAL_BEFORE_NEXT_FS_TEST: waitBeforeNextFs,
+	MAX_WAIT_INTERVAL_BEFORE_NEXT_OTHER_TEST: waitBeforeNextOther,
 	BLOCK_CONSOLE_LOG_DASH_REPEATS: repeats,
 } = require("./_settings");
 
@@ -25,11 +26,15 @@ let NRS_SESSION = null;
 
 const runOnlyConnectionTests = !!process.argv.filter(el => el == "-c" || el == "--connections").length || process.env.debugP;
 const runOnlyFsTests = !!process.argv.filter(el => el == "-s" || el == "--fs").length || process.env.debugP;
+const runOnlyOtherTests = !!process.argv.filter(el => el == "-o" || el == "--others").length || process.env.debugP;
 
 const bConn = filename => "./blocked/connections/" + filename;
 const bFs = filename => "./blocked/fs/" + filename;
+const bOth = filename => "./blocked/others/" + filename;
+
 const aConn = filename => "./allowed/connections/" + filename;
 const aFs = filename => "./allowed/fs/" + filename;
+const aOth = filename => "./allowed/others/" + filename;
 
 const connectionTests = [
 
@@ -189,20 +194,61 @@ const fsTests = [
 
 ];
 
-const tests = runOnlyConnectionTests
-	? connectionTests
-	: runOnlyFsTests
-		? fsTests
-		: connectionTests.concat([
-			() => blockLogDash("Connection Tests finished"),
-			waitBeforeNextFs,
-		]).concat(fsTests);
+const otherTests = [
+
+	() => blockLogDash("Other Tests started"),
+
+	() => NRS.process.blockBinding(NRS_PASSWORD, {
+
+		returnProxyInsteadThrow: true,
+		whiteListType: "project",
+		whiteList: [
+			"tests/allowed/others/binding.js",
+		]
+
+	}),
+
+	bOth("binding"),
+	aOth("binding"),
+
+	//waitBeforeNextOther,
+
+];
+
+const tests = (function() {
+
+	if(runOnlyConnectionTests) {
+
+		return connectionTests;
+
+	} else if(runOnlyFsTests) {
+
+		return fsTests;
+
+	} else if(runOnlyOtherTests) {
+
+		return otherTests;
+
+	} else {
+
+		return connectionTests
+			.concat([
+				() => blockLogDash("Connection Tests finished"),
+				waitBeforeNextFs,
+			])
+			.concat(fsTests)
+			.concat([
+				() => blockLogDash("FS Tests finished"),
+				waitBeforeNextOther,
+			]);
+
+	}
+
+})();
 
 function getRemainingTestsCount() {
 
-	const copy = Object.assign([], tests);
-
-	return copy.filter(t => typeof t == "string").length;
+	return tests.filter(t => typeof t == "string").length;
 
 }
 
