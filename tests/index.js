@@ -16,13 +16,14 @@ NRS.fs.block(NRS_PASSWORD);
 
 const clearFsTempBeforeRun = require("./clearFsTempBeforeRun");
 const $unlinkSync = NRS.fs.$fs.get(NRS_PASSWORD, "unlinkSync");
-clearFsTempBeforeRun($unlinkSync);
+const $rmdirSync = NRS.fs.$fs.get(NRS_PASSWORD, "rmdirSync");
+clearFsTempBeforeRun($unlinkSync, $rmdirSync);
 
 const mustStayFile = require("./mustStayFile");
 const $writeFileSync = NRS.fs.$fs.get(NRS_PASSWORD, "writeFileSync");
 mustStayFile($writeFileSync);
 
-let NRS_SESSION = null;
+const NRS_SESSION = NRS.session(NRS_PASSWORD);
 
 const runOnlyConnectionTests = !!process.argv.filter(el => el == "-c" || el == "--connections").length || process.env.debugP;
 const runOnlyFsTests = !!process.argv.filter(el => el == "-s" || el == "--fs").length || process.env.debugP;
@@ -95,8 +96,6 @@ const connectionTests = [
 	waitBeforeNextConnection,
 
 	() => {
-
-		NRS_SESSION = NRS.session(NRS_PASSWORD);
 
 		NRS_SESSION.connections.allow();
 
@@ -192,6 +191,45 @@ const fsTests = [
 	bFs("ftruncate"),
 	aFs("ftruncate"),
 
+	() => NRS_SESSION.fs.addProjectPathToWhiteList(
+		["tests/allowed/fs/futimes.js"],
+		["tests/allowed/fs/hardLink.js"],
+		["tests/allowed/fs/mkDir.js"],
+		["tests/allowed/fs/rename.js"],
+		["tests/allowed/fs/symLink.js"],
+		["tests/allowed/fs/unlink.js"],
+	),
+
+	waitBeforeNextFs,
+
+	bFs("futimes"),
+	aFs("futimes"),
+
+	waitBeforeNextFs,
+
+	bFs("hardLink"),
+	aFs("hardLink"),
+
+	waitBeforeNextFs,
+
+	bFs("mkDir"),
+	aFs("mkDir"),
+
+	waitBeforeNextFs,
+
+	bFs("rename"),
+	aFs("rename"),
+
+	waitBeforeNextFs,
+
+	bFs("symLink"),
+	aFs("symLink"),
+
+	waitBeforeNextFs,
+
+	bFs("unlink"),
+	aFs("unlink"),
+
 ];
 
 const otherTests = [
@@ -240,7 +278,8 @@ const tests = (function() {
 			.concat([
 				() => blockLogDash("FS Tests finished"),
 				waitBeforeNextOther,
-			]);
+			])
+			.concat(otherTests);
 
 	}
 
