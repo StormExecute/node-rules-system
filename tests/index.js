@@ -1,12 +1,17 @@
 const NRS = require("../src/index");
 
 const {
+
 	NRS_PASSWORD,
+
 	MAX_WAIT_INTERVAL_BEFORE_THROW,
+
 	MAX_WAIT_INTERVAL_BEFORE_NEXT_CONNECTION_TEST: waitBeforeNextConnection,
 	MAX_WAIT_INTERVAL_BEFORE_NEXT_FS_TEST: waitBeforeNextFs,
 	MAX_WAIT_INTERVAL_BEFORE_NEXT_OTHER_TEST: waitBeforeNextOther,
+
 	BLOCK_CONSOLE_LOG_DASH_REPEATS: repeats,
+
 } = require("./_settings");
 
 NRS.init(NRS_PASSWORD);
@@ -38,6 +43,9 @@ const aConn = filename => "./allowed/connections/" + filename;
 const aFs = filename => "./allowed/fs/" + filename;
 const aFPs = filename => "./allowed/fs/promises/" + filename;
 const aOth = filename => "./allowed/others/" + filename;
+
+const bFPsV = filename => process.version >= "v10.0.0" ? bFPs(filename) : () => {};
+const aFPsV = filename => process.version >= "v10.0.0" ? aFPs(filename) : () => {};
 
 const connectionTests = [
 
@@ -242,10 +250,28 @@ const fsTests = [
 
 	() => NRS_SESSION.fs.addProjectPathToWhiteList(
 		["tests/allowed/fs/promises/appendFile.js"],
+		["tests/allowed/fs/promises/rename.js"],
+		["tests/allowed/fs/promises/writeFile.js"],
+		["tests/allowed/fs/promises/openAndAppend.js"],
 	),
 
-	bFPs("appendFile"),
-	aFPs("appendFile"),
+	bFPsV("appendFile"),
+	aFPsV("appendFile"),
+
+	waitBeforeNextFs,
+
+	bFPsV("rename"),
+	aFPsV("rename"),
+
+	waitBeforeNextFs,
+
+	bFPsV("writeFile"),
+	aFPsV("writeFile"),
+
+	waitBeforeNextFs,
+
+	bFPsV("openAndAppend"),
+	aFPsV("openAndAppend"),
 
 ];
 
