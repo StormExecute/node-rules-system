@@ -1,4 +1,4 @@
-const { readdirSync } = require("fs");
+const { readdirSync, lstatSync } = require("fs");
 const nodePath = require("path");
 
 const dirs = [
@@ -8,7 +8,7 @@ const dirs = [
 
 ];
 
-module.exports = (unlinkSync) => {
+module.exports = (unlinkSync, rmdirSync) => {
 
 	return (function clearDirectory () {
 
@@ -22,9 +22,17 @@ module.exports = (unlinkSync) => {
 
 			if(file == ".gitignore") continue;
 
-			unlinkSync(
-				nodePath.join(directory, file)
-			);
+			const thisPath = nodePath.join(directory, file);
+
+			if(lstatSync(thisPath).isDirectory()) {
+
+				rmdirSync(thisPath);
+
+			} else {
+
+				unlinkSync(thisPath);
+
+			}
 
 		}
 
