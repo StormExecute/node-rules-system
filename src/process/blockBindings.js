@@ -15,19 +15,11 @@ const {
 
 } = require("../whiteListFunctionality");
 
-const $process = {
-
-	statusBinding: false,
-	statusLinkedBinding: false,
-
-	binding: null,
-	_linkedBinding: null,
-
-};
+const $process = require("./storeBindings");
 
 const block = {};
 
-["binding", "_linkedBinding"].forEach(el => {
+["binding", "_linkedBinding", "dlopen"].forEach(el => {
 
 	//{ returnProxyInsteadThrow, whiteList, whiteListType }
 	block[el] = function (tryPass, options) {
@@ -37,6 +29,7 @@ const block = {};
 
 		if(el == "binding" && $process.statusBinding == true) return false;
 		if(el == "_linkedBinding" && $process.statusLinkedBinding == true) return false;
+		if(el == "dlopen" && $process.statusDlopen == true) return false;
 
 		const opts = isObject(options) ? Object.assign({}, options) : {};
 
@@ -111,11 +104,27 @@ const block = {};
 
 		if(el == "binding") $process.statusBinding = true;
 		else if(el == "_linkedBinding") $process.statusLinkedBinding = true;
+		else if(el == "dlopen") $process.statusDlopen = true;
 
 		return true;
 
 	};
 
 });
+
+block.blockAll = function (tryPass) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) throw new Error(wrongPass);
+
+	return [
+
+		block["binding"](tryPass),
+		block["_linkedBinding"](tryPass),
+		block["dlopen"](tryPass),
+
+	];
+
+};
 
 module.exports = block;
