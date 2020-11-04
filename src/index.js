@@ -119,6 +119,11 @@ const child_process = getWhiteListFunctionality(require("./child_process/addToWh
 child_process.block = require("./child_process/block");
 child_process.allow = require("./child_process/allow");
 
+const dgram = getWhiteListFunctionality(require("./dgram/addToWhiteList"));
+
+dgram.block = require("./dgram/block");
+dgram.allow = require("./dgram/allow");
+
 const { setPassword: init, changePassword: reInit } = require("./password");
 
 const makeSession = require("./session");
@@ -136,6 +141,8 @@ module.exports = {
 	fs,
 
 	process,
+
 	child_process,
+	dgram,
 
 };
