@@ -119,10 +119,14 @@ const child_process = getWhiteListFunctionality(require("./child_process/addToWh
 child_process.block = require("./child_process/block");
 child_process.allow = require("./child_process/allow");
 
+child_process.$fns = { get: makeGet(require("./child_process/store")) };
+
 const dgram = getWhiteListFunctionality(require("./dgram/addToWhiteList"));
 
 dgram.block = require("./dgram/block");
 dgram.allow = require("./dgram/allow");
+
+dgram.$fns = { get: makeGet(require("./dgram/store")) };
 
 const { setPassword: init, changePassword: reInit } = require("./password");
 
