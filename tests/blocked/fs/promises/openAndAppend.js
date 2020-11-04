@@ -7,7 +7,7 @@ const returnProxy = require("../../../../src/returnProxy");
 
 	const fileHandle = await fs.open(nodePath.join(__dirname, "../../../fsTemp/blocked/byPromises.txt"), 'w');
 
-	const test = await fileHandle.appendFile("!!!");
+	const test = await fileHandle.__proto__.appendFile.apply(fileHandle, ["!!!"]);
 
 	if(test != returnProxy) {
 
