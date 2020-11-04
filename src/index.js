@@ -114,6 +114,8 @@ const process = {
 
 };
 
+process.$fns = { get: makeGet(require("./process/storeBindings")) };
+
 const child_process = getWhiteListFunctionality(require("./child_process/addToWhiteList"));
 
 child_process.block = require("./child_process/block");
