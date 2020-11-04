@@ -96,11 +96,21 @@ fs.$fs = { get: makeGet($fs) };
 fs.$fsPromises = { get: makeGet($fsPromises) };
 
 const blockBindings = require("./process/blockBindings");
+const allowBindings = require("./process/allowBindings");
 
 const process = {
 
 	blockBinding: blockBindings["binding"],
 	blockLinkedBinding: blockBindings["_linkedBinding"],
+	blockDlopen: blockBindings["dlopen"],
+
+	blockBindingLinkedBindingAndDlopen: blockBindings.blockAll,
+
+	allowBinding: allowBindings.allowBinding,
+	allowLinkedBinding: allowBindings.allowLinkedBinding,
+	allowDlopen: allowBindings.allowDlopen,
+
+	allowBindingLinkedBindingAndDlopen: allowBindings.allowAll,
 
 };
 
