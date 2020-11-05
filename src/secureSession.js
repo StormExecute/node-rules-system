@@ -4,7 +4,9 @@ const getCallerPaths = require("./getCallerPaths");
 
 const { addProjectPathToWhiteList } = require("./whiteListFunctionality");
 
-const makeSession = function (connections, fs, process) {
+const { logsEmitter, wrongPassEmitter } = require("./logs");
+
+const makeSession = function (connections, fs, process, child_process, dgram, worker_threads) {
 
 	const whiteList = [];
 
@@ -16,7 +18,7 @@ const makeSession = function (connections, fs, process) {
 
 			password.value = password;
 
-		} else if(password != password.value) throw new Error(wrongPass);
+		} else if(password != password.value) return wrongPassEmitter(wrongPass, "secureSession", { args });
 
 		const whiteListResult = addProjectPathToWhiteList(whiteList, password, args);
 
@@ -89,20 +91,87 @@ const makeSession = function (connections, fs, process) {
 
 			process: {
 
+				$fns: { $get(propName){} },
+
 				blockBinding(options){},
 				blockLinkedBinding(options){},
+				blockDlopen(options){},
+
+				blockBindingLinkedBindingAndDlopen(options){},
+
+				allowBinding(options){},
+				allowLinkedBinding(options){},
+				allowDlopen(options){},
+
+				allowBindingLinkedBindingAndDlopen(options){},
+
+			},
+
+			child_process: {
+
+				addFullPathToWhiteList(...args){},
+				addProjectPathToWhiteList(...args){},
+				addDependencyToWhiteList(...args){},
+				addDependencyPathToWhiteList(...args){},
+
+				$fns: { $get(propName){} },
+
+				block(fullBlock){},
+				allow(fullBlock){},
+
+			},
+
+			dgram: {
+
+				addFullPathToWhiteList(...args){},
+				addProjectPathToWhiteList(...args){},
+				addDependencyToWhiteList(...args){},
+				addDependencyPathToWhiteList(...args){},
+
+				$fns: { $get(propName){} },
+
+				block(fullBlock){},
+				allow(fullBlock){},
+
+			},
+
+			worker_threads: {
+
+				addFullPathToWhiteList(...args){},
+				addProjectPathToWhiteList(...args){},
+				addDependencyToWhiteList(...args){},
+				addDependencyPathToWhiteList(...args){},
+
+				$fns: { $get(propName){} },
+
+				block(fullBlock){},
+				allow(fullBlock){},
 
 			},
 
 		};
 
-		const makeSecureWrapper = function (fn) {
+		const makeSecureWrapper = function (fn, NRSFnName, NRSFnPropName) {
 
 			return function (...args) {
 
 				const callerPaths = getCallerPaths();
 
-				if (!callerPaths) return false;
+				if (!callerPaths) {
+
+					logsEmitter("callFromSecureSession", [undefined, undefined], {
+
+						grantRights: false,
+
+						NRSFnName,
+						NRSFnPropName,
+						args
+
+					});
+
+					return false;
+
+				}
 
 				const [nativePath, wrapPath] = callerPaths;
 
@@ -114,11 +183,31 @@ const makeSession = function (connections, fs, process) {
 						wrapPath.startsWith(whiteList[i][1])
 					) {
 
+						logsEmitter("callFromSecureSession", [nativePath, wrapPath], {
+
+							grantRights: true,
+
+							NRSFnName,
+							NRSFnPropName,
+							args
+
+						});
+
 						return fn(...args);
 
 					}
 
 				}
+
+				logsEmitter("callFromSecureSession", [nativePath, wrapPath], {
+
+					grantRights: false,
+
+					NRSFnName,
+					NRSFnPropName,
+					args
+
+				});
 
 				return false;
 
@@ -128,7 +217,7 @@ const makeSession = function (connections, fs, process) {
 
 		const setSecureSessionProperty = function (prop, fn) {
 
-			$session[prop] = makeSecureWrapper(fn);
+			$session[prop] = makeSecureWrapper(fn, "session", prop);
 
 		};
 
@@ -211,7 +300,7 @@ const makeSession = function (connections, fs, process) {
 
 				return standartWrapper(fnProp, connections, ...args);
 
-			});
+			}, "connections", fnProp);
 
 		});
 
@@ -231,7 +320,7 @@ const makeSession = function (connections, fs, process) {
 
 				return standartWrapper(fnProp, fs, ...args);
 
-			});
+			}, "fs", fnProp);
 
 		});
 
@@ -239,6 +328,15 @@ const makeSession = function (connections, fs, process) {
 
 			"blockBinding",
 			"blockLinkedBinding",
+			"blockDlopen",
+
+			"blockBindingLinkedBindingAndDlopen",
+
+			"allowBinding",
+			"allowLinkedBinding",
+			"allowDlopen",
+
+			"allowBindingLinkedBindingAndDlopen",
 
 		].forEach(fnProp => {
 
@@ -246,7 +344,67 @@ const makeSession = function (connections, fs, process) {
 
 				return standartWrapper(fnProp, process, ...args);
 
-			});
+			}, "process", fnProp);
+
+		});
+
+		[
+
+			"addFullPathToWhiteList",
+			"addProjectPathToWhiteList",
+			"addDependencyToWhiteList",
+			"addDependencyPathToWhiteList",
+
+			"block",
+			"allow",
+
+		].forEach(fnProp => {
+
+			$session.child_process[fnProp] = makeSecureWrapper(function (...args) {
+
+				return standartWrapper(fnProp, child_process, ...args);
+
+			}, "child_process", fnProp);
+
+		});
+
+		[
+
+			"addFullPathToWhiteList",
+			"addProjectPathToWhiteList",
+			"addDependencyToWhiteList",
+			"addDependencyPathToWhiteList",
+
+			"block",
+			"allow",
+
+		].forEach(fnProp => {
+
+			$session.dgram[fnProp] = makeSecureWrapper(function (...args) {
+
+				return standartWrapper(fnProp, dgram, ...args);
+
+			}, "dgram", fnProp);
+
+		});
+
+		[
+
+			"addFullPathToWhiteList",
+			"addProjectPathToWhiteList",
+			"addDependencyToWhiteList",
+			"addDependencyPathToWhiteList",
+
+			"block",
+			"allow",
+
+		].forEach(fnProp => {
+
+			$session.worker_threads[fnProp] = makeSecureWrapper(function (...args) {
+
+				return standartWrapper(fnProp, worker_threads, ...args);
+
+			}, "worker_threads", fnProp);
 
 		});
 
@@ -266,7 +424,7 @@ const makeSession = function (connections, fs, process) {
 
 					return getWrapper(fnProp, connections, propName);
 
-				})
+				}, "connections.get", fnProp)
 
 			};
 
@@ -285,11 +443,51 @@ const makeSession = function (connections, fs, process) {
 
 					return getWrapper(fnProp, fs, propName);
 
-				})
+				}, "fs.get", fnProp)
 
 			}
 
 		});
+
+		$session.process.$fns = {
+
+			get: makeSecureWrapper(function (propName) {
+
+				return getWrapper("$fns", process, propName);
+
+			}, "process.get", "$fns")
+
+		};
+
+		$session.child_process.$fns = {
+
+			get: makeSecureWrapper(function (propName) {
+
+				return getWrapper("$fns", child_process, propName);
+
+			}, "child_process.get", "$fns")
+
+		};
+
+		$session.dgram.$fns = {
+
+			get: makeSecureWrapper(function (propName) {
+
+				return getWrapper("$fns", dgram, propName);
+
+			}, "dgram.get", "$fns")
+
+		};
+
+		$session.worker_threads.$fns = {
+
+			get: makeSecureWrapper(function (propName) {
+
+				return getWrapper("$fns", worker_threads, propName);
+
+			}, "worker_threads.get", "$fns")
+
+		};
 
 		return Object.assign({}, $session);
 
