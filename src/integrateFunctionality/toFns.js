@@ -4,6 +4,8 @@ const returnProxy = require("../returnProxy");
 
 const debug = require("./debugThisFn");
 
+const { logsEmitter } = require("../logs");
+
 function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock) {
 
 	allowList = allowList || [];
@@ -20,6 +22,17 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 			if(!callerPaths) {
 
+				logsEmitter("callFn", [undefined, undefined], {
+
+					grantRights: false,
+
+					fn: el,
+					args,
+
+					calledAsClass: !!(new.target),
+
+				});
+
 				debug && console.log("toFns->false", callerPaths, el);
 
 				return returnProxy;
@@ -31,6 +44,8 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 			debug && console.log("toFns->true", el, nativePath, wrapPath);
 
 			if(~allowList.indexOf(nativePath)) {
+
+				//dont emit
 
 				return new.target ? new backup[el](...args) : backup[el].apply(this, args);
 
@@ -44,11 +59,33 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 					wrapPath.startsWith(whiteList[i][1])
 				) {
 
+					logsEmitter("callFn", [nativePath, wrapPath], {
+
+						grantRights: true,
+
+						fn: el,
+						args,
+
+						calledAsClass: !!(new.target),
+
+					});
+
 					return new.target ? new backup[el](...args): backup[el].apply(this, args);
 
 				}
 
 			}
+
+			logsEmitter("callFn", [nativePath, wrapPath], {
+
+				grantRights: false,
+
+				fn: el,
+				args,
+
+				calledAsClass: !!(new.target),
+
+			});
 
 			debug && console.log("toFns->", false);
 
