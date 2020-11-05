@@ -130,12 +130,37 @@ dgram.allow = require("./dgram/allow");
 
 dgram.$fns = { get: makeGet(require("./dgram/store")) };
 
-const { setPassword: init, changePassword: reInit } = require("./password");
+const {
+
+	setPassword: init,
+	changePassword: reInit,
+
+	password,
+	needToSetPassword,
+	wrongPass,
+
+} = require("./password");
 
 const makeSession = require("./session");
 const makeSecureSession = require("./secureSession");
 
+const {
+
+	getAllLogs,
+	getLogsEmitter,
+
+	startRecordLogs,
+	stopRecordLogs,
+
+} = require("./logs").make(password, needToSetPassword, wrongPass);
+
 module.exports = {
+
+	getAllLogs,
+	getLogsEmitter,
+
+	startRecordLogs,
+	stopRecordLogs,
 
 	init,
 	reInit,
