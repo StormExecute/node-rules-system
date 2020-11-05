@@ -4,6 +4,8 @@ const returnProxy = require("../returnProxy");
 
 const debug = require("./debugThisFn");
 
+const { logsEmitter } = require("../logs");
+
 function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, allowList, fullBlock) {
 
 	backup[backupProp] = origin.prototype[fnName];
@@ -17,6 +19,15 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 		const callerPaths = getCallerPaths();
 
 		if(!callerPaths) {
+
+			logsEmitter("callProtoFn", [undefined, undefined], {
+
+				grantRights: false,
+
+				protoFn: fnName,
+				args,
+
+			});
 
 			debug && console.log("toProtoFn->false", callerPaths);
 
@@ -42,11 +53,29 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 				wrapPath.startsWith(whiteList[i][1])
 			) {
 
+				logsEmitter("callProtoFn", [nativePath, wrapPath], {
+
+					grantRights: true,
+
+					protoFn: fnName,
+					args,
+
+				});
+
 				return backup[backupProp].apply(this, args);
 
 			}
 
 		}
+
+		logsEmitter("callProtoFn", [nativePath, wrapPath], {
+
+			grantRights: false,
+
+			protoFn: fnName,
+			args,
+
+		});
 
 		debug && console.log("toProtoFn->", false);
 
