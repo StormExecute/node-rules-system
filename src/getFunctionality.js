@@ -10,7 +10,7 @@ function make(object) {
 	return function (tryPass, propName) {
 
 		if(password.value === null) throw new Error(needToSetPassword);
-		if(tryPass != password.value) wrongPassEmitter(wrongPass, "get", { propName });
+		if(tryPass != password.value) return wrongPassEmitter(wrongPass, "get", { propName });
 
 		logsEmitter("get", null, {
 
