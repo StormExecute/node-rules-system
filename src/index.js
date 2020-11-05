@@ -130,6 +130,13 @@ dgram.allow = require("./dgram/allow");
 
 dgram.$fns = { get: makeGet(require("./dgram/store")) };
 
+const worker_threads = getWhiteListFunctionality(require("./worker_threads/addToWhiteList"));
+
+worker_threads.block = require("./worker_threads/block");
+worker_threads.allow = require("./worker_threads/allow");
+
+worker_threads.$fns = { get: makeGet(require("./worker_threads/store")) };
+
 const {
 
 	setPassword: init,
@@ -175,5 +182,6 @@ module.exports = {
 
 	child_process,
 	dgram,
+	worker_threads,
 
 };
