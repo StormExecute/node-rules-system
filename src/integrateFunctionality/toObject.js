@@ -1,10 +1,10 @@
-const { password } = require("../password");
-
 const getCallerPaths = require("../getCallerPaths");
 
 const returnProxy = require("../returnProxy");
 
 const debug = require("./debugThisFn");
+
+const { logsEmitter } = require("../logs");
 
 function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock) {
 
@@ -19,6 +19,15 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 			const callerPaths = getCallerPaths();
 
 			if(!callerPaths) {
+
+				logsEmitter("callObj", [undefined, undefined], {
+
+					grantRights: false,
+
+					obj: name,
+					prop,
+
+				});
 
 				debug && console.log("toObj->false", callerPaths, name);
 
@@ -40,11 +49,29 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 					wrapPath.startsWith(whiteList[i][1])
 				) {
 
+					logsEmitter("callObj", [nativePath, wrapPath], {
+
+						grantRights: true,
+
+						obj: name,
+						prop,
+
+					});
+
 					return backup[name][prop];
 
 				}
 
 			}
+
+			logsEmitter("callObj", [nativePath, wrapPath], {
+
+				grantRights: false,
+
+				obj: name,
+				prop,
+
+			});
 
 			debug && console.log("toObj->", false);
 
