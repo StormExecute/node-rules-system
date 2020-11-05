@@ -1,6 +1,6 @@
 const { password, mustBeString } = require("./password");
 
-const makeSession = function (connections, fs, process) {
+const makeSession = function (connections, fs, process, child_process, dgram, worker_threads) {
 
 	return function session (password) {
 
@@ -91,8 +91,61 @@ const makeSession = function (connections, fs, process) {
 
 			process: {
 
+				$fns: { $get(propName){} },
+
 				blockBinding(options){},
 				blockLinkedBinding(options){},
+				blockDlopen(options){},
+
+				blockBindingLinkedBindingAndDlopen(options){},
+
+				allowBinding(options){},
+				allowLinkedBinding(options){},
+				allowDlopen(options){},
+
+				allowBindingLinkedBindingAndDlopen(options){},
+
+			},
+
+			child_process: {
+
+				addFullPathToWhiteList(...args){},
+				addProjectPathToWhiteList(...args){},
+				addDependencyToWhiteList(...args){},
+				addDependencyPathToWhiteList(...args){},
+
+				$fns: { $get(propName){} },
+
+				block(fullBlock){},
+				allow(fullBlock){},
+
+			},
+
+			dgram: {
+
+				addFullPathToWhiteList(...args){},
+				addProjectPathToWhiteList(...args){},
+				addDependencyToWhiteList(...args){},
+				addDependencyPathToWhiteList(...args){},
+
+				$fns: { $get(propName){} },
+
+				block(fullBlock){},
+				allow(fullBlock){},
+
+			},
+
+			worker_threads: {
+
+				addFullPathToWhiteList(...args){},
+				addProjectPathToWhiteList(...args){},
+				addDependencyToWhiteList(...args){},
+				addDependencyPathToWhiteList(...args){},
+
+				$fns: { $get(propName){} },
+
+				block(fullBlock){},
+				allow(fullBlock){},
 
 			},
 
@@ -194,12 +247,81 @@ const makeSession = function (connections, fs, process) {
 
 			"blockBinding",
 			"blockLinkedBinding",
+			"blockDlopen",
+
+			"blockBindingLinkedBindingAndDlopen",
+
+			"allowBinding",
+			"allowLinkedBinding",
+			"allowDlopen",
+
+			"allowBindingLinkedBindingAndDlopen",
 
 		].forEach(fnProp => {
 
 			$session.process[fnProp] = function (...args) {
 
 				return standartWrapper(fnProp, process, ...args);
+
+			}
+
+		});
+
+		[
+
+			"addFullPathToWhiteList",
+			"addProjectPathToWhiteList",
+			"addDependencyToWhiteList",
+			"addDependencyPathToWhiteList",
+
+			"block",
+			"allow",
+
+		].forEach(fnProp => {
+
+			$session.child_process[fnProp] = function (...args) {
+
+				return standartWrapper(fnProp, child_process, ...args);
+
+			}
+
+		});
+
+		[
+
+			"addFullPathToWhiteList",
+			"addProjectPathToWhiteList",
+			"addDependencyToWhiteList",
+			"addDependencyPathToWhiteList",
+
+			"block",
+			"allow",
+
+		].forEach(fnProp => {
+
+			$session.dgram[fnProp] = function (...args) {
+
+				return standartWrapper(fnProp, dgram, ...args);
+
+			}
+
+		});
+
+		[
+
+			"addFullPathToWhiteList",
+			"addProjectPathToWhiteList",
+			"addDependencyToWhiteList",
+			"addDependencyPathToWhiteList",
+
+			"block",
+			"allow",
+
+		].forEach(fnProp => {
+
+			$session.worker_threads[fnProp] = function (...args) {
+
+				return standartWrapper(fnProp, worker_threads, ...args);
 
 			}
 
@@ -245,6 +367,46 @@ const makeSession = function (connections, fs, process) {
 			}
 
 		});
+
+		$session.process.$fns = {
+
+			get: function (propName) {
+
+				return getWrapper("$fns", process, propName);
+
+			}
+
+		};
+
+		$session.child_process.$fns = {
+
+			get: function (propName) {
+
+				return getWrapper("$fns", child_process, propName);
+
+			}
+
+		};
+
+		$session.dgram.$fns = {
+
+			get: function (propName) {
+
+				return getWrapper("$fns", dgram, propName);
+
+			}
+
+		};
+
+		$session.worker_threads.$fns = {
+
+			get: function (propName) {
+
+				return getWrapper("$fns", worker_threads, propName);
+
+			}
+
+		};
 
 		return Object.assign({}, $session);
 

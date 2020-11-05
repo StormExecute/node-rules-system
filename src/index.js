@@ -172,7 +172,7 @@ module.exports = {
 	init,
 	reInit,
 
-	session: makeSession(connections, fs, process),
+	session: makeSession(connections, fs, process, child_process, dgram, worker_threads),
 	secureSession: makeSecureSession(connections, fs, process),
 
 	connections,
