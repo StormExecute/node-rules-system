@@ -8,7 +8,9 @@ const wrongLastPass = prefix + " Wrong last password!";
 
 const mustBeString = prefix + " The password must be a string!";
 
-let password = { value: null };
+const password = { value: null };
+
+const { logsEmitter } = require("./logs");
 
 function setPassword (newPassword) {
 
@@ -18,9 +20,13 @@ function setPassword (newPassword) {
 
 		password.value = newPassword;
 
+		logsEmitter("setPassword");
+
 		return true;
 
 	} else {
+
+		logsEmitter("passwordAlready");
 
 		throw new Error(passAlready);
 
@@ -38,9 +44,13 @@ function changePassword(lastPassword, newPassword) {
 
 		password.value = newPassword;
 
+		logsEmitter("changePassword");
+
 		return true;
 
 	} else {
+
+		logsEmitter("wrongChangePassword");
 
 		throw new Error(wrongLastPass);
 
