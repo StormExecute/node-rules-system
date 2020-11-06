@@ -137,6 +137,13 @@ worker_threads.allow = require("./worker_threads/allow");
 
 worker_threads.$fns = { get: makeGet(require("./worker_threads/store")) };
 
+const cluster = getWhiteListFunctionality(require("./cluster/addToWhiteList"));
+
+cluster.block = require("./cluster/block");
+cluster.allow = require("./cluster/allow");
+
+cluster.$fns = { get: makeGet(require("./cluster/store")) };
+
 const {
 
 	setPassword: init,
