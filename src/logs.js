@@ -2,6 +2,8 @@ const isObject = require("../dependencies/isObject");
 
 const getCallerPaths = require("./getCallerPaths");
 
+const settings = require("./_settings/store");
+
 const EventEmitter = require('events');
 class NRSLogs extends EventEmitter {}
 const logs = new NRSLogs();
@@ -11,7 +13,7 @@ let recordAllLogs = false;
 const allLogs = [];
 
 //setPassword, passwordAlready, changePassword, wrongChangePassword, wrongPassword, callFn, callObj, callProtoFn, get, callFromSecureSession
-function logsEmitter(type, customCallerPaths, details) {
+function logsEmitter(type, customCallerPaths, details, force) {
 
 	details = isObject(details) ? details : {};
 
@@ -35,9 +37,19 @@ function logsEmitter(type, customCallerPaths, details) {
 	logs.emit(message.type, message);
 	logs.emit("*", message);
 
-	return true;
+	return force ? message : true;
 
 }
+
+logsEmitter.force = function (type, customCallerPaths, details) {
+
+	const message = this(type, customCallerPaths, details, true);
+
+	allLogs.push(message);
+
+	return true;
+
+};
 
 function wrongPassEmitter(wrongPass, where, details) {
 
@@ -53,7 +65,9 @@ function wrongPassEmitter(wrongPass, where, details) {
 
 	});
 
-	throw new Error(wrongPass);
+	if(settings.throwIfWrongPassword) throw new Error(wrongPass);
+
+	return true;
 
 }
 
@@ -70,7 +84,7 @@ module.exports = {
 			startRecordLogs: function (tryPass) {
 
 				if (password.value === null) throw new Error(needToSetPassword);
-				if (tryPass != password.value) throw new Error(wrongPass);
+				if (tryPass != password.value) return wrongPassEmitter(wrongPass, "startRecordLogs");
 
 				recordAllLogs = true;
 
@@ -79,7 +93,7 @@ module.exports = {
 			stopRecordLogs: function (tryPass) {
 
 				if (password.value === null) throw new Error(needToSetPassword);
-				if (tryPass != password.value) throw new Error(wrongPass);
+				if (tryPass != password.value) return wrongPassEmitter(wrongPass, "stopRecordLogs");
 
 				recordAllLogs = false;
 
@@ -88,7 +102,7 @@ module.exports = {
 			getAllLogs: function (tryPass) {
 
 				if (password.value === null) throw new Error(needToSetPassword);
-				if (tryPass != password.value) throw new Error(wrongPass);
+				if (tryPass != password.value) return wrongPassEmitter(wrongPass, "getAllLogs");
 
 				return Object.assign([], allLogs);
 
@@ -97,7 +111,7 @@ module.exports = {
 			getLogsEmitter: function (tryPass) {
 
 				if (password.value === null) throw new Error(needToSetPassword);
-				if (tryPass != password.value) throw new Error(wrongPass);
+				if (tryPass != password.value) return wrongPassEmitter(wrongPass, "getLogsEmitter");
 
 				return logs;
 
