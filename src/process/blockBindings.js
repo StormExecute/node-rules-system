@@ -6,6 +6,8 @@ const returnProxy = require("../returnProxy");
 
 const isObject = require("../../dependencies/isObject");
 
+const { logsEmitter, wrongPassEmitter } = require("../logs");
+
 const {
 
 	addFullPathToWhiteList,
@@ -25,7 +27,7 @@ const block = {};
 	block[el] = function (tryPass, options) {
 
 		if(password.value === null) throw new Error(needToSetPassword);
-		if(tryPass != password.value) throw new Error(wrongPass);
+		if(tryPass != password.value) return wrongPassEmitter(wrongPass, el, { options })
 
 		if(el == "binding" && $process.statusBinding == true) return false;
 		if(el == "_linkedBinding" && $process.statusLinkedBinding == true) return false;
@@ -33,44 +35,51 @@ const block = {};
 
 		const opts = isObject(options) ? Object.assign({}, options) : {};
 
-		if(typeof opts["whiteListType"] != "string") {
-
-			throw new Error("[node-rules-system] To block " + el + " you need to choose opts.whiteListType: project, full, dependency, dependencyPath!");
-
-		}
-
-		if(!Array.isArray(opts.whiteList)) throw new Error("[node-rules-system] To block " + el + " you need to set options.whiteList!");
-
 		const whiteList = [];
 
-		if(opts["whiteListType"] == "full") {
+		if(typeof opts["whiteListType"] == "string" && Array.isArray(opts.whiteList)) {
 
-			addFullPathToWhiteList(whiteList, tryPass, opts.whiteList);
+			if (opts["whiteListType"] == "full") {
 
-		} else if(opts["whiteListType"] == "dependency") {
+				addFullPathToWhiteList(whiteList, tryPass, opts.whiteList);
 
-			addDependencyToWhiteList(whiteList, tryPass, opts.whiteList);
+			} else if (opts["whiteListType"] == "dependency") {
 
-		} else if(opts["whiteListType"] == "dependencyPath") {
+				addDependencyToWhiteList(whiteList, tryPass, opts.whiteList);
 
-			addDependencyPathToWhiteList(whiteList, tryPass, opts.whiteList);
+			} else if (opts["whiteListType"] == "dependencyPath") {
 
-		} else {
+				addDependencyPathToWhiteList(whiteList, tryPass, opts.whiteList);
 
-			addProjectPathToWhiteList(whiteList, tryPass, opts.whiteList);
+			} else {
+
+				addProjectPathToWhiteList(whiteList, tryPass, opts.whiteList);
+
+			}
 
 		}
 
-		const blockedReturn = function (nativePath, wrapPath) {
+		const blockedReturn = function (module, nativePath, wrapPath) {
 
 			nativePath = nativePath || "";
 			wrapPath = wrapPath || "";
+
+			logsEmitter("callFn", [nativePath || undefined, wrapPath || undefined], {
+
+				grantRights: false,
+
+				fn: el,
+				args: module,
+
+				calledAsClass: null,
+
+			});
 
 			if(typeof opts["returnProxyInsteadThrow"] == "boolean") return returnProxy;
 
 			throw new Error("[node-rules-system] The script does not have access to process." + el + "!\n"
 				+ "NativePath: " + nativePath + "\n"
-				+ "WrapPath: " + wrapPath);
+				+ "WrapPath: " + wrapPath) + "\n";
 
 		}
 
@@ -80,7 +89,7 @@ const block = {};
 
 			const callerPaths = getCallerPaths();
 
-			if (!callerPaths) return blockedReturn();
+			if (!callerPaths) return blockedReturn(module);
 
 			const [nativePath, wrapPath] = callerPaths;
 
@@ -92,13 +101,24 @@ const block = {};
 					wrapPath.startsWith(whiteList[i][1])
 				) {
 
+					logsEmitter("callFn", [nativePath, wrapPath], {
+
+						grantRights: true,
+
+						fn: el,
+						args: module,
+
+						calledAsClass: null,
+
+					});
+
 					return $process[el](module);
 
 				}
 
 			}
 
-			return blockedReturn();
+			return blockedReturn(module, nativePath, wrapPath);
 
 		};
 
@@ -112,16 +132,16 @@ const block = {};
 
 });
 
-block.blockAll = function (tryPass) {
+block.blockAll = function (tryPass, options) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
 	if(tryPass != password.value) throw new Error(wrongPass);
 
 	return [
 
-		block["binding"](tryPass),
-		block["_linkedBinding"](tryPass),
-		block["dlopen"](tryPass),
+		block["binding"](tryPass, options),
+		block["_linkedBinding"](tryPass, options),
+		block["dlopen"](tryPass, options),
 
 	];
 
