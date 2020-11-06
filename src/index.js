@@ -21,6 +21,10 @@ const {
 	$https,
 	$http2,
 
+} = require("./connections/store");
+
+const {
+
 	integrateToNet,
 	integrateToHttp,
 	integrateToHttps,
@@ -30,6 +34,12 @@ const {
 	integrateToHttpClient,
 	integrateToTls,
 	integrateToTlsWrap,
+
+	blockConnections,
+
+} = require("./connections/block");
+
+const {
 
 	restoreNet,
 	restoreHttp,
@@ -41,10 +51,9 @@ const {
 	restoreTls,
 	restoreTlsWrap,
 
-	blockConnections,
 	allowConnections,
 
-} = require("./connections/block");
+} = require("./connections/allow");
 
 const connections = getWhiteListFunctionality(require("./connections/addToWhiteList"));
 
@@ -82,15 +91,12 @@ const {
 	$fs,
 	$fsPromises,
 
-	fsBlockWriteAndChange,
-	fsAllowWriteAndChange,
-
-} = require("./fs/block");
+} = require("./fs/store");
 
 const fs = getWhiteListFunctionality(require("./fs/addToWhiteList"));
 
-fs.block = fsBlockWriteAndChange;
-fs.allow = fsAllowWriteAndChange;
+fs.block = require("./fs/block");
+fs.allow = require("./fs/allow");
 
 fs.$fs = { get: makeGet($fs) };
 fs.$fsPromises = { get: makeGet($fsPromises) };
