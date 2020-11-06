@@ -1,4 +1,4 @@
-const $process = {
+module.exports = {
 
 	statusBinding: false,
 	statusLinkedBinding: false,
@@ -9,5 +9,3 @@ const $process = {
 	dlopen: null,
 
 };
-
-module.exports = $process;

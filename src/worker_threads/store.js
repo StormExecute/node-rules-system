@@ -1,9 +1,7 @@
-const $drgam = {
+module.exports = {
 
 	status: false,
 
 	Worker: null,
 
 };
-
-module.exports = $drgam;

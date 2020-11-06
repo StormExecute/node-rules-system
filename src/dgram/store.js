@@ -1,4 +1,4 @@
-const $drgam = {
+module.exports = {
 
 	status: false,
 
@@ -8,5 +8,3 @@ const $drgam = {
 	Socket: null,
 
 };
-
-module.exports = $drgam;

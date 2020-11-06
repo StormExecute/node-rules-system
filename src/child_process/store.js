@@ -1,4 +1,4 @@
-const $childProcess = {
+module.exports = {
 
 	status: false,
 
@@ -17,5 +17,3 @@ const $childProcess = {
 	spawnSync: null,
 
 };
-
-module.exports = $childProcess;

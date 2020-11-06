@@ -1,9 +1,7 @@
-const $cluster = {
+module.exports = {
 
 	status: false,
 
 	fork: null,
 
 };
-
-module.exports = $cluster;
