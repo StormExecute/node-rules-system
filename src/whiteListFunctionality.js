@@ -1,5 +1,7 @@
 const { password, needToSetPassword, wrongPass } = require("./password");
 
+const { wrongPassEmitter } = require("./logs");
+
 const fs = require("fs");
 const nodePath = require("path");
 
@@ -97,7 +99,7 @@ function addToWhiteList(whiteList, preFn, nextArgsArray) {
 function addFullPathToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addFullPathToWhiteList", { argsArray })
 
 	return addToWhiteList(whiteList, (nativePath, wrapPath) => {
 
@@ -110,7 +112,7 @@ function addFullPathToWhiteList(whiteList, tryPass, argsArray) {
 function addProjectPathToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addProjectPathToWhiteList", { argsArray })
 
 	return addToWhiteList(whiteList, (nativePath, wrapPath) => {
 
@@ -130,7 +132,7 @@ function addProjectPathToWhiteList(whiteList, tryPass, argsArray) {
 function addDependencyToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addDependencyToWhiteList", { argsArray })
 
 	return addToWhiteList(whiteList, (projectWrapPath, dependencyNativePath) => {
 
@@ -150,7 +152,7 @@ function addDependencyToWhiteList(whiteList, tryPass, argsArray) {
 function addDependencyPathToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addDependencyPathToWhiteList", { argsArray })
 
 	return addToWhiteList(whiteList, (projectWrapPath, dependencyNativePath) => {
 
