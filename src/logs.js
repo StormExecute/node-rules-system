@@ -28,9 +28,13 @@ function logsEmitter(type, customCallerPaths, details, force) {
 		nativePath: callerPaths[0],
 		wrapPath: callerPaths[1],
 
-		...details
-
 	};
+
+	for(const prop in details) {
+
+		message[prop] = details[prop];
+
+	}
 
 	if(recordAllLogs) allLogs.push(message);
 
@@ -55,15 +59,21 @@ function wrongPassEmitter(wrongPass, where, details) {
 
 	details = isObject(details) ? details : {};
 
-	logsEmitter("wrongPassword", null, {
+	const message = {
 
 		grantRights: false,
 
 		where,
 
-		...details
+	};
 
-	});
+	for(const prop in details) {
+
+		message[prop] = details[prop];
+
+	}
+
+	logsEmitter("wrongPassword", null, message);
 
 	if(settings.throwIfWrongPassword) throw new Error(wrongPass);
 
