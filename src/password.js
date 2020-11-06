@@ -20,7 +20,7 @@ function setPassword (newPassword) {
 
 		password.value = newPassword;
 
-		logsEmitter("setPassword");
+		logsEmitter.force("setPassword");
 
 		return true;
 
@@ -50,7 +50,7 @@ function changePassword(lastPassword, newPassword) {
 
 	} else {
 
-		logsEmitter("wrongChangePassword");
+		logsEmitter("wrongChangePassword", null, { wrongLastPass: lastPassword });
 
 		throw new Error(wrongLastPass);
 
