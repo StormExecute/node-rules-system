@@ -161,6 +161,8 @@ const {
 
 } = require("./logs").make(password, needToSetPassword, wrongPass);
 
+const settings = require("./_settings/main");
+
 module.exports = {
 
 	getAllLogs,
@@ -168,6 +170,8 @@ module.exports = {
 
 	startRecordLogs,
 	stopRecordLogs,
+
+	settings,
 
 	init,
 	reInit,
