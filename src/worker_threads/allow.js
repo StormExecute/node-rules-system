@@ -1,6 +1,6 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
 
-const worker_threads = require("dgram");
+const worker_threads = require("worker_threads");
 
 const $worker_threads = require("./store");
 

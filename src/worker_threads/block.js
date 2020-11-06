@@ -2,7 +2,7 @@ const { password, needToSetPassword, wrongPass } = require("../password");
 
 const { whiteList } = require("./addToWhiteList");
 
-const worker_threads = require("dgram");
+const worker_threads = require("worker_threads");
 
 const $worker_threads = require("./store");
 
