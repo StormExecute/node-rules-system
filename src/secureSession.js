@@ -6,7 +6,23 @@ const { addProjectPathToWhiteList } = require("./whiteListFunctionality");
 
 const { logsEmitter, wrongPassEmitter } = require("./logs");
 
-const makeSession = function (connections, fs, process, child_process, dgram, worker_threads) {
+const standartMethods = [
+
+	"addFullPathToWhiteList",
+	"addProjectPathToWhiteList",
+	"addDependencyToWhiteList",
+	"addDependencyPathToWhiteList",
+
+	"block",
+	"allow",
+
+];
+
+const makeSession = function (
+	connections, fs,
+	process, child_process, dgram, worker_threads, cluster,
+	settings, logs
+) {
 
 	const whiteList = [];
 
@@ -148,6 +164,33 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 				allow(fullBlock){},
 
 			},
+
+			cluster: {
+
+				addFullPathToWhiteList(...args){},
+				addProjectPathToWhiteList(...args){},
+				addDependencyToWhiteList(...args){},
+				addDependencyPathToWhiteList(...args){},
+
+				$fns: { $get(propName){} },
+
+				block(fullBlock){},
+				allow(fullBlock){},
+
+			},
+
+			settings: {
+
+				throwIfWrongPassword(){},
+				dontThrowIfWrongPassword(){},
+
+			},
+
+			getAllLogs(){},
+			getLogsEmitter(){},
+
+			startRecordLogs(){},
+			stopRecordLogs(){},
 
 		};
 
@@ -304,17 +347,7 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 
 		});
 
-		[
-
-			"addFullPathToWhiteList",
-			"addProjectPathToWhiteList",
-			"addDependencyToWhiteList",
-			"addDependencyPathToWhiteList",
-
-			"block",
-			"allow",
-
-		].forEach(fnProp => {
+		standartMethods.forEach(fnProp => {
 
 			$session.fs[fnProp] = makeSecureWrapper(function (...args) {
 
@@ -348,17 +381,7 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 
 		});
 
-		[
-
-			"addFullPathToWhiteList",
-			"addProjectPathToWhiteList",
-			"addDependencyToWhiteList",
-			"addDependencyPathToWhiteList",
-
-			"block",
-			"allow",
-
-		].forEach(fnProp => {
+		standartMethods.forEach(fnProp => {
 
 			$session.child_process[fnProp] = makeSecureWrapper(function (...args) {
 
@@ -368,17 +391,7 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 
 		});
 
-		[
-
-			"addFullPathToWhiteList",
-			"addProjectPathToWhiteList",
-			"addDependencyToWhiteList",
-			"addDependencyPathToWhiteList",
-
-			"block",
-			"allow",
-
-		].forEach(fnProp => {
+		standartMethods.forEach(fnProp => {
 
 			$session.dgram[fnProp] = makeSecureWrapper(function (...args) {
 
@@ -388,23 +401,55 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 
 		});
 
-		[
-
-			"addFullPathToWhiteList",
-			"addProjectPathToWhiteList",
-			"addDependencyToWhiteList",
-			"addDependencyPathToWhiteList",
-
-			"block",
-			"allow",
-
-		].forEach(fnProp => {
+		standartMethods.forEach(fnProp => {
 
 			$session.worker_threads[fnProp] = makeSecureWrapper(function (...args) {
 
 				return standartWrapper(fnProp, worker_threads, ...args);
 
 			}, "worker_threads", fnProp);
+
+		});
+
+		standartMethods.forEach(fnProp => {
+
+			$session.cluster[fnProp] = makeSecureWrapper(function (...args) {
+
+				return standartWrapper(fnProp, cluster, ...args);
+
+			}, "cluster", fnProp);
+
+		});
+
+		[
+
+			"throwIfWrongPassword",
+			"dontThrowIfWrongPassword",
+
+		].forEach(fnProp => {
+
+			$session.settings[fnProp] = makeSecureWrapper(function (...args) {
+
+				return standartWrapper(fnProp, settings, ...args);
+
+			}, "settings", fnProp);
+
+		});
+
+		[
+
+			"getAllLogs",
+			"getLogsEmitter",
+			"startRecordLogs",
+			"stopRecordLogs",
+
+		].forEach(fnProp => {
+
+			$session[fnProp] = makeSecureWrapper(function (...args) {
+
+				return standartWrapper(fnProp, logs, ...args);
+
+			}, "logs", fnProp)
 
 		});
 
@@ -486,6 +531,16 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 				return getWrapper("$fns", worker_threads, propName);
 
 			}, "worker_threads.get", "$fns")
+
+		};
+
+		$session.cluster.$fns = {
+
+			get: makeSecureWrapper(function (propName) {
+
+				return getWrapper("$fns", cluster, propName);
+
+			}, "cluster.get", "$fns")
 
 		};
 

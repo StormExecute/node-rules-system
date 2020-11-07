@@ -1,6 +1,22 @@
 const { password, mustBeString } = require("./password");
 
-const makeSession = function (connections, fs, process, child_process, dgram, worker_threads) {
+const standartMethods = [
+
+	"addFullPathToWhiteList",
+	"addProjectPathToWhiteList",
+	"addDependencyToWhiteList",
+	"addDependencyPathToWhiteList",
+
+	"block",
+	"allow",
+
+];
+
+const makeSession = function (
+	connections, fs,
+	process, child_process, dgram, worker_threads, cluster,
+	settings, logs
+) {
 
 	return function session (password) {
 
@@ -149,6 +165,33 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 
 			},
 
+			cluster: {
+
+				addFullPathToWhiteList(...args){},
+				addProjectPathToWhiteList(...args){},
+				addDependencyToWhiteList(...args){},
+				addDependencyPathToWhiteList(...args){},
+
+				$fns: { $get(propName){} },
+
+				block(fullBlock){},
+				allow(fullBlock){},
+
+			},
+
+			settings: {
+
+				throwIfWrongPassword(){},
+				dontThrowIfWrongPassword(){},
+
+			},
+
+			getAllLogs(){},
+			getLogsEmitter(){},
+
+			startRecordLogs(){},
+			stopRecordLogs(){},
+
 		};
 
 		const standartWrapper = function (fnProp, factory, ...args) {
@@ -223,17 +266,7 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 
 		});
 
-		[
-
-			"addFullPathToWhiteList",
-			"addProjectPathToWhiteList",
-			"addDependencyToWhiteList",
-			"addDependencyPathToWhiteList",
-
-			"block",
-			"allow",
-
-		].forEach(fnProp => {
+		standartMethods.forEach(fnProp => {
 
 			$session.fs[fnProp] = function (...args) {
 
@@ -267,17 +300,7 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 
 		});
 
-		[
-
-			"addFullPathToWhiteList",
-			"addProjectPathToWhiteList",
-			"addDependencyToWhiteList",
-			"addDependencyPathToWhiteList",
-
-			"block",
-			"allow",
-
-		].forEach(fnProp => {
+		standartMethods.forEach(fnProp => {
 
 			$session.child_process[fnProp] = function (...args) {
 
@@ -287,17 +310,7 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 
 		});
 
-		[
-
-			"addFullPathToWhiteList",
-			"addProjectPathToWhiteList",
-			"addDependencyToWhiteList",
-			"addDependencyPathToWhiteList",
-
-			"block",
-			"allow",
-
-		].forEach(fnProp => {
+		standartMethods.forEach(fnProp => {
 
 			$session.dgram[fnProp] = function (...args) {
 
@@ -307,21 +320,53 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 
 		});
 
-		[
-
-			"addFullPathToWhiteList",
-			"addProjectPathToWhiteList",
-			"addDependencyToWhiteList",
-			"addDependencyPathToWhiteList",
-
-			"block",
-			"allow",
-
-		].forEach(fnProp => {
+		standartMethods.forEach(fnProp => {
 
 			$session.worker_threads[fnProp] = function (...args) {
 
 				return standartWrapper(fnProp, worker_threads, ...args);
+
+			}
+
+		});
+
+		standartMethods.forEach(fnProp => {
+
+			$session.cluster[fnProp] = function (...args) {
+
+				return standartWrapper(fnProp, cluster, ...args);
+
+			}
+
+		});
+
+		[
+
+			"throwIfWrongPassword",
+			"dontThrowIfWrongPassword",
+
+		].forEach(fnProp => {
+
+			$session.settings[fnProp] = function (...args) {
+
+				return standartWrapper(fnProp, settings, ...args);
+
+			}
+
+		});
+
+		[
+
+			"getAllLogs",
+			"getLogsEmitter",
+			"startRecordLogs",
+			"stopRecordLogs",
+
+		].forEach(fnProp => {
+
+			$session[fnProp] = function (...args) {
+
+				return standartWrapper(fnProp, logs, ...args);
 
 			}
 
@@ -403,6 +448,16 @@ const makeSession = function (connections, fs, process, child_process, dgram, wo
 			get: function (propName) {
 
 				return getWrapper("$fns", worker_threads, propName);
+
+			}
+
+		};
+
+		$session.cluster.$fns = {
+
+			get: function (propName) {
+
+				return getWrapper("$fns", cluster, propName);
 
 			}
 
