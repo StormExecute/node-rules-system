@@ -2,6 +2,8 @@ const { password, needToSetPassword, wrongPass } = require("../password");
 
 const getCallerPaths = require("../getCallerPaths");
 
+const { wrongPassEmitter } = require("../logs");
+
 const { whiteList } = require("./addToWhiteList");
 
 const tls = require('tls');
@@ -35,7 +37,7 @@ const integrateToProtoFn = require("../integrateFunctionality/toProtoFn");
 function integrateToTls(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockTls", { fullBlock });
 
 	if($tls.status == true) return false;
 
@@ -54,7 +56,7 @@ function integrateToTls(tryPass, fullBlock) {
 function integrateToTlsWrap(tryPass, fullBlock) {
 
 	if (password.value === null) throw new Error(needToSetPassword);
-	if (tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockTlsWrap", { fullBlock });
 
 	if (_tls.status == true) return false;
 
@@ -73,7 +75,7 @@ function integrateToTlsWrap(tryPass, fullBlock) {
 function integrateToNet(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockNet", { fullBlock });
 
 	if($net.status == true) return false;
 
@@ -94,7 +96,7 @@ function integrateToNet(tryPass, fullBlock) {
 function integrateToHttpAgent(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockHttpAgent", { fullBlock });
 
 	if(_httpAgent.status == true) return false;
 
@@ -117,7 +119,7 @@ function integrateToHttpAgent(tryPass, fullBlock) {
 function integrateToHttpClient(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockHttpClient", { fullBlock });
 
 	if(_httpClient.status == true) return false;
 
@@ -130,7 +132,7 @@ function integrateToHttpClient(tryPass, fullBlock) {
 function integrateToHttp(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockHttp", { fullBlock });
 
 	if($http.status == true) return false;
 
@@ -145,7 +147,7 @@ function integrateToHttp(tryPass, fullBlock) {
 function integrateToHttps(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockHttps", { fullBlock });
 
 	if($https.status == true) return false;
 
@@ -160,7 +162,7 @@ function integrateToHttps(tryPass, fullBlock) {
 function integrateToHttp2(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockHttp2", { fullBlock });
 
 	if($http2.status == true) return false;
 
@@ -173,7 +175,7 @@ function integrateToHttp2(tryPass, fullBlock) {
 function blockConnections(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockConnections", { fullBlock });
 
 	const result = [
 

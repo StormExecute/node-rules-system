@@ -1,5 +1,7 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
 
+const { wrongPassEmitter } = require("../logs");
+
 const { whiteList } = require("./addToWhiteList");
 
 const worker_threads = require("worker_threads");
@@ -11,7 +13,7 @@ const integrateToFns = require("../integrateFunctionality/toFns");
 function blockWorker(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockWorkerThreads");
 
 	if($worker_threads.status == true) return false;
 

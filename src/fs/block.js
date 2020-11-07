@@ -2,6 +2,8 @@ const fs = require("fs");
 
 const { password, needToSetPassword, wrongPass } = require("../password");
 
+const { wrongPassEmitter } = require("../logs");
+
 const getCallerPaths = require("../getCallerPaths");
 
 const returnProxy = require("../returnProxy");
@@ -25,7 +27,7 @@ const breakFileHandleProto = require("./breakFileHandleProto");
 function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockFs");
 
 	let fsStatus = false;
 	let fsPromisesStatus = false;

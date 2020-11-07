@@ -27,7 +27,13 @@ const block = {};
 	block[el] = function (tryPass, options) {
 
 		if(password.value === null) throw new Error(needToSetPassword);
-		if(tryPass != password.value) return wrongPassEmitter(wrongPass, el, { options })
+		if(tryPass != password.value) {
+
+			const where = el == "binding" ? "Binding" : el == "_linkedBinding" ? "LinkedBinding" : "Dlopen";
+
+			return wrongPassEmitter(wrongPass, "blockProcess" + where, { options })
+
+		}
 
 		if(el == "binding" && $process.statusBinding == true) return false;
 		if(el == "_linkedBinding" && $process.statusLinkedBinding == true) return false;
@@ -135,7 +141,7 @@ const block = {};
 block.blockAll = function (tryPass, options) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockProcessBindingLinkedBindingAndDlopen");
 
 	return [
 

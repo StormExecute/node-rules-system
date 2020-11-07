@@ -1,5 +1,7 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
 
+const { wrongPassEmitter } = require("../logs");
+
 const tls = require('tls');
 const net = require("net");
 const http = require("http");
@@ -29,7 +31,7 @@ const restore = require("../restore");
 function restoreTls(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "allowTls");
 
 	if($tls.status == false) return false;
 
@@ -51,7 +53,7 @@ function restoreTls(tryPass) {
 function restoreTlsWrap(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "allowTlsWrap");
 
 	if(_tls.status == false) return false;
 
@@ -73,7 +75,7 @@ function restoreTlsWrap(tryPass) {
 function restoreNet(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "allowNet");
 
 	if($net.status == false) return false;
 
@@ -99,7 +101,7 @@ function restoreNet(tryPass) {
 function restoreHttpAgent(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "allowHttpAgent");
 
 	if(_httpAgent.status == false) return false;
 
@@ -114,7 +116,7 @@ function restoreHttpAgent(tryPass) {
 function restoreHttpClient(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "allowHttpClient");
 
 	if(_httpClient.status == false) return false;
 
@@ -129,7 +131,7 @@ function restoreHttpClient(tryPass) {
 function restoreHttp(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "allowHttp");
 
 	if($http.status == false) return false;
 
@@ -144,7 +146,7 @@ function restoreHttp(tryPass) {
 function restoreHttps(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "allowHttps");
 
 	if($https.status == false) return false;
 
@@ -159,7 +161,7 @@ function restoreHttps(tryPass) {
 function restoreHttp2(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "allowHttp2");
 
 	if($http2.status == false) return false;
 
@@ -174,7 +176,7 @@ function restoreHttp2(tryPass) {
 function allowConnections(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) throw new Error(wrongPass);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "allowConnections");
 
 	const result = [
 
