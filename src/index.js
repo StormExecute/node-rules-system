@@ -189,8 +189,28 @@ module.exports = {
 	init,
 	reInit,
 
-	session: makeSession(connections, fs, process, child_process, dgram, worker_threads),
-	secureSession: makeSecureSession(connections, fs, process, child_process, dgram, worker_threads),
+	session: makeSession(
+		connections, fs,
+		process, child_process, dgram, worker_threads, cluster,
+		settings,
+		{
+			getAllLogs,
+			getLogsEmitter,
+			startRecordLogs,
+			stopRecordLogs
+		}
+	),
+	secureSession: makeSecureSession(
+		connections, fs,
+		process, child_process, dgram, worker_threads, cluster,
+		settings,
+		{
+			getAllLogs,
+			getLogsEmitter,
+			startRecordLogs,
+			stopRecordLogs
+		}
+	),
 
 	connections,
 	fs,
@@ -200,5 +220,6 @@ module.exports = {
 	child_process,
 	dgram,
 	worker_threads,
+	cluster,
 
 };
