@@ -192,6 +192,9 @@ const makeSession = function (
 			startRecordLogs(){},
 			stopRecordLogs(){},
 
+			fullSecure(status){},
+			setSecure(status, secureElements){},
+
 		};
 
 		const standartWrapper = function (fnProp, factory, ...args) {
