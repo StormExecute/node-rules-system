@@ -21,7 +21,7 @@ const standartMethods = [
 const makeSession = function (
 	connections, fs,
 	process, child_process, dgram, worker_threads, cluster,
-	settings, logs
+	settings, nrsCoreFns
 ) {
 
 	const whiteList = [];
@@ -447,9 +447,24 @@ const makeSession = function (
 
 			$session[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, logs, ...args);
+				return standartWrapper(fnProp, nrsCoreFns, ...args);
 
-			}, "logs", fnProp)
+			}, "logs", fnProp);
+
+		});
+
+		[
+
+			"fullSecure",
+			"setSecure",
+
+		].forEach(fnProp => {
+
+			$session[fnProp] = makeSecureWrapper(function (...args) {
+
+				return standartWrapper(fnProp, nrsCoreFns, ...args);
+
+			}, "fullOrSetSecure", fnProp);
 
 		});
 

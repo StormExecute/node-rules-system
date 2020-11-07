@@ -15,7 +15,7 @@ const standartMethods = [
 const makeSession = function (
 	connections, fs,
 	process, child_process, dgram, worker_threads, cluster,
-	settings, logs
+	settings, nrsCoreFns
 ) {
 
 	return function session (password) {
@@ -361,12 +361,14 @@ const makeSession = function (
 			"getLogsEmitter",
 			"startRecordLogs",
 			"stopRecordLogs",
+			"fullSecure",
+			"setSecure",
 
 		].forEach(fnProp => {
 
 			$session[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, logs, ...args);
+				return standartWrapper(fnProp, nrsCoreFns, ...args);
 
 			}
 
