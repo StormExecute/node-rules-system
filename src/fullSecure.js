@@ -2,7 +2,7 @@ const { password, needToSetPassword, wrongPass } = require("./password");
 
 const { wrongPassEmitter } = require("./logs");
 
-const makeFullSecure = function (
+module.exports = function makeFullSecure(
 	connections, fs,
 	process, child_process, dgram, worker_threads, cluster
 ) {

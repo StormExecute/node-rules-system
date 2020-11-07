@@ -176,6 +176,9 @@ const {
 
 const settings = require("./_settings/main");
 
+const makeFullSecure = require("./fullSecure");
+const makeSetSecure = require("./setSecure");
+
 module.exports = {
 
 	getAllLogs,
@@ -210,6 +213,15 @@ module.exports = {
 			startRecordLogs,
 			stopRecordLogs
 		}
+	),
+
+	fullSecure: makeFullSecure(
+		connections, fs,
+		process, child_process, dgram, worker_threads, cluster
+	),
+	setSecure: makeSetSecure(
+		connections, fs,
+		process, child_process, dgram, worker_threads, cluster
 	),
 
 	connections,
