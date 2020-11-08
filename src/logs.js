@@ -12,7 +12,8 @@ let recordAllLogs = false;
 
 const allLogs = [];
 
-//setPassword, passwordAlready, changePassword, wrongChangePassword, wrongPassword, callFn, callObj, callProtoFn, get, callFromSecureSession
+//setPassword, passwordAlready, changePassword, wrongChangePassword, wrongPassword,
+// callFn, callObj, callProtoFn, get, callFromSecureSession, addToWhiteList
 function logsEmitter(type, customCallerPaths, details, force) {
 
 	details = isObject(details) ? details : {};

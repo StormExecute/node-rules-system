@@ -1,6 +1,6 @@
 const { password, needToSetPassword, wrongPass } = require("./password");
 
-const { wrongPassEmitter } = require("./logs");
+const { logsEmitter, wrongPassEmitter } = require("./logs");
 
 const fs = require("fs");
 const nodePath = require("path");
@@ -38,9 +38,23 @@ function findCWD(path, lastPath) {
 
 }
 
+function emitWhiteList(grantRights, whiteList, args) {
+
+	logsEmitter("addToWhiteList", null, {
+
+		whiteList: whiteList.name,
+		grantRights,
+		args,
+
+	});
+
+	return grantRights;
+
+}
+
 function addToWhiteList(whiteList, preFn, nextArgsArray) {
 
-	if(!nextArgsArray.length) return false;
+	if(!nextArgsArray.length) return emitWhiteList(false, whiteList, nextArgsArray);
 
 	let result = false;
 
@@ -90,7 +104,9 @@ function addToWhiteList(whiteList, preFn, nextArgsArray) {
 
 		}
 
-	} else return false;
+	} else return emitWhiteList(false, whiteList, nextArgsArray);
+
+	emitWhiteList(result, whiteList, nextArgsArray);
 
 	return result;
 
