@@ -3,8 +3,8 @@ const debug = !!process.argv.filter(el => el == "--debugP").length || process.en
 const isWindows = require("../dependencies/isWindows");
 
 const isCallerPath = !isWindows
-	? path => path[0] == "/"
-	: path => path.match(/^[a-zA-Z]:\\/);
+	? path => path && path[0] == "/"
+	: path => path && path.match(/^[a-zA-Z]:\\/);
 
 function endsWithTranslationSlashes(str, arg) {
 
