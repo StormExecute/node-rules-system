@@ -48,6 +48,8 @@ function main(callerPaths, errStack) {
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/secureSession.js")
 				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/session.js")
+				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/logs.js")
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/password.js")
@@ -57,6 +59,19 @@ function main(callerPaths, errStack) {
 				endsWithTranslationSlashes(path, "/node-rules-system/src/getFunctionality.js")
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/whiteListFunctionality.js")
+
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/cluster/addToWhiteList.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/worker_threads/addToWhiteList.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/dgram/addToWhiteList.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/child_process/addToWhiteList.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/connections/addToWhiteList.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/fs/addToWhiteList.js")
 
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/cluster/allow.js")
