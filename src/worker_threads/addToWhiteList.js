@@ -1,6 +1,7 @@
 const main = require("../whiteListFunctionality");
 
 const workerThreadsWhiteList = [];
+workerThreadsWhiteList.name = "worker_threads";
 
 [
 

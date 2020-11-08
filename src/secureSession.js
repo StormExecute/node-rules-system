@@ -25,6 +25,7 @@ const makeSession = function (
 ) {
 
 	const whiteList = [];
+	whiteList.name = "secureSession";
 
 	return function session (password, ...args) {
 

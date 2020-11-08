@@ -1,6 +1,7 @@
 const main = require("../whiteListFunctionality");
 
 const clusterWhiteList = [];
+clusterWhiteList.name = "cluster";
 
 [
 

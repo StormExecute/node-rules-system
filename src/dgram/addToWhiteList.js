@@ -1,6 +1,7 @@
 const main = require("../whiteListFunctionality");
 
 const dgramWhiteList = [];
+dgramWhiteList.name = "dgram";
 
 [
 

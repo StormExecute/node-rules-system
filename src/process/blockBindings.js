@@ -42,6 +42,7 @@ const block = {};
 		const opts = isObject(options) ? Object.assign({}, options) : {};
 
 		const whiteList = [];
+		whiteList.name = el;
 
 		if(typeof opts["whiteListType"] == "string" && Array.isArray(opts.whiteList)) {
 

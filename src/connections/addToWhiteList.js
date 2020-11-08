@@ -1,6 +1,7 @@
 const main = require("../whiteListFunctionality");
 
 const connectionsWhiteList = [];
+connectionsWhiteList.name = "connections";
 
 module.exports = {
 

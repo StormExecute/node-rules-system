@@ -1,6 +1,7 @@
 const main = require("../whiteListFunctionality");
 
 const fsWhiteList = [];
+fsWhiteList.name = "fs";
 
 [
 

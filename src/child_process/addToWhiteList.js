@@ -1,6 +1,7 @@
 const main = require("../whiteListFunctionality");
 
 const childProcessWhiteList = [];
+childProcessWhiteList.name = "child_process";
 
 [
 
