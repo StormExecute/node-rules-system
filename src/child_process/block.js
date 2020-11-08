@@ -22,7 +22,7 @@ function blockChildProcess(tryPass, fullBlock) {
 		["ChildProcess", "exec", "execSync", "execFile", "execFileSync", "fork", "_forkChild", "spawn", "spawnSync"],
 		child_process,
 		$childProcess,
-		["internal/cluster/master.js"],
+		["child_process.js", "internal/cluster/master.js"],
 		fullBlock
 	);
 
