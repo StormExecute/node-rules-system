@@ -369,11 +369,15 @@ const makeSession = function (
 
 			"blockBindingLinkedBindingAndDlopen",
 
+			"block",
+
 			"allowBinding",
 			"allowLinkedBinding",
 			"allowDlopen",
 
 			"allowBindingLinkedBindingAndDlopen",
+
+			"allow",
 
 		].forEach(fnProp => {
 
@@ -444,6 +448,7 @@ const makeSession = function (
 
 			"getAllLogs",
 			"getLogsEmitter",
+
 			"startRecordLogs",
 			"stopRecordLogs",
 
@@ -460,7 +465,12 @@ const makeSession = function (
 		[
 
 			"fullSecure",
+			"enableFullSecure",
+			"disableFullSecure",
+
 			"setSecure",
+			"setSecureEnable",
+			"setSecureDisable",
 
 		].forEach(fnProp => {
 
@@ -469,6 +479,20 @@ const makeSession = function (
 				return standartWrapper(fnProp, nrsCoreFns, ...args);
 
 			}, "fullOrSetSecure", fnProp);
+
+		});
+
+		[
+
+			"isReturnProxy",
+
+		].forEach(fnProp => {
+
+			$session[fnProp] = makeSecureWrapper(function (...args) {
+
+				return standartWrapper(fnProp, nrsCoreFns, ...args);
+
+			}, "NRSCore", fnProp);
 
 		});
 

@@ -287,11 +287,15 @@ const makeSession = function (
 
 			"blockBindingLinkedBindingAndDlopen",
 
+			"block",
+
 			"allowBinding",
 			"allowLinkedBinding",
 			"allowDlopen",
 
 			"allowBindingLinkedBindingAndDlopen",
+
+			"allow",
 
 		].forEach(fnProp => {
 
@@ -362,10 +366,19 @@ const makeSession = function (
 
 			"getAllLogs",
 			"getLogsEmitter",
+
 			"startRecordLogs",
 			"stopRecordLogs",
+
 			"fullSecure",
+			"enableFullSecure",
+			"disableFullSecure",
+
 			"setSecure",
+			"setSecureEnable",
+			"setSecureDisable",
+
+			"isReturnProxy",
 
 		].forEach(fnProp => {
 
