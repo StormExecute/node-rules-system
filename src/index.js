@@ -112,11 +112,15 @@ const process = {
 
 	blockBindingLinkedBindingAndDlopen: blockBindings.blockAll,
 
+	block: blockBindings.blockAll,
+
 	allowBinding: allowBindings.allowBinding,
 	allowLinkedBinding: allowBindings.allowLinkedBinding,
 	allowDlopen: allowBindings.allowDlopen,
 
 	allowBindingLinkedBindingAndDlopen: allowBindings.allowAll,
+
+	allow: blockBindings.blockAll,
 
 };
 
