@@ -27,17 +27,17 @@ const makeSession = function (
 	const whiteList = [];
 	whiteList.name = "secureSession";
 
-	return function session (password, ...args) {
+	return function session (tryPass, ...args) {
 
-		if(typeof password != "string") throw new Error(mustBeString);
+		if(typeof tryPass != "string") throw new Error(mustBeString);
 
 		if(!password.value) {
 
-			password.value = password;
+			password.value = tryPass;
 
-		} else if(password != password.value) return wrongPassEmitter(wrongPass, "secureSession", { args });
+		} else if(tryPass != password.value) return wrongPassEmitter(wrongPass, "secureSession", { args });
 
-		const whiteListResult = addProjectPathToWhiteList(whiteList, password, args);
+		const whiteListResult = addProjectPathToWhiteList(whiteList, tryPass, args);
 
 		if(!whiteListResult) throw new Error("[node-rules-system] To create a secure session, you need to give it paths!");
 
@@ -283,13 +283,13 @@ const makeSession = function (
 
 			if($sessionConfigs.returnSession) {
 
-				factory[fnProp](password, ...args);
+				factory[fnProp](tryPass, ...args);
 
 				return Object.assign({}, $session);
 
 			} else {
 
-				return factory[fnProp](password, ...args);
+				return factory[fnProp](tryPass, ...args);
 
 			}
 
@@ -299,13 +299,13 @@ const makeSession = function (
 
 			if($sessionConfigs.returnSession) {
 
-				factory[fnProp].get(password, propName);
+				factory[fnProp].get(tryPass, propName);
 
 				return Object.assign({}, $session);
 
 			} else {
 
-				return factory[fnProp].get(password, propName);
+				return factory[fnProp].get(tryPass, propName);
 
 			}
 
