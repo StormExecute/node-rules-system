@@ -7,7 +7,7 @@ module.exports = function makeFullSecure(
 	process, child_process, dgram, worker_threads, cluster
 ) {
 
-	return function fullSecure(tryPass, status) {
+	function fullSecure(tryPass, status) {
 
 		status = status || "enable";
 
@@ -39,6 +39,24 @@ module.exports = function makeFullSecure(
 			cluster.allow(tryPass),
 
 		];
+
+	}
+
+	return {
+
+		fullSecure,
+
+		enableFullSecure: function (tryPass) {
+
+			return fullSecure(tryPass, "enable");
+
+		},
+
+		disableFullSecure: function (tryPass) {
+
+			return fullSecure(tryPass, "disable");
+
+		},
 
 	}
 

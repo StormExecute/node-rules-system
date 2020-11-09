@@ -183,11 +183,11 @@ const settings = require("./_settings/main");
 const makeFullSecure = require("./fullSecure");
 const makeSetSecure = require("./setSecure");
 
-const fullSecure = makeFullSecure(
+const { fullSecure, enableFullSecure, disableFullSecure } = makeFullSecure(
 	connections, fs,
 	process, child_process, dgram, worker_threads, cluster
 );
-const setSecure = makeSetSecure(
+const { setSecure, setSecureEnable, setSecureDisable } = makeSetSecure(
 	connections, fs,
 	process, child_process, dgram, worker_threads, cluster
 );
@@ -210,12 +210,21 @@ module.exports = {
 		process, child_process, dgram, worker_threads, cluster,
 		settings,
 		{
+
 			getAllLogs,
 			getLogsEmitter,
+
 			startRecordLogs,
 			stopRecordLogs,
+
 			fullSecure,
+			enableFullSecure,
+			disableFullSecure,
+
 			setSecure,
+			setSecureEnable,
+			setSecureDisable,
+
 		}
 	),
 	secureSession: makeSecureSession(
@@ -223,17 +232,31 @@ module.exports = {
 		process, child_process, dgram, worker_threads, cluster,
 		settings,
 		{
+
 			getAllLogs,
 			getLogsEmitter,
+
 			startRecordLogs,
 			stopRecordLogs,
+
 			fullSecure,
+			enableFullSecure,
+			disableFullSecure,
+
 			setSecure,
+			setSecureEnable,
+			setSecureDisable,
+
 		}
 	),
 
 	fullSecure,
+	enableFullSecure,
+	disableFullSecure,
+
 	setSecure,
+	setSecureEnable,
+	setSecureDisable,
 
 	connections,
 	fs,

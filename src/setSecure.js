@@ -7,7 +7,7 @@ module.exports = function makeSetSecure (
 	process, child_process, dgram, worker_threads, cluster
 ) {
 
-	return function setSecure(tryPass, status, secureElements) {
+	function setSecure(tryPass, status, secureElements) {
 
 		if(password.value === null) throw new Error(needToSetPassword);
 		if(tryPass != password.value) return wrongPassEmitter(wrongPass, "setSecure", { status, secureElements });
@@ -80,6 +80,24 @@ module.exports = function makeSetSecure (
 		}
 
 		return results;
+
+	}
+
+	return {
+
+		setSecure,
+
+		setSecureEnable: function (tryPass, secureElements) {
+
+			return setSecure(tryPass, "enable", secureElements);
+
+		},
+
+		setSecureDisable: function (tryPass, secureElements) {
+
+			return setSecure(tryPass, "disable", secureElements);
+
+		},
 
 	}
 
