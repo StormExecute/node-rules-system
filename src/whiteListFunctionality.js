@@ -42,6 +42,7 @@ function emitWhiteList(grantRights, whiteList, args) {
 
 	logsEmitter("addToWhiteList", null, {
 
+		$cwd,
 		whiteList: whiteList.name,
 		grantRights,
 		args,
