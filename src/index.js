@@ -192,6 +192,8 @@ const { setSecure, setSecureEnable, setSecureDisable } = makeSetSecure(
 	process, child_process, dgram, worker_threads, cluster
 );
 
+const isReturnProxy = require("./isReturnProxy");
+
 module.exports = {
 
 	getAllLogs,
@@ -225,6 +227,8 @@ module.exports = {
 			setSecureEnable,
 			setSecureDisable,
 
+			isReturnProxy,
+
 		}
 	),
 	secureSession: makeSecureSession(
@@ -247,6 +251,8 @@ module.exports = {
 			setSecureEnable,
 			setSecureDisable,
 
+			isReturnProxy,
+
 		}
 	),
 
@@ -268,6 +274,6 @@ module.exports = {
 	worker_threads,
 	cluster,
 
-	isReturnProxy: require("./isReturnProxy"),
+	isReturnProxy,
 
 };
