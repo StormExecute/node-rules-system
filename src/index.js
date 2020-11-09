@@ -241,4 +241,6 @@ module.exports = {
 	worker_threads,
 	cluster,
 
+	isReturnProxy: require("./isReturnProxy"),
+
 };
