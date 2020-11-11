@@ -1,7 +1,5 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
 
-const getCallerPaths = require("../getCallerPaths");
-
 const { wrongPassEmitter } = require("../logs");
 
 const { whiteList } = require("./addToWhiteList");
