@@ -16,6 +16,9 @@ const {
 
 const restore = require("../restore");
 
+const needProcessVersion = require("../../dependencies/needProcessVersion");
+const fsPromisesSupport = ~needProcessVersion("10.0.0");
+
 function fsAllowWriteAndChange(tryPass) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
@@ -33,12 +36,16 @@ function fsAllowWriteAndChange(tryPass) {
 
 	}
 
-	if($fsPromises.status == true) {
+	if(fsPromisesSupport && $fsPromises.status == true) {
 
 		restore($fsPromisesList.concat( [ "open" ] ), fs.promises, $fsPromises);
 
 		fsPromisesStatus = true;
 		$fsPromises.status = false;
+
+	} else if(!fsPromisesSupport) {
+
+		fsPromisesStatus = null;
 
 	}
 

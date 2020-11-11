@@ -24,6 +24,9 @@ const integrateToFns = require("../integrateFunctionality/toFns");
 
 const breakFileHandleProto = require("./breakFileHandleProto");
 
+const needProcessVersion = require("../../dependencies/needProcessVersion");
+const fsPromisesSupport = ~needProcessVersion("10.0.0");
+
 function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
@@ -41,7 +44,7 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 	}
 
-	if($fsPromises.status == false) {
+	if(fsPromisesSupport && $fsPromises.status == false) {
 
 		integrateToFns(whiteList, $fsPromisesList, fs.promises, $fsPromises, [], fullBlock);
 
@@ -93,6 +96,10 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 		fsPromisesStatus = true;
 		$fsPromises.status = true;
+
+	} else if(!fsPromisesSupport) {
+
+		fsPromisesStatus = null;
 
 	}
 
