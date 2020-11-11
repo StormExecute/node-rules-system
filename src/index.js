@@ -142,7 +142,9 @@ dgram.$fns = { get: makeGet(require("./dgram/store")) };
 
 let worker_threads = null;
 
-if(process.version >= "v10.5.0") {
+const needProcessVersion = require("../dependencies/needProcessVersion");
+
+if(~needProcessVersion("10.5.0")) {
 
 	worker_threads = getWhiteListFunctionality(require("./worker_threads/addToWhiteList"));
 
