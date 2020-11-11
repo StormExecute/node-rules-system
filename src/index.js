@@ -140,12 +140,34 @@ dgram.allow = require("./dgram/allow");
 
 dgram.$fns = { get: makeGet(require("./dgram/store")) };
 
-const worker_threads = getWhiteListFunctionality(require("./worker_threads/addToWhiteList"));
+let worker_threads = null;
 
-worker_threads.block = require("./worker_threads/block");
-worker_threads.allow = require("./worker_threads/allow");
+if(process.version >= "v10.5.0") {
 
-worker_threads.$fns = { get: makeGet(require("./worker_threads/store")) };
+	worker_threads = getWhiteListFunctionality(require("./worker_threads/addToWhiteList"));
+
+	worker_threads.block = require("./worker_threads/block");
+	worker_threads.allow = require("./worker_threads/allow");
+
+	worker_threads.$fns = { get: makeGet(require("./worker_threads/store")) };
+
+} else {
+
+	worker_threads = {
+
+		addFullPathToWhiteList: () => null,
+		addProjectPathToWhiteList: () => null,
+		addDependencyToWhiteList: () => null,
+		addDependencyPathToWhiteList: () => null,
+
+		block: () => null,
+		allow: () => null,
+
+		$fns: { get: () => null },
+
+	};
+
+}
 
 const cluster = getWhiteListFunctionality(require("./cluster/addToWhiteList"));
 
