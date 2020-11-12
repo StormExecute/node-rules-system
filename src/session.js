@@ -1,5 +1,7 @@
 const { password, mustBeString } = require("./password");
 
+const { logsEmitter } = require("./logs");
+
 const standartMethods = [
 
 	"addFullPathToWhiteList",
@@ -25,6 +27,8 @@ const makeSession = function (
 		if(!password.value) {
 
 			password.value = password;
+
+			logsEmitter.force("setPassword", null, { where: "session" });
 
 		}
 

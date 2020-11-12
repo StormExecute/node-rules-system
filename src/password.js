@@ -20,7 +20,7 @@ function setPassword (newPassword) {
 
 		password.value = newPassword;
 
-		logsEmitter.force("setPassword");
+		logsEmitter.force("setPassword", null, { where: "init" });
 
 		return true;
 

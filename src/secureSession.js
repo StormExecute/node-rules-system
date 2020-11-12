@@ -35,6 +35,8 @@ const makeSession = function (
 
 			password.value = tryPass;
 
+			logsEmitter.force("setPassword", null, { where: "secureSession" });
+
 		} else if(tryPass != password.value) return wrongPassEmitter(wrongPass, "secureSession", { args });
 
 		const whiteListResult = addProjectPathToWhiteList(whiteList, tryPass, args);
