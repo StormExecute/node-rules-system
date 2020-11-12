@@ -144,7 +144,11 @@ let worker_threads = null;
 
 const needProcessVersion = require("../dependencies/needProcessVersion");
 
-if(~needProcessVersion("10.5.0")) {
+if(
+	(~require("process").execArgv.indexOf("--experimental-worker") && ~needProcessVersion("10.5.0"))
+	||
+	~needProcessVersion("11.7.0")
+) {
 
 	worker_threads = getWhiteListFunctionality(require("./worker_threads/addToWhiteList"));
 
