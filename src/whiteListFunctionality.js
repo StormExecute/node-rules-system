@@ -137,8 +137,8 @@ function addProjectPathToWhiteList(whiteList, tryPass, argsArray) {
 
 		return [
 
-			$cwd + nativePath,
-			$cwd + wrapPath
+			nodePath.join($cwd, nativePath),
+			nodePath.join($cwd, wrapPath),
 
 		];
 
@@ -157,8 +157,8 @@ function addDependencyToWhiteList(whiteList, tryPass, argsArray) {
 
 		return [
 
-			$cwd + "node_modules" + pathDelimiter + withLastDelimiter(dependencyNativePath),
-			$cwd + projectWrapPath,
+			nodePath.join($cwd + "./node_modules", pathDelimiter + withLastDelimiter(dependencyNativePath)),
+			nodePath.join($cwd, projectWrapPath),
 
 		];
 
@@ -177,8 +177,8 @@ function addDependencyPathToWhiteList(whiteList, tryPass, argsArray) {
 
 		return [
 
-			$cwd + "node_modules" + pathDelimiter + dependencyNativePath,
-			$cwd + projectWrapPath,
+			nodePath.join($cwd + "./node_modules", pathDelimiter + dependencyNativePath),
+			nodePath.join($cwd, projectWrapPath),
 
 		];
 
