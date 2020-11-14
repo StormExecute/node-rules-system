@@ -8,7 +8,7 @@ const nodePath = require("path");
 const isWindows = require("../dependencies/isWindows");
 const pathDelimiter = isWindows ? "\\" : "/";
 
-let $cwd = null;
+let $corePath = null;
 
 function withLastDelimiter(str) {
 
@@ -24,7 +24,7 @@ function withLastDelimiter(str) {
 
 }
 
-function findCWD(path, lastPath) {
+function findCorePath(path, lastPath) {
 
 	let cwd = path || process.cwd();
 
@@ -34,7 +34,7 @@ function findCWD(path, lastPath) {
 
 	if(newPath == lastPath) return withLastDelimiter(process.cwd());
 
-	return findCWD(newPath, cwd);
+	return findCorePath(newPath, cwd);
 
 }
 
@@ -42,7 +42,7 @@ function emitWhiteList(grantRights, whiteList, args) {
 
 	logsEmitter("addToWhiteList", null, {
 
-		$cwd,
+		$corePath,
 		whiteList: whiteList.name,
 		grantRights,
 		args,
@@ -133,12 +133,12 @@ function addProjectPathToWhiteList(whiteList, tryPass, argsArray) {
 
 	return addToWhiteList(whiteList, (nativePath, wrapPath) => {
 
-		if(!$cwd) $cwd = findCWD();
+		if(!$corePath) $corePath = findCorePath();
 
 		return [
 
-			nodePath.join($cwd, nativePath),
-			nodePath.join($cwd, wrapPath),
+			nodePath.join($corePath, nativePath),
+			nodePath.join($corePath, wrapPath),
 
 		];
 
@@ -153,12 +153,12 @@ function addDependencyToWhiteList(whiteList, tryPass, argsArray) {
 
 	return addToWhiteList(whiteList, (projectWrapPath, dependencyNativePath) => {
 
-		if(!$cwd) $cwd = findCWD();
+		if(!$corePath) $corePath = findCorePath();
 
 		return [
 
-			nodePath.join($cwd + "./node_modules", pathDelimiter + withLastDelimiter(dependencyNativePath)),
-			nodePath.join($cwd, projectWrapPath),
+			nodePath.join($corePath + "./node_modules", pathDelimiter + withLastDelimiter(dependencyNativePath)),
+			nodePath.join($corePath, projectWrapPath),
 
 		];
 
@@ -173,12 +173,12 @@ function addDependencyPathToWhiteList(whiteList, tryPass, argsArray) {
 
 	return addToWhiteList(whiteList, (projectWrapPath, dependencyNativePath) => {
 
-		if(!$cwd) $cwd = findCWD();
+		if(!$corePath) $corePath = findCorePath();
 
 		return [
 
-			nodePath.join($cwd + "./node_modules", pathDelimiter + dependencyNativePath),
-			nodePath.join($cwd, projectWrapPath),
+			nodePath.join($corePath + "./node_modules", pathDelimiter + dependencyNativePath),
+			nodePath.join($corePath, projectWrapPath),
 
 		];
 
@@ -187,6 +187,9 @@ function addDependencyPathToWhiteList(whiteList, tryPass, argsArray) {
 }
 
 module.exports = {
+
+	findCorePath,
+	$corePath,
 
 	addFullPathToWhiteList,
 	addProjectPathToWhiteList,
