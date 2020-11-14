@@ -26,7 +26,7 @@ function setPassword (newPassword) {
 
 	} else {
 
-		logsEmitter("passwordAlready");
+		logsEmitter.force("passwordAlready");
 
 		throw new Error(passAlready);
 
@@ -44,13 +44,13 @@ function changePassword(lastPassword, newPassword) {
 
 		password.value = newPassword;
 
-		logsEmitter("changePassword");
+		logsEmitter.force("changePassword");
 
 		return true;
 
 	} else {
 
-		logsEmitter("wrongChangePassword", null, { wrongLastPass: lastPassword });
+		logsEmitter.force("wrongChangePassword", null, { wrongLastPass: lastPassword });
 
 		throw new Error(wrongLastPass);
 
