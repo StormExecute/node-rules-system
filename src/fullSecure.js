@@ -4,7 +4,8 @@ const { wrongPassEmitter } = require("./logs");
 
 module.exports = function makeFullSecure(
 	connections, fs,
-	process, child_process, dgram, worker_threads, cluster
+	process, child_process, dgram, worker_threads, cluster,
+	timers
 ) {
 
 	function fullSecure(tryPass, status) {
@@ -26,6 +27,8 @@ module.exports = function makeFullSecure(
 			worker_threads.block(tryPass),
 			cluster.block(tryPass),
 
+			timers.integrate(tryPass),
+
 		] : [
 
 			connections.allow(tryPass),
@@ -37,6 +40,8 @@ module.exports = function makeFullSecure(
 			dgram.allow(tryPass),
 			worker_threads.allow(tryPass),
 			cluster.allow(tryPass),
+
+			timers.restore(tryPass),
 
 		];
 

@@ -4,7 +4,8 @@ const { wrongPassEmitter } = require("./logs");
 
 module.exports = function makeSetSecure (
 	connections, fs,
-	process, child_process, dgram, worker_threads, cluster
+	process, child_process, dgram, worker_threads, cluster,
+	timers
 ) {
 
 	function setSecure(tryPass, status, secureElements) {
@@ -61,6 +62,7 @@ module.exports = function makeSetSecure (
 				else if(el == "dgram") return dgram;
 				else if(el == "worker_threads") return worker_threads;
 				else if(el == "cluster") return cluster;
+				else if(el == "timers") return timers;
 				else return null;
 
 			})();
@@ -73,7 +75,9 @@ module.exports = function makeSetSecure (
 
 			}
 
-			const action = status == "enable" ? "block" : "allow";
+			const action = status == "enable"
+				? method == timers ? "integrate" : "block"
+				: method == timers ? "restore" : "allow";
 
 			results.push( method[action](tryPass) );
 
