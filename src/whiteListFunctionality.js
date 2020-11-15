@@ -26,7 +26,7 @@ function withLastDelimiter(str) {
 
 function findCorePath(path, lastPath) {
 
-	let cwd = path || process.cwd();
+	const cwd = path || process.cwd();
 
 	if(fs.existsSync(cwd + pathDelimiter + "package.json")) return withLastDelimiter(cwd);
 
@@ -157,7 +157,7 @@ function addDependencyToWhiteList(whiteList, tryPass, argsArray) {
 
 		return [
 
-			nodePath.join($corePath + "./node_modules", pathDelimiter + withLastDelimiter(dependencyNativePath)),
+			nodePath.join($corePath + "node_modules", pathDelimiter + withLastDelimiter(dependencyNativePath)),
 			nodePath.join($corePath, projectWrapPath),
 
 		];
@@ -177,7 +177,7 @@ function addDependencyPathToWhiteList(whiteList, tryPass, argsArray) {
 
 		return [
 
-			nodePath.join($corePath + "./node_modules", pathDelimiter + dependencyNativePath),
+			nodePath.join($corePath + "node_modules", pathDelimiter + dependencyNativePath),
 			nodePath.join($corePath, projectWrapPath),
 
 		];
