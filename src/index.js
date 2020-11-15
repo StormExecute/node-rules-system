@@ -140,7 +140,8 @@ dgram.allow = require("./dgram/allow");
 
 dgram.$fns = { get: makeGet(require("./dgram/store")) };
 
-let worker_threads = null;
+//lazy
+let worker_threads;
 
 const needProcessVersion = require("../dependencies/needProcessVersion");
 
@@ -206,6 +207,34 @@ const {
 
 } = require("./logs").make(password, needToSetPassword, wrongPass);
 
+const {
+
+	integrateIT,
+	changeMaxGetUniqFnNameRecursiveCalls,
+
+} = require("./timers/integrate");
+
+const timersRestore = require("./timers/restore");
+
+const timers = {
+
+	changeMaxGetUniqFnNameRecursiveCalls,
+
+	integrateToImmediate: integrateIT.setImmediate,
+	integrateToProcessNextTick: integrateIT.nextTick,
+
+	integrate: integrateIT.all,
+
+	restoreImmediate: timersRestore.setImmediate,
+	restoreProcessNextTick: timersRestore.nextTick,
+
+	restore: timersRestore.all,
+
+};
+
+const timersStore = require("./timers/thisStore");
+timers.$fns = { get: makeGet(timersStore) };
+
 const settings = require("./_settings/main");
 
 const makeFullSecure = require("./fullSecure");
@@ -213,11 +242,13 @@ const makeSetSecure = require("./setSecure");
 
 const { fullSecure, enableFullSecure, disableFullSecure } = makeFullSecure(
 	connections, fs,
-	process, child_process, dgram, worker_threads, cluster
+	process, child_process, dgram, worker_threads, cluster,
+	timers
 );
 const { setSecure, setSecureEnable, setSecureDisable } = makeSetSecure(
 	connections, fs,
-	process, child_process, dgram, worker_threads, cluster
+	process, child_process, dgram, worker_threads, cluster,
+	timers
 );
 
 const isReturnProxy = require("./isReturnProxy");
