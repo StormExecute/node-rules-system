@@ -17,6 +17,7 @@ const standartMethods = [
 const makeSession = function (
 	connections, fs,
 	process, child_process, dgram, worker_threads, cluster,
+	timers,
 	settings, nrsCoreFns
 ) {
 
@@ -180,6 +181,24 @@ const makeSession = function (
 
 				block(fullBlock){},
 				allow(fullBlock){},
+
+			},
+
+			timers: {
+
+				changeMaxGetUniqFnNameRecursiveCalls(newValue){},
+
+				integrateToImmediate(){},
+				integrateToProcessNextTick(){},
+
+				integrate(){},
+
+				restoreImmediate(){},
+				restoreProcessNextTick(){},
+
+				restore(){},
+
+				$fns: { $get(propName){} },
 
 			},
 
@@ -396,6 +415,30 @@ const makeSession = function (
 
 		[
 
+			"changeMaxGetUniqFnNameRecursiveCalls",
+
+			"integrateToImmediate",
+			"integrateToProcessNextTick",
+
+			"integrate",
+
+			"restoreImmediate",
+			"restoreProcessNextTick",
+
+			"restore",
+
+		].forEach(fnProp => {
+
+			$session.timers[fnProp] = function (...args) {
+
+				return standartWrapper(fnProp, timers, ...args);
+
+			}
+
+		});
+
+		[
+
 			"$tls",
 			"$net",
 			"$http",
@@ -480,6 +523,16 @@ const makeSession = function (
 			get: function (propName) {
 
 				return getWrapper("$fns", cluster, propName);
+
+			}
+
+		};
+
+		$session.timers.$fns = {
+
+			get: function (propName) {
+
+				return getWrapper("$fns", timers, propName);
 
 			}
 

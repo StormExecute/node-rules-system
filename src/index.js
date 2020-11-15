@@ -269,6 +269,7 @@ module.exports = {
 	session: makeSession(
 		connections, fs,
 		process, child_process, dgram, worker_threads, cluster,
+		timers,
 		settings,
 		{
 
@@ -293,6 +294,7 @@ module.exports = {
 	secureSession: makeSecureSession(
 		connections, fs,
 		process, child_process, dgram, worker_threads, cluster,
+		timers,
 		settings,
 		{
 
