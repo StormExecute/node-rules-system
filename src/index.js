@@ -222,7 +222,7 @@ const { setSecure, setSecureEnable, setSecureDisable } = makeSetSecure(
 
 const isReturnProxy = require("./isReturnProxy");
 
-const NRS = {
+module.exports = {
 
 	getAllLogs,
 	getLogsEmitter,
@@ -305,59 +305,3 @@ const NRS = {
 	isReturnProxy,
 
 };
-
-const doesPackageJsonHaveTypeModule = require("./doesPackageJsonHaveTypeModule");
-
-//moment init if esm enabled
-if(
-	~require("process").execArgv.indexOf("--experimental-modules")
-	||
-	doesPackageJsonHaveTypeModule()
-) {
-
-	const tempPassword = "NRS-TEMP-PASSWORD-" + Math.random();
-
-	init(tempPassword);
-	enableFullSecure(tempPassword);
-
-	let tempStore = {};
-
-	for(const prop in NRS) {
-
-		tempStore[prop] = NRS[prop];
-
-		NRS[prop] = function () {
-
-			throw new Error("[node-rules-system] NRS fixed enabled ESM support and initialized full protection with a temporary password.\n"
-				+ "To use the standard NRS, call the NRS.tempReInit(NRS.tempPassword, [yourNewPassword]: string) method after NRS importing.\n"
-				+ "You can also pass the third argument as a boolean variable that answers the question whether to leave full protection."
-			);
-
-		}
-
-	}
-
-	NRS.tempReInit = function (tempReInitPass, newPassword, leaveFullSecure) {
-
-		if(tempReInitPass != tempPassword) throw new Error("[node-rules-system] Wrong tempPassword!");
-
-		reInit(tempReInitPass, newPassword);
-
-		for(const prop in NRS) {
-
-			NRS[prop] = tempStore[prop];
-			tempStore[prop] = null;
-
-		}
-
-		tempStore = null;
-
-		if(!leaveFullSecure) disableFullSecure(newPassword);
-
-	};
-
-	NRS.tempPassword = tempPassword;
-
-}
-
-module.exports = NRS;
