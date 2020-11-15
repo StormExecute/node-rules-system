@@ -100,6 +100,8 @@ const block = {};
 
 			const [nativePath, wrapPath] = callerPaths;
 
+			if(nativePath == "dns.js" || nativePath == "zlib.js") return $process[el](module);
+
 			for (let i = 0; i < whiteList.length; ++i) {
 
 				if (
