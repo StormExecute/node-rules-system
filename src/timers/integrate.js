@@ -2,6 +2,8 @@ const { password, needToSetPassword, wrongPass } = require("../password");
 const { wrongPassEmitter } = require("../logs");
 const getCallerPaths = require("../getCallerPaths");
 
+const events = require('events');
+
 const pathsStore = require("./pathsStore");
 const $thisStore = require("./thisStore");
 
@@ -49,6 +51,14 @@ const integrateIT = {};
 	[global, "setImmediate"],
 	[process, "nextTick"],
 
+	[global, "setTimeout"],
+	[global, "setInterval"],
+
+	[global.Promise.prototype, "then"],
+	[global.Promise.prototype, "catch"],
+
+	[events.EventEmitter.prototype, "on"],
+
 ].forEach( ( [el, prop] ) => {
 
 	integrateIT[prop] = function (tryPass) {
@@ -59,21 +69,45 @@ const integrateIT = {};
 		if (prop == "setImmediate" && $thisStore.statusImmediate == true) return false;
 		if (prop == "nextTick" && $thisStore.statusNextTick == true) return false;
 
+		if (prop == "setTimeout" && $thisStore.statusSetTimeout == true) return false;
+		if (prop == "setInterval" && $thisStore.statusSetInterval == true) return false;
+
+		if (prop == "then" && $thisStore.statusPromiseThen == true) return false;
+		if (prop == "catch" && $thisStore.statusPromiseCatch == true) return false;
+
+		if (prop == "on" && $thisStore.statusEventEmitterOn == true) return false;
+
 		$thisStore[prop] = el[prop];
 
 		el[prop] = function () {
 
 			const callback = arguments[0];
 
+			const callerPaths = getCallerPaths();
+
+			if(
+				!callerPaths
+				||
+				callerPaths[0] == "_stream_writable.js"
+			) {
+
+				return $thisStore[prop].apply(this, arguments);
+
+			}
+
 			const uniqFunctionName = getUniqFnName(prop);
 
-			pathsStore[uniqFunctionName] = getCallerPaths();
+			pathsStore[uniqFunctionName] = callerPaths;
 
 			const temp = {
 
 				[uniqFunctionName]: function (...args) {
 
-					return callback.apply(this, args);
+					const result = callback.apply(this, args);
+
+					if(pathsStore[uniqFunctionName]) delete pathsStore[uniqFunctionName];
+
+					return result;
 
 				}
 
@@ -87,6 +121,14 @@ const integrateIT = {};
 
 		if (prop == "setImmediate" && $thisStore.statusImmediate == false) return $thisStore.statusImmediate = true;
 		if (prop == "nextTick" && $thisStore.statusNextTick == false) return $thisStore.statusNextTick = true;
+
+		if (prop == "setTimeout" && $thisStore.statusSetTimeout == false) return $thisStore.statusSetTimeout = true;
+		if (prop == "setInterval" && $thisStore.statusSetInterval == false) return $thisStore.statusSetInterval = true;
+
+		if (prop == "then" && $thisStore.statusPromiseThen == false) return $thisStore.statusPromiseThen = true;
+		if (prop == "catch" && $thisStore.statusPromiseCatch == false) return $thisStore.statusPromiseCatch = true;
+
+		if (prop == "on" && $thisStore.statusEventEmitterOn == false) return $thisStore.statusEventEmitterOn = true;
 
 		return false;
 
@@ -103,6 +145,14 @@ integrateIT.all = function (tryPass) {
 
 		integrateIT.setImmediate(tryPass),
 		integrateIT.nextTick(tryPass),
+
+		integrateIT.setTimeout(tryPass),
+		integrateIT.setInterval(tryPass),
+
+		integrateIT.then(tryPass),
+		integrateIT.catch(tryPass),
+
+		integrateIT.on(tryPass),
 
 	];
 
