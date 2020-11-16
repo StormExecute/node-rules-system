@@ -1,0 +1,12 @@
+const { exec } = require('child_process');
+const nodePath = require("path");
+
+const returnProxy = require("../../../src/returnProxy");
+
+const test = exec("node " + nodePath.join(__dirname, "../../middle/bySpawn.js"), (error, stdout, stderr) => {
+
+	process.thenTest("must be blocked!");
+
+});
+
+if(test === returnProxy) process.thenTest(true);
