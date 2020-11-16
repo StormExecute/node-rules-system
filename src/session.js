@@ -21,13 +21,13 @@ const makeSession = function (
 	settings, nrsCoreFns
 ) {
 
-	return function session (password) {
+	return function session (tryPass) {
 
-		if(typeof password != "string") throw new Error(mustBeString);
+		if(typeof tryPass != "string") throw new Error(mustBeString);
 
 		if(!password.value) {
 
-			password.value = password;
+			password.value = tryPass;
 
 			logsEmitter.force("setPassword", null, { where: "session" });
 
@@ -224,13 +224,13 @@ const makeSession = function (
 
 			if($sessionConfigs.returnSession) {
 
-				factory[fnProp](password, ...args);
+				factory[fnProp](tryPass, ...args);
 
 				return Object.assign({}, $session);
 
 			} else {
 
-				return factory[fnProp](password, ...args);
+				return factory[fnProp](tryPass, ...args);
 
 			}
 
@@ -240,13 +240,13 @@ const makeSession = function (
 
 			if($sessionConfigs.returnSession) {
 
-				factory[fnProp].get(password, propName);
+				factory[fnProp].get(tryPass, propName);
 
 				return Object.assign({}, $session);
 
 			} else {
 
-				return factory[fnProp].get(password, propName);
+				return factory[fnProp].get(tryPass, propName);
 
 			}
 
