@@ -1,4 +1,7 @@
 const debug = !!process.argv.filter(el => el == "--debugP").length || process.env.debugP;
+const debugFileNames = !!process.argv.filter(el => el == "--debugF").length || process.env.debugF;
+
+const timersPathsStore = require("./timers/pathsStore");
 
 const isWindows = require("../dependencies/isWindows");
 
@@ -35,9 +38,29 @@ function main(callerPaths, errStack) {
 	let first = null;
 	let second = null;
 
+	debugFileNames && console.log("debugFileNames", errStack.map(el => el.getFileName()));
+
+	//this should happen in a separate loop to avoid sudden breaks
+	for(let i = 0; i < errStack.length; ++i) {
+
+		const fnName = errStack[i].getFunctionName();
+
+		if(timersPathsStore[fnName]) {
+
+			const paths = timersPathsStore[fnName];
+
+			return paths;
+
+		}
+
+	}
+
 	for(let i = 0; i < errStack.length; ++i) {
 
 		const path = errStack[i].getFileName();
+
+		//to skip nulls in state "inProcessScreening"
+		if(!path) continue;
 
 		if(
 			inProcessScreening
@@ -87,6 +110,8 @@ function main(callerPaths, errStack) {
 				endsWithTranslationSlashes(path, "/node-rules-system/src/connections/allow.js")
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/fs/allow.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/timers/restore.js")
 
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/cluster/block.js")
@@ -102,6 +127,8 @@ function main(callerPaths, errStack) {
 				endsWithTranslationSlashes(path, "/node-rules-system/src/connections/block.js")
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/fs/block.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/timers/integrate.js")
 
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/integrateFunctionality/toFns.js")
