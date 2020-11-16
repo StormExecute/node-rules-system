@@ -223,10 +223,26 @@ const timers = {
 	integrateToImmediate: integrateIT.setImmediate,
 	integrateToProcessNextTick: integrateIT.nextTick,
 
+	integrateToSetTimeout: integrateIT.setTimeout,
+	integrateToSetInterval: integrateIT.setInterval,
+
+	integrateToPromiseThen: integrateIT.then,
+	integrateToPromiseCatch: integrateIT.catch,
+
+	integrateToEventEmitterOn: integrateIT.on,
+
 	integrate: integrateIT.all,
 
 	restoreImmediate: timersRestore.setImmediate,
 	restoreProcessNextTick: timersRestore.nextTick,
+
+	restoreSetTimeout: timersRestore.setTimeout,
+	restoreSetInterval: timersRestore.setInterval,
+
+	restorePromiseThen: timersRestore.then,
+	restorePromiseCatch: timersRestore.catch,
+
+	restoreEventEmitterOn: timersRestore.on,
 
 	restore: timersRestore.all,
 

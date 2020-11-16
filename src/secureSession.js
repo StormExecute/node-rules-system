@@ -524,10 +524,26 @@ const makeSession = function (
 			"integrateToImmediate",
 			"integrateToProcessNextTick",
 
+			"integrateToSetTimeout",
+			"integrateToSetInterval",
+
+			"integrateToPromiseThen",
+			"integrateToPromiseCatch",
+
+			"integrateToEventEmitterOn",
+
 			"integrate",
 
 			"restoreImmediate",
 			"restoreProcessNextTick",
+
+			"restoreSetTimeout",
+			"restoreSetInterval",
+
+			"restorePromiseThen",
+			"restorePromiseCatch",
+
+			"restoreEventEmitterOn",
 
 			"restore",
 
