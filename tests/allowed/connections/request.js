@@ -8,7 +8,7 @@ const NRS_SESSION = require("../../../src/index").session(NRS_PASSWORD);
 
 let then = false;
 
-request.get("http://example.com", function () {
+request.get("http://localhost:3000", function () {
 
 	if(then == true) return;
 
