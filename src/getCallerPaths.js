@@ -31,29 +31,13 @@ function endsWithTranslationSlashes(str, arg) {
 
 }
 
-function main(callerPaths, errStack) {
+function parseStack(errStack) {
 
 	let inProcessScreening = true;
 
-	let first = null;
-	let second = null;
+	const result = [];
 
-	debugFileNames && console.log("debugFileNames", errStack.map(el => el.getFileName()));
-
-	//this should happen in a separate loop to avoid sudden breaks
-	for(let i = 0; i < errStack.length; ++i) {
-
-		const fnName = errStack[i].getFunctionName();
-
-		if(timersPathsStore[fnName]) {
-
-			const paths = timersPathsStore[fnName];
-
-			return paths;
-
-		}
-
-	}
+	//debugFileNames && console.log("debugFileNames", errStack.map(el => el.getFileName()));
 
 	for(let i = 0; i < errStack.length; ++i) {
 
@@ -61,6 +45,14 @@ function main(callerPaths, errStack) {
 
 		//to skip nulls in state "inProcessScreening"
 		if(!path) continue;
+
+		const fnName = errStack[i].getFunctionName();
+
+		if(timersPathsStore[fnName]) {
+
+			return timersPathsStore[fnName];
+
+		}
 
 		if(
 			inProcessScreening
@@ -148,23 +140,18 @@ function main(callerPaths, errStack) {
 
 			inProcessScreening = false;
 
-			first = path;
+			//anyway push path
+			result.push(path);
 
 			continue;
 
 		}
 
-		if(
-			isCallerPath(path)
-			&&
-			(
-				(i + 1) < errStack.length
-				&&
-				!isCallerPath(errStack[i + 1].getFileName())
-			)
-		) {
+		if(isCallerPath(path)) {
 
-			second = path;
+			result.push(path);
+
+		} else {
 
 			break;
 
@@ -172,11 +159,7 @@ function main(callerPaths, errStack) {
 
 	}
 
-	if(!first) return callerPaths;
-
-	if(first && !second) second = first;
-
-	return [first, second];
+	return result;
 
 }
 
@@ -184,21 +167,15 @@ function getCallerPaths() {
 
 	const originalFunc = Error.prepareStackTrace;
 
-	let callerPaths = null;
+	const err = new Error();
 
-	try {
+	Error.prepareStackTrace = function (err, stack) { return stack; };
 
-		const err = new Error();
-
-		Error.prepareStackTrace = function (err, stack) { return stack; };
-
-		callerPaths = main(callerPaths, err.stack)
-
-	} catch (e) {}
+	const callerPaths = parseStack(err.stack)
 
 	Error.prepareStackTrace = originalFunc;
 
-	debug && console.log("getCallerPaths", callerPaths);
+	//debug && console.log("getCallerPaths", callerPaths);
 
 	return callerPaths;
 
