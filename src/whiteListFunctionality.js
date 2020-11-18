@@ -5,22 +5,18 @@ const { logsEmitter, wrongPassEmitter } = require("./logs");
 const fs = require("fs");
 const nodePath = require("path");
 
+const isObject = require("../dependencies/isObject");
+
 const isWindows = require("../dependencies/isWindows");
 const pathDelimiter = isWindows ? "\\" : "/";
 
-let $corePath = null;
+const $corePath = { value: null };
 
 function withLastDelimiter(str) {
 
-	if(typeof str == "string") {
+	if(typeof str != "string") return arguments[0];
 
-		return str[str.length - 1] == pathDelimiter ? str : str + pathDelimiter;
-
-	} else {
-
-		return arguments[0];
-
-	}
+	return str[str.length - 1] == pathDelimiter ? str : str + pathDelimiter;
 
 }
 
@@ -38,11 +34,67 @@ function findCorePath(path, lastPath) {
 
 }
 
+$corePath.value = findCorePath();
+
+const nm = () => withLastDelimiter("node_modules");
+
+function dep(path) {
+
+	if(typeof path != "string") return false;
+
+	if(path.startsWith($corePath.value)) {
+
+		return nm() + path;
+
+	} else {
+
+		return $corePath.value + nm() + path;
+
+	}
+
+}
+
+function depD(path) {
+
+	if(typeof path != "string") return false;
+
+	if(path.startsWith($corePath.value)) {
+
+		return withLastDelimiter(nm() + path);
+
+	} else {
+
+		return withLastDelimiter($corePath.value + nm() + path);
+
+	}
+
+}
+
+function core(path) {
+
+	if(typeof path != "string") return false;
+
+	if(path.startsWith($corePath.value)) return path;
+
+	return $corePath.value + path;
+
+}
+
+function coreD(path) {
+
+	if(typeof path != "string") return false;
+
+	if(path.startsWith($corePath.value)) return path;
+
+	return withLastDelimiter($corePath.value + path);
+
+}
+
 function emitWhiteList(grantRights, whiteList, args) {
 
 	logsEmitter("addToWhiteList", null, {
 
-		$corePath,
+		$corePath: $corePath.value,
 		whiteList: whiteList.name,
 		grantRights,
 		args,
@@ -53,59 +105,117 @@ function emitWhiteList(grantRights, whiteList, args) {
 
 }
 
+function parseWhiteListArg(whiteList, arg, preFn, result) {
+
+	if(Array.isArray(arg)) {
+
+		const paths = [];
+
+		for(let i = 0; i < arg.length; ++i) {
+
+			if(typeof arg[i] == "string") {
+
+				typeof preFn == "function"
+					? paths.push( preFn( arg[i] ) )
+					: paths.push( arg[i] )
+
+			}
+
+		}
+
+		if(paths.length) {
+
+			!result && (result = true);
+
+			whiteList.push({
+
+				paths,
+				callerFnName: null,
+
+			});
+
+		}
+
+	} else if(typeof arg == "string") {
+
+		!result && (result = true);
+
+		whiteList.push({
+
+			paths: [ typeof preFn == "function" ? preFn(arg) : arg ],
+			callerFnName: null,
+
+		});
+
+	} else if(isObject(arg)) {
+
+		const paths = typeof arg.paths == "string"
+			? [typeof preFn == "function" ? preFn(arg.paths) : arg.paths]
+			: [];
+
+		if(Array.isArray(arg.paths)) {
+
+			for(let i = 0; i < arg.paths.length; ++i) {
+
+				if(typeof arg.paths[i] == "string") {
+
+					typeof preFn == "function"
+						? paths.push( preFn( arg.paths[i] ) )
+						: paths.push( arg.paths[i] )
+
+				}
+
+			}
+
+		}
+
+		if(paths.length) {
+
+			!result && (result = true);
+
+			whiteList.push({
+
+				paths,
+				callerFnName: typeof arg.callerFnName == "string" ? arg.callerFnName : null,
+
+			});
+
+		}
+
+	}
+
+	return result;
+
+}
+
 function addToWhiteList(whiteList, preFn, nextArgsArray) {
 
 	if(!nextArgsArray.length) return emitWhiteList(false, whiteList, nextArgsArray);
 
 	let result = false;
 
-	if(Array.isArray(nextArgsArray[0])) {
+	for(let i = 0; i < nextArgsArray.length; ++i) {
 
-		for(let i = 0; i < nextArgsArray.length; ++i) {
+		result = parseWhiteListArg( whiteList, nextArgsArray[i], preFn, result );
 
-			const arr = nextArgsArray[i];
+		if(typeof nextArgsArray[i] == "function") {
 
-			if(arr.length == 1 && typeof arr[0] == "string") {
+			result = parseWhiteListArg( whiteList, nextArgsArray[i]({
 
-				const [nativePath, wrapPath] = preFn(arr[0], arr[0]);
+				dep,
+				depD,
 
-				whiteList.push([nativePath, wrapPath]);
+				core,
+				coreD,
 
-				!result && (result = true);
+				$corePath: $corePath.value,
+				findCorePath,
 
-			} else if(arr.length == 2 && typeof arr[1] == "string") {
-
-				const [nativePath, wrapPath] = preFn(arr[1], arr[0]);
-
-				whiteList.push([nativePath, wrapPath]);
-
-				!result && (result = true);
-
-			}
+			}), preFn, result );
 
 		}
 
-	} else if(typeof nextArgsArray[0] == "string") {
-
-		if(nextArgsArray.length == 1) {
-
-			const [nativePath, wrapPath] = preFn(nextArgsArray[0], nextArgsArray[0]);
-
-			whiteList.push([nativePath, wrapPath]);
-
-			!result && (result = true);
-
-		} else if(nextArgsArray.length == 2 && typeof nextArgsArray[1] == "string") {
-
-			const [nativePath, wrapPath] = preFn(nextArgsArray[1], nextArgsArray[0]);
-
-			whiteList.push([nativePath, wrapPath]);
-
-			!result && (result = true);
-
-		}
-
-	} else return emitWhiteList(false, whiteList, nextArgsArray);
+	}
 
 	emitWhiteList(result, whiteList, nextArgsArray);
 
@@ -113,74 +223,73 @@ function addToWhiteList(whiteList, preFn, nextArgsArray) {
 
 }
 
-function addFullPathToWhiteList(whiteList, tryPass, argsArray) {
+function addCustomPathsToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addFullPathToWhiteList", { argsArray })
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addCustomPathsToWhiteList", { argsArray })
 
-	return addToWhiteList(whiteList, (nativePath, wrapPath) => {
+	return addToWhiteList(whiteList, path => {
 
-		return [nativePath, wrapPath];
+		return path;
 
 	}, argsArray);
 
 }
 
-function addProjectPathToWhiteList(whiteList, tryPass, argsArray) {
+function addPathsToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addProjectPathToWhiteList", { argsArray })
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addPathsToWhiteList", { argsArray });
 
-	return addToWhiteList(whiteList, (nativePath, wrapPath) => {
+	return addToWhiteList(whiteList, path => {
 
-		if(!$corePath) $corePath = findCorePath();
-
-		return [
-
-			nodePath.join($corePath, nativePath),
-			nodePath.join($corePath, wrapPath),
-
-		];
+		return nodePath.join($corePath.value, path);
 
 	}, argsArray);
 
 }
 
-function addDependencyToWhiteList(whiteList, tryPass, argsArray) {
+function addDependencyAndPathsToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addDependencyToWhiteList", { argsArray })
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addDependencyAndPathsToWhiteList", { argsArray });
 
-	return addToWhiteList(whiteList, (projectWrapPath, dependencyNativePath) => {
+	let dependencyI = true;
 
-		if(!$corePath) $corePath = findCorePath();
+	return addToWhiteList(whiteList, path => {
 
-		return [
+		if(dependencyI) {
 
-			nodePath.join($corePath + "node_modules", pathDelimiter + withLastDelimiter(dependencyNativePath)),
-			nodePath.join($corePath, projectWrapPath),
+			dependencyI = false;
 
-		];
+			return withLastDelimiter( nodePath.join($corePath.value + nm(), path) );
+
+		}
+
+		return nodePath.join($corePath.value, path);
 
 	}, argsArray);
 
 }
 
-function addDependencyPathToWhiteList(whiteList, tryPass, argsArray) {
+function addDependencyPathAndProjectPathsToWhiteList(whiteList, tryPass, argsArray) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addDependencyPathToWhiteList", { argsArray })
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "addDependencyPathAndProjectPathsToWhiteList", { argsArray });
 
-	return addToWhiteList(whiteList, (projectWrapPath, dependencyNativePath) => {
+	let dependencyI = true;
 
-		if(!$corePath) $corePath = findCorePath();
+	return addToWhiteList(whiteList, path => {
 
-		return [
+		if(dependencyI) {
 
-			nodePath.join($corePath + "node_modules", pathDelimiter + dependencyNativePath),
-			nodePath.join($corePath, projectWrapPath),
+			dependencyI = false;
 
-		];
+			return nodePath.join($corePath.value + nm(), path);
+
+		}
+
+		return nodePath.join($corePath.value, path);
 
 	}, argsArray);
 
@@ -188,12 +297,12 @@ function addDependencyPathToWhiteList(whiteList, tryPass, argsArray) {
 
 module.exports = {
 
-	findCorePath,
 	$corePath,
 
-	addFullPathToWhiteList,
-	addProjectPathToWhiteList,
-	addDependencyToWhiteList,
-	addDependencyPathToWhiteList,
+	addCustomPathsToWhiteList,
+	addPathsToWhiteList,
+
+	addDependencyAndPathsToWhiteList,
+	addDependencyPathAndProjectPathsToWhiteList,
 
 };
