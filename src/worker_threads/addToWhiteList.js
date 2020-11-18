@@ -5,10 +5,10 @@ workerThreadsWhiteList.name = "worker_threads";
 
 [
 
-	"addFullPathToWhiteList",
-	"addProjectPathToWhiteList",
-	"addDependencyToWhiteList",
-	"addDependencyPathToWhiteList",
+	"addCustomPathsToWhiteList",
+	"addPathsToWhiteList",
+	"addDependencyAndPathsToWhiteList",
+	"addDependencyPathAndProjectPathsToWhiteList",
 
 ].forEach(exportFn => {
 

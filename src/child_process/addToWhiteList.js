@@ -5,10 +5,10 @@ childProcessWhiteList.name = "child_process";
 
 [
 
-	"addFullPathToWhiteList",
-	"addProjectPathToWhiteList",
-	"addDependencyToWhiteList",
-	"addDependencyPathToWhiteList",
+	"addCustomPathsToWhiteList",
+	"addPathsToWhiteList",
+	"addDependencyAndPathsToWhiteList",
+	"addDependencyPathAndProjectPathsToWhiteList",
 
 ].forEach(exportFn => {
 

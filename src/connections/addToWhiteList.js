@@ -5,18 +5,18 @@ connectionsWhiteList.name = "connections";
 
 module.exports = {
 
-	addFullPathToWhiteList(){},
-	addProjectPathToWhiteList(){},
-	addDependencyToWhiteList(){},
-	addDependencyPathToWhiteList(){},
+	addCustomPathsToWhiteList(){},
+	addPathsToWhiteList(){},
+	addDependencyAndPathsToWhiteList(){},
+	addDependencyPathAndProjectPathsToWhiteList(){},
 };
 
 [
 
-	"addFullPathToWhiteList",
-	"addProjectPathToWhiteList",
-	"addDependencyToWhiteList",
-	"addDependencyPathToWhiteList",
+	"addCustomPathsToWhiteList",
+	"addPathsToWhiteList",
+	"addDependencyAndPathsToWhiteList",
+	"addDependencyPathAndProjectPathsToWhiteList",
 
 ].forEach(exportFn => {
 

@@ -5,10 +5,10 @@ dgramWhiteList.name = "dgram";
 
 [
 
-	"addFullPathToWhiteList",
-	"addProjectPathToWhiteList",
-	"addDependencyToWhiteList",
-	"addDependencyPathToWhiteList",
+	"addCustomPathsToWhiteList",
+	"addPathsToWhiteList",
+	"addDependencyAndPathsToWhiteList",
+	"addDependencyPathAndProjectPathsToWhiteList",
 
 ].forEach(exportFn => {
 

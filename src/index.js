@@ -4,10 +4,10 @@ const getWhiteListFunctionality = function (fns) {
 
 	return {
 
-		addFullPathToWhiteList: fns.addFullPathToWhiteList,
-		addProjectPathToWhiteList: fns.addProjectPathToWhiteList,
-		addDependencyToWhiteList: fns.addDependencyToWhiteList,
-		addDependencyPathToWhiteList: fns.addDependencyPathToWhiteList,
+		addCustomPathsToWhiteList: fns.addCustomPathsToWhiteList,
+		addPathsToWhiteList: fns.addPathsToWhiteList,
+		addDependencyAndPathsToWhiteList: fns.addDependencyAndPathsToWhiteList,
+		addDependencyPathAndProjectPathsToWhiteList: fns.addDependencyPathAndProjectPathsToWhiteList,
 
 	};
 
@@ -162,10 +162,10 @@ if(
 
 	worker_threads = {
 
-		addFullPathToWhiteList: () => null,
-		addProjectPathToWhiteList: () => null,
-		addDependencyToWhiteList: () => null,
-		addDependencyPathToWhiteList: () => null,
+		addCustomPathsToWhiteList: () => null,
+		addPathsToWhiteList: () => null,
+		addDependencyAndPathsToWhiteList: () => null,
+		addDependencyPathAndProjectPathsToWhiteList: () => null,
 
 		block: () => null,
 		allow: () => null,

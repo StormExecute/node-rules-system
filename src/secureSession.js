@@ -2,16 +2,16 @@ const { password, mustBeString, wrongPass } = require("./password");
 
 const getCallerPaths = require("./getCallerPaths");
 
-const { addProjectPathToWhiteList } = require("./whiteListFunctionality");
+const { addPathsToWhiteList } = require("./whiteListFunctionality");
 
 const { logsEmitter, wrongPassEmitter } = require("./logs");
 
 const standartMethods = [
 
-	"addFullPathToWhiteList",
-	"addProjectPathToWhiteList",
-	"addDependencyToWhiteList",
-	"addDependencyPathToWhiteList",
+	"addCustomPathsToWhiteList",
+	"addPathsToWhiteList",
+	"addDependencyAndPathsToWhiteList",
+	"addDependencyPathAndProjectPathsToWhiteList",
 
 	"block",
 	"allow",
@@ -40,7 +40,7 @@ const makeSession = function (
 
 		} else if(tryPass != password.value) return wrongPassEmitter(wrongPass, "secureSession", { args });
 
-		const whiteListResult = addProjectPathToWhiteList(whiteList, tryPass, args);
+		const whiteListResult = addPathsToWhiteList(whiteList, tryPass, args);
 
 		if(!whiteListResult) throw new Error("[node-rules-system] To create a secure session, you need to give it paths!");
 
@@ -58,10 +58,10 @@ const makeSession = function (
 
 			connections: {
 
-				addFullPathToWhiteList(...args){},
-				addProjectPathToWhiteList(...args){},
-				addDependencyToWhiteList(...args){},
-				addDependencyPathToWhiteList(...args){},
+				addCustomPathsToWhiteList(...args){},
+				addPathsToWhiteList(...args){},
+				addDependencyAndPathsToWhiteList(...args){},
+				addDependencyPathAndProjectPathsToWhiteList(...args){},
 
 				$tls: { get(propName){} },
 				$net: { get(propName){} },
@@ -96,10 +96,10 @@ const makeSession = function (
 
 			fs: {
 
-				addFullPathToWhiteList(...args){},
-				addProjectPathToWhiteList(...args){},
-				addDependencyToWhiteList(...args){},
-				addDependencyPathToWhiteList(...args){},
+				addCustomPathsToWhiteList(...args){},
+				addPathsToWhiteList(...args){},
+				addDependencyAndPathsToWhiteList(...args){},
+				addDependencyPathAndProjectPathsToWhiteList(...args){},
 
 				$fs: { $get(propName){} },
 				$fsPromises: { $get(propName){} },
@@ -129,10 +129,10 @@ const makeSession = function (
 
 			child_process: {
 
-				addFullPathToWhiteList(...args){},
-				addProjectPathToWhiteList(...args){},
-				addDependencyToWhiteList(...args){},
-				addDependencyPathToWhiteList(...args){},
+				addCustomPathsToWhiteList(...args){},
+				addPathsToWhiteList(...args){},
+				addDependencyAndPathsToWhiteList(...args){},
+				addDependencyPathAndProjectPathsToWhiteList(...args){},
 
 				$fns: { $get(propName){} },
 
@@ -143,10 +143,10 @@ const makeSession = function (
 
 			dgram: {
 
-				addFullPathToWhiteList(...args){},
-				addProjectPathToWhiteList(...args){},
-				addDependencyToWhiteList(...args){},
-				addDependencyPathToWhiteList(...args){},
+				addCustomPathsToWhiteList(...args){},
+				addPathsToWhiteList(...args){},
+				addDependencyAndPathsToWhiteList(...args){},
+				addDependencyPathAndProjectPathsToWhiteList(...args){},
 
 				$fns: { $get(propName){} },
 
@@ -157,10 +157,10 @@ const makeSession = function (
 
 			worker_threads: {
 
-				addFullPathToWhiteList(...args){},
-				addProjectPathToWhiteList(...args){},
-				addDependencyToWhiteList(...args){},
-				addDependencyPathToWhiteList(...args){},
+				addCustomPathsToWhiteList(...args){},
+				addPathsToWhiteList(...args){},
+				addDependencyAndPathsToWhiteList(...args){},
+				addDependencyPathAndProjectPathsToWhiteList(...args){},
 
 				$fns: { $get(propName){} },
 
@@ -171,10 +171,10 @@ const makeSession = function (
 
 			cluster: {
 
-				addFullPathToWhiteList(...args){},
-				addProjectPathToWhiteList(...args){},
-				addDependencyToWhiteList(...args){},
-				addDependencyPathToWhiteList(...args){},
+				addCustomPathsToWhiteList(...args){},
+				addPathsToWhiteList(...args){},
+				addDependencyAndPathsToWhiteList(...args){},
+				addDependencyPathAndProjectPathsToWhiteList(...args){},
 
 				$fns: { $get(propName){} },
 
@@ -190,10 +190,26 @@ const makeSession = function (
 				integrateToImmediate(){},
 				integrateToProcessNextTick(){},
 
+				integrateToSetTimeout(){},
+				integrateToSetInterval(){},
+
+				integrateToPromiseThen(){},
+				integrateToPromiseCatch(){},
+
+				integrateToEventEmitterOn(){},
+
 				integrate(){},
 
 				restoreImmediate(){},
 				restoreProcessNextTick(){},
+
+				restoreSetTimeout(){},
+				restoreSetInterval(){},
+
+				restorePromiseThen(){},
+				restorePromiseCatch(){},
+
+				restoreEventEmitterOn(){},
 
 				restore(){},
 
@@ -205,6 +221,8 @@ const makeSession = function (
 
 				throwIfWrongPassword(){},
 				dontThrowIfWrongPassword(){},
+
+				setCorePath(path){},
 
 			},
 
@@ -334,10 +352,10 @@ const makeSession = function (
 
 		[
 
-			"addFullPathToWhiteList",
-			"addProjectPathToWhiteList",
-			"addDependencyToWhiteList",
-			"addDependencyPathToWhiteList",
+			"addCustomPathsToWhiteList",
+			"addPathsToWhiteList",
+			"addDependencyAndPathsToWhiteList",
+			"addDependencyPathAndProjectPathsToWhiteList",
 
 			"integrateToNet",
 			"integrateToHttp",
@@ -454,6 +472,8 @@ const makeSession = function (
 
 			"throwIfWrongPassword",
 			"dontThrowIfWrongPassword",
+
+			"setCorePath",
 
 		].forEach(fnProp => {
 

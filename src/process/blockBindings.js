@@ -10,10 +10,10 @@ const { logsEmitter, wrongPassEmitter } = require("../logs");
 
 const {
 
-	addFullPathToWhiteList,
-	addProjectPathToWhiteList,
-	addDependencyToWhiteList,
-	addDependencyPathToWhiteList,
+	addCustomPathsToWhiteList,
+	addPathsToWhiteList,
+	addDependencyAndPathsToWhiteList,
+	addDependencyPathAndProjectPathsToWhiteList,
 
 } = require("../whiteListFunctionality");
 
@@ -46,21 +46,21 @@ const block = {};
 
 		if(typeof opts["whiteListType"] == "string" && Array.isArray(opts.whiteList)) {
 
-			if (opts["whiteListType"] == "full") {
+			if (opts["whiteListType"] == "custom") {
 
-				addFullPathToWhiteList(whiteList, tryPass, opts.whiteList);
+				addCustomPathsToWhiteList(whiteList, tryPass, opts.whiteList);
 
 			} else if (opts["whiteListType"] == "dependency") {
 
-				addDependencyToWhiteList(whiteList, tryPass, opts.whiteList);
+				addDependencyAndPathsToWhiteList(whiteList, tryPass, opts.whiteList);
 
 			} else if (opts["whiteListType"] == "dependencyPath") {
 
-				addDependencyPathToWhiteList(whiteList, tryPass, opts.whiteList);
+				addDependencyPathAndProjectPathsToWhiteList(whiteList, tryPass, opts.whiteList);
 
 			} else {
 
-				addProjectPathToWhiteList(whiteList, tryPass, opts.whiteList);
+				addPathsToWhiteList(whiteList, tryPass, opts.whiteList);
 
 			}
 
