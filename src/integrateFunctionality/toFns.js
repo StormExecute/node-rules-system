@@ -20,9 +20,9 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 			const callerPaths = getCallerPaths();
 
-			if(!callerPaths) {
+			if(!callerPaths.length) {
 
-				logsEmitter("callFn", [undefined, undefined], {
+				logsEmitter("callFn", [], {
 
 					grantRights: false,
 
@@ -39,11 +39,9 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 			}
 
-			const [nativePath, wrapPath] = callerPaths;
+			debug && console.log("toFns->true", el, callerPaths);
 
-			debug && console.log("toFns->true", el, nativePath, wrapPath);
-
-			if(~allowList.indexOf(nativePath)) {
+			if(~allowList.indexOf(callerPaths[0])) {
 
 				//dont emit
 
@@ -53,13 +51,27 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 			for(let i = 0; i < whiteList.length; ++i) {
 
-				if(
-					nativePath.startsWith(whiteList[i][0])
-					&&
-					wrapPath.startsWith(whiteList[i][1])
-				) {
+				const { callerFnName, paths } = whiteList[i];
 
-					logsEmitter("callFn", [nativePath, wrapPath], {
+				let l = 0;
+
+				for(let j = 0; j < callerPaths.length; ++j) {
+
+					if((l + 1) > paths.length) break;
+
+					const callerPath = callerPaths[j];
+
+					if( callerPath.startsWith( paths[l] ) ) {
+
+						++l;
+
+					}
+
+				}
+
+				if(l && l == paths.length) {
+
+					logsEmitter("callFn", callerPaths, {
 
 						grantRights: true,
 
@@ -76,7 +88,7 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 			}
 
-			logsEmitter("callFn", [nativePath, wrapPath], {
+			logsEmitter("callFn", callerPaths, {
 
 				grantRights: false,
 
