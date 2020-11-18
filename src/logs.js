@@ -13,21 +13,20 @@ let recordAllLogs = false;
 const allLogs = [];
 
 //setPassword, passwordAlready, changePassword, wrongChangePassword, wrongPassword,
-// callFn, callObj, callProtoFn, get, callFromSecureSession, addToWhiteList
+//callFn, callObj, callProtoFn, get, callFromSecureSession, addToWhiteList
 function logsEmitter(type, customCallerPaths, details, force) {
 
 	details = isObject(details) ? details : {};
 
 	let callerPaths = customCallerPaths || getCallerPaths();
 
-	if(!callerPaths) callerPaths = [undefined, undefined];
+	if(!callerPaths.length) callerPaths = [];
 
 	const message = {
 
 		type,
 
-		nativePath: callerPaths[0],
-		wrapPath: callerPaths[1],
+		callerPaths,
 
 	};
 
