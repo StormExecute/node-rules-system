@@ -86,9 +86,11 @@ const integrateIT = {};
 			const callerPaths = getCallerPaths();
 
 			if(
-				!callerPaths
+				!callerPaths.length
 				||
 				callerPaths[0] == "_stream_writable.js"
+				||
+				callerPaths[0] == "_stream_readable.js"
 			) {
 
 				return $thisStore[prop].apply(this, arguments);
