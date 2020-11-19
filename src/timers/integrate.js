@@ -81,7 +81,9 @@ const integrateIT = {};
 
 		el[prop] = function () {
 
-			const callback = arguments[0];
+			const callbackI = prop == "on" ? 1 : 0;
+
+			const callback = arguments[callbackI];
 
 			const callerPaths = getCallerPaths();
 
@@ -101,6 +103,8 @@ const integrateIT = {};
 
 			pathsStore[uniqFunctionName] = callerPaths;
 
+			callback.NRSId = uniqFunctionName;
+
 			const temp = {
 
 				[uniqFunctionName]: function (...args) {
@@ -115,7 +119,7 @@ const integrateIT = {};
 
 			};
 
-			arguments[0] = temp[uniqFunctionName];
+			arguments[callbackI] = temp[uniqFunctionName];
 
 			return $thisStore[prop].apply(this, arguments);
 
