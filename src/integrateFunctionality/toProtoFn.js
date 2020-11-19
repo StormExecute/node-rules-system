@@ -1,4 +1,5 @@
 const getCallerPaths = require("../getCallerPaths");
+const getCallerFnName = require("../getCallerFnName");
 
 const returnProxy = require("../returnProxy");
 
@@ -18,9 +19,9 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 
 		const callerPaths = getCallerPaths();
 
-		if(!callerPaths) {
+		if(!callerPaths.length) {
 
-			logsEmitter("callProtoFn", [undefined, undefined], {
+			logsEmitter("callProtoFn", [], {
 
 				grantRights: false,
 
@@ -35,11 +36,9 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 
 		}
 
-		const [nativePath, wrapPath] = callerPaths;
+		debug && console.log("toProtoFn->true", callerPaths);
 
-		debug && console.log("toProtoFn->true", nativePath, wrapPath);
-
-		if(~allowList.indexOf(nativePath)) {
+		if(~allowList.indexOf(callerPaths[0])) {
 
 			return backup[backupProp].apply(this, args);
 
@@ -47,13 +46,33 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 
 		for(let i = 0; i < whiteList.length; ++i) {
 
-			if(
-				nativePath.startsWith(whiteList[i][0])
-				&&
-				wrapPath.startsWith(whiteList[i][1])
-			) {
+			const { callerFnName, paths } = whiteList[i];
 
-				logsEmitter("callProtoFn", [nativePath, wrapPath], {
+			if(typeof callerFnName == "string") {
+
+				if(getCallerFnName() != callerFnName) continue;
+
+			}
+
+			let l = 0;
+
+			for(let j = 0; j < callerPaths.length; ++j) {
+
+				if((l + 1) > paths.length) break;
+
+				const callerPath = callerPaths[j];
+
+				if( callerPath.startsWith( paths[l] ) ) {
+
+					++l;
+
+				}
+
+			}
+
+			if(l && l == paths.length) {
+
+				logsEmitter("callProtoFn", callerPaths, {
 
 					grantRights: true,
 
@@ -68,7 +87,7 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 
 		}
 
-		logsEmitter("callProtoFn", [nativePath, wrapPath], {
+		logsEmitter("callProtoFn", callerPaths, {
 
 			grantRights: false,
 
