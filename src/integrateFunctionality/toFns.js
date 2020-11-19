@@ -1,4 +1,5 @@
 const getCallerPaths = require("../getCallerPaths");
+const getCallerFnName = require("../getCallerFnName");
 
 const returnProxy = require("../returnProxy");
 
@@ -14,7 +15,7 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 		backup[el] = origin[el];
 
-		origin[el] = function (...args) {
+		origin[el] = function () {
 
 			if(fullBlock) return returnProxy;
 
@@ -27,7 +28,7 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 					grantRights: false,
 
 					fn: el,
-					args,
+					args: arguments,
 
 					calledAsClass: !!(new.target),
 
@@ -45,13 +46,19 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 				//dont emit
 
-				return new.target ? new backup[el](...args) : backup[el].apply(this, args);
+				return new.target ? new backup[el](...arguments) : backup[el].apply(this, arguments);
 
 			}
 
 			for(let i = 0; i < whiteList.length; ++i) {
 
 				const { callerFnName, paths } = whiteList[i];
+
+				if(typeof callerFnName == "string") {
+
+					if(getCallerFnName() != callerFnName) continue;
+
+				}
 
 				let l = 0;
 
@@ -76,13 +83,13 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 						grantRights: true,
 
 						fn: el,
-						args,
+						args: arguments,
 
 						calledAsClass: !!(new.target),
 
 					});
 
-					return new.target ? new backup[el](...args): backup[el].apply(this, args);
+					return new.target ? new backup[el](...arguments): backup[el].apply(this, arguments);
 
 				}
 
@@ -93,7 +100,7 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 				grantRights: false,
 
 				fn: el,
-				args,
+				args: arguments,
 
 				calledAsClass: !!(new.target),
 
