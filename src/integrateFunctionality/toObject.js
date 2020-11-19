@@ -1,4 +1,5 @@
 const getCallerPaths = require("../getCallerPaths");
+const getCallerFnName = require("../getCallerFnName");
 
 const returnProxy = require("../returnProxy");
 
@@ -18,9 +19,9 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 
 			const callerPaths = getCallerPaths();
 
-			if(!callerPaths) {
+			if(!callerPaths.length) {
 
-				logsEmitter("callObj", [undefined, undefined], {
+				logsEmitter("callObj", [], {
 
 					grantRights: false,
 
@@ -35,21 +36,39 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 
 			}
 
-			const [nativePath, wrapPath] = callerPaths;
+			debug && console.log("toObj->true", name, prop, callerPaths);
 
-			debug && console.log("toObj->true", name, prop, nativePath, wrapPath);
-
-			if(~allowList.indexOf(nativePath)) return backup[name][prop];
+			if(~allowList.indexOf(callerPaths[0])) return backup[name][prop];
 
 			for(let i = 0; i < whiteList.length; ++i) {
 
-				if(
-					nativePath.startsWith(whiteList[i][0])
-					&&
-					wrapPath.startsWith(whiteList[i][1])
-				) {
+				const { callerFnName, paths } = whiteList[i];
 
-					logsEmitter("callObj", [nativePath, wrapPath], {
+				if(typeof callerFnName == "string") {
+
+					if(getCallerFnName() != callerFnName) continue;
+
+				}
+
+				let l = 0;
+
+				for(let j = 0; j < callerPaths.length; ++j) {
+
+					if((l + 1) > paths.length) break;
+
+					const callerPath = callerPaths[j];
+
+					if( callerPath.startsWith( paths[l] ) ) {
+
+						++l;
+
+					}
+
+				}
+
+				if(l && l == paths.length) {
+
+					logsEmitter("callObj", callerPaths, {
 
 						grantRights: true,
 
@@ -64,7 +83,7 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 
 			}
 
-			logsEmitter("callObj", [nativePath, wrapPath], {
+			logsEmitter("callObj", callerPaths, {
 
 				grantRights: false,
 
