@@ -3,7 +3,7 @@ const getCallerFnName = require("../getCallerFnName");
 
 const returnProxy = require("../returnProxy");
 
-const debug = require("./debugThisFn");
+const debug = require("../_debug");
 
 const { logsEmitter } = require("../logs");
 
@@ -34,13 +34,13 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 				});
 
-				debug && console.log("toFns->false", callerPaths, el);
+				debug.integrate("toFns->false", callerPaths, el);
 
 				return returnProxy;
 
 			}
 
-			debug && console.log("toFns->true", el, callerPaths);
+			debug.integrate("toFns->true", el, callerPaths);
 
 			if(~allowList.indexOf(callerPaths[0])) {
 
@@ -106,7 +106,7 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 			});
 
-			debug && console.log("toFns->", false);
+			debug.integrate("toFns->", false);
 
 			return returnProxy;
 

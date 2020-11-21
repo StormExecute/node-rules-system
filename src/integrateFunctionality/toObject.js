@@ -3,7 +3,7 @@ const getCallerFnName = require("../getCallerFnName");
 
 const returnProxy = require("../returnProxy");
 
-const debug = require("./debugThisFn");
+const debug = require("../_debug");
 
 const { logsEmitter } = require("../logs");
 
@@ -30,13 +30,13 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 
 				});
 
-				debug && console.log("toObj->false", callerPaths, name);
+				debug.integrate("toObj->false", callerPaths, name);
 
 				return returnProxy;
 
 			}
 
-			debug && console.log("toObj->true", name, prop, callerPaths);
+			debug.integrate("toObj->true", name, prop, callerPaths);
 
 			if(~allowList.indexOf(callerPaths[0])) return backup[name][prop];
 
@@ -92,7 +92,7 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 
 			});
 
-			debug && console.log("toObj->", false);
+			debug.integrate("toObj->", false);
 
 			return returnProxy;
 
