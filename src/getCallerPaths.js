@@ -1,5 +1,4 @@
-const debug = !!process.argv.filter(el => el == "--debugP").length || process.env.debugP;
-const debugFileNames = !!process.argv.filter(el => el == "--debugF").length || process.env.debugF;
+const debug = require("./_debug");
 
 const timersPathsStore = require("./timers/pathsStore");
 
@@ -34,10 +33,11 @@ function endsWithTranslationSlashes(str, arg) {
 function parseStack(errStack) {
 
 	let inProcessScreening = true;
+	let mergeTimersPaths = false;
 
 	const result = [];
 
-	//debugFileNames && console.log("debugFileNames", errStack.map(el => el.getFileName()));
+	debug.fileNames("debugFileNames", errStack.map(el => el.getFileName()));
 
 	for(let i = 0; i < errStack.length; ++i) {
 
@@ -48,9 +48,9 @@ function parseStack(errStack) {
 
 		const fnName = errStack[i].getFunctionName();
 
-		if(timersPathsStore[fnName]) {
+		if(!mergeTimersPaths && timersPathsStore[fnName]) {
 
-			return timersPathsStore[fnName];
+			mergeTimersPaths = fnName;
 
 		}
 
@@ -159,6 +159,26 @@ function parseStack(errStack) {
 
 	}
 
+	if(mergeTimersPaths) {
+
+		for (let i = result.length - 1; i >= 0; i--) {
+
+			if(
+				!~timersPathsStore[mergeTimersPaths].indexOf(result[i])
+				&&
+				!endsWithTranslationSlashes(result[i], "node-rules-system/src/timers/integrate.js")
+			) {
+
+				timersPathsStore[mergeTimersPaths].splice(0, 0, result[i]);
+
+			}
+
+		}
+
+		return timersPathsStore[mergeTimersPaths];
+
+	}
+
 	return result;
 
 }
@@ -175,10 +195,12 @@ function getCallerPaths() {
 
 	Error.prepareStackTrace = originalFunc;
 
-	//debug && console.log("getCallerPaths", callerPaths);
+	debug.getCallerPaths("getCallerPaths", callerPaths);
 
 	return callerPaths;
 
 }
+
+getCallerPaths.isCallerPath = isCallerPath;
 
 module.exports = getCallerPaths;
