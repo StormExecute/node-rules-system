@@ -2,10 +2,14 @@ const { password, needToSetPassword, wrongPass } = require("../password");
 const { wrongPassEmitter } = require("../logs");
 const getCallerPaths = require("../getCallerPaths");
 
+const debug = require("../_debug");
+
 const events = require('events');
 
 const pathsStore = require("./pathsStore");
 const $thisStore = require("./thisStore");
+
+Error.stackTraceLimit = 100;
 
 let maxGetUniqFnNameRecursiveCalls = 15;
 
@@ -90,9 +94,7 @@ const integrateIT = {};
 			if(
 				!callerPaths.length
 				||
-				callerPaths[0] == "_stream_writable.js"
-				||
-				callerPaths[0] == "_stream_readable.js"
+				!getCallerPaths.isCallerPath(callerPaths[0])
 			) {
 
 				return $thisStore[prop].apply(this, arguments);
@@ -102,8 +104,6 @@ const integrateIT = {};
 			const uniqFunctionName = getUniqFnName(prop);
 
 			pathsStore[uniqFunctionName] = callerPaths;
-
-			callback.NRSId = uniqFunctionName;
 
 			const temp = {
 
@@ -120,6 +120,8 @@ const integrateIT = {};
 			};
 
 			arguments[callbackI] = temp[uniqFunctionName];
+
+			debug.timers("timers", uniqFunctionName, callerPaths, arguments);
 
 			return $thisStore[prop].apply(this, arguments);
 
