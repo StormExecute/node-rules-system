@@ -21,6 +21,14 @@ NRS.fs.block(NRS_PASSWORD);
 NRS.fs.allow(NRS_PASSWORD);
 NRS.fs.block(NRS_PASSWORD);
 
+const FAST_NRS_SESSION = NRS.session(NRS_PASSWORD);
+
+NRS.setSecure(NRS_PASSWORD, "enable", [
+	"child_process", "dgram", "worker_threads", "cluster", "timers"
+]);
+
+FAST_NRS_SESSION.startRecordLogs();
+
 const clearFsTempBeforeRun = require("./clearFsTempBeforeRun");
 const $unlinkSync = NRS.fs.$fs.get(NRS_PASSWORD, "unlinkSync");
 const $rmdirSync = NRS.fs.$fs.get(NRS_PASSWORD, "rmdirSync");
@@ -46,23 +54,35 @@ const aFs = filename => "./allowed/fs/" + filename;
 const aFPs = filename => "./allowed/fs/promises/" + filename;
 const aOth = filename => "./allowed/others/" + filename;
 
-const bFPsV = filename => process.version >= "v10.0.0" ? bFPs(filename) : () => {};
-const aFPsV = filename => process.version >= "v10.0.0" ? aFPs(filename) : () => {};
+const needProcessVersion = require("../dependencies/needProcessVersion");
+
+const bFPsV = filename => ~needProcessVersion("10.0.0") ? bFPs(filename) : () => {};
+const aFPsV = filename => ~needProcessVersion("10.0.0") ? aFPs(filename) : () => {};
+
+require("express")()
+	.get("/", (req, res) => res.send("hello"))
+	.listen(3000);
+
+global.Array.prototype.last = function() {
+
+	return this[this.length - 1];
+
+}
 
 const connectionTests = [
 
 	() => blockLogDash("Connection Tests started"),
 
-	() => NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/connections/http.js"),
+	() => NRS.connections.addPathsToWhiteList(NRS_PASSWORD, "tests/allowed/connections/http.js"),
 
 	bConn("http"),
 	aConn("http"),
 
 	waitBeforeNextConnection,
 
-	() => NRS.connections.addProjectPathToWhiteList(
+	() => NRS.connections.addPathsToWhiteList(
 		NRS_PASSWORD,
-		["tests/index.js", "tests/allowed/connections/httpSecond"],
+		["tests/allowed/connections/httpSecond", "tests/index.js"],
 		["tests/blocked/connections/httpFullBlocked_allowed.js"]
 	),
 
@@ -98,7 +118,7 @@ const connectionTests = [
 	() => {
 
 		NRS.connections.block(NRS_PASSWORD, false);
-		NRS.connections.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/connections/https.js", "tests/middle/httpsTest")
+		NRS.connections.addPathsToWhiteList(NRS_PASSWORD, ["tests/middle/httpsTest", "tests/allowed/connections/https.js"])
 
 	},
 
@@ -143,7 +163,7 @@ const connectionTests = [
 	//to slow down the fast pace
 	waitBeforeNextConnection,
 
-	() => NRS_SESSION.connections.addProjectPathToWhiteList("tests/allowed/connections/net.js"),
+	() => NRS_SESSION.connections.addPathsToWhiteList("tests/allowed/connections/net.js"),
 
 	bConn("net"),
 	aConn("net"),
@@ -161,13 +181,42 @@ const connectionTests = [
 	bConn("http2WithSecureSession"),
 	aConn("http2WithSecureSession"),
 
+	waitBeforeNextConnection,
+
+	() => FAST_NRS_SESSION.connections.addDependencyAndPathsToWhiteList(
+
+		["$test/allowed", "tests/index.js"],
+		["node_modules/$test/allowed", "tests/allowed/connections/httpDependency-Project.js"],
+		["node_modules/node-fetch", "tests/allowed/connections/node-fetch.js"],
+		["node_modules/request", "tests/allowed/connections/request.js"],
+
+	),
+
+	bConn("node-fetch"),
+	aConn("node-fetch"),
+
+	waitBeforeNextConnection,
+
+	bConn("request"),
+	aConn("request"),
+
+	waitBeforeNextConnection,
+
+	"$test/blocked/httpInDependency",
+	"$test/allowed/httpInDependency",
+
+	waitBeforeNextConnection,
+
+	bConn("httpDependency-Project"),
+	aConn("httpDependency-Project"),
+
 ];
 
 const fsTests = [
 
 	() => {
 
-		NRS.fs.addProjectPathToWhiteList(NRS_PASSWORD, "tests/allowed/fs/fsWriteSimple.js");
+		NRS.fs.addPathsToWhiteList(NRS_PASSWORD, "tests/allowed/fs/fsWriteSimple.js");
 
 		blockLogDash("FS Tests started");
 
@@ -178,7 +227,7 @@ const fsTests = [
 
 	waitBeforeNextFs,
 
-	() => NRS.fs.addProjectPathToWhiteList(NRS_PASSWORD,
+	() => NRS.fs.addPathsToWhiteList(NRS_PASSWORD,
 		["tests/allowed/fs/appendFile.js"],
 		["tests/allowed/fs/copyFile.js"],
 		["tests/allowed/fs/createWriteStream.js"],
@@ -203,7 +252,7 @@ const fsTests = [
 	bFs("ftruncate"),
 	aFs("ftruncate"),
 
-	() => NRS_SESSION.fs.addProjectPathToWhiteList(
+	() => NRS_SESSION.fs.addPathsToWhiteList(
 		["tests/allowed/fs/futimes.js"],
 		["tests/allowed/fs/hardLink.js"],
 		["tests/allowed/fs/mkDir.js"],
@@ -250,7 +299,7 @@ const fsTests = [
 
 	waitBeforeNextFs,
 
-	() => NRS_SESSION.fs.addProjectPathToWhiteList(
+	() => NRS_SESSION.fs.addPathsToWhiteList(
 		["tests/allowed/fs/promises/appendFile.js"],
 		["tests/allowed/fs/promises/rename.js"],
 		["tests/allowed/fs/promises/writeFile.js"],
@@ -294,7 +343,33 @@ const otherTests = [
 	bOth("binding"),
 	aOth("binding"),
 
-	//waitBeforeNextOther,
+	waitBeforeNextOther,
+
+	() => FAST_NRS_SESSION.child_process.addPathsToWhiteList("tests/allowed/others/child_process.js"),
+
+	bOth("child_process"),
+	aOth("child_process"),
+
+	waitBeforeNextOther,
+
+	() => FAST_NRS_SESSION.dgram.addPathsToWhiteList("tests/allowed/others/dgram.js"),
+
+	bOth("dgram"),
+	aOth("dgram"),
+
+	waitBeforeNextOther,
+
+	() => FAST_NRS_SESSION.worker_threads.addPathsToWhiteList("tests/allowed/others/worker.js"),
+
+	bOth("worker"),
+	aOth("worker"),
+
+	waitBeforeNextOther,
+
+	() => FAST_NRS_SESSION.cluster.addPathsToWhiteList("tests/allowed/others/cluster.js"),
+
+	bOth("cluster"),
+	aOth("cluster"),
 
 ];
 
