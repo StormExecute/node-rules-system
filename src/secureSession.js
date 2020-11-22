@@ -1,10 +1,13 @@
 const { password, mustBeString, wrongPass } = require("./password");
 
 const getCallerPaths = require("./getCallerPaths");
+const getCallerFnName = require("./getCallerFnName");
 
 const { addPathsToWhiteList } = require("./whiteListFunctionality");
 
 const { logsEmitter, wrongPassEmitter } = require("./logs");
+
+const debug = require("./_debug");
 
 const standartMethods = [
 
@@ -243,9 +246,9 @@ const makeSession = function (
 
 				const callerPaths = getCallerPaths();
 
-				if (!callerPaths) {
+				if (!callerPaths.length) {
 
-					logsEmitter("callFromSecureSession", [undefined, undefined], {
+					logsEmitter("callFromSecureSession", [], {
 
 						grantRights: false,
 
@@ -255,21 +258,49 @@ const makeSession = function (
 
 					});
 
+					debug.other("callFromSecureSession->false", callerPaths);
+
 					return false;
 
 				}
 
-				const [nativePath, wrapPath] = callerPaths;
+				debug.other("callFromSecureSession->true", callerPaths);
 
 				for (let i = 0; i < whiteList.length; ++i) {
 
-					if (
-						nativePath.startsWith(whiteList[i][0])
-						&&
-						wrapPath.startsWith(whiteList[i][1])
-					) {
+					const { callerFnName, paths } = whiteList[i];
 
-						logsEmitter("callFromSecureSession", [nativePath, wrapPath], {
+					if(typeof callerFnName == "string") {
+
+						if(getCallerFnName() != callerFnName) continue;
+
+					}
+
+					if( !callerPaths[0].startsWith( paths[0] ) ) {
+
+						continue;
+
+					}
+
+					let l = 1;
+
+					for(let j = 0; j < callerPaths.length; ++j) {
+
+						if((l + 1) > paths.length) break;
+
+						const callerPath = callerPaths[j];
+
+						if( callerPath.startsWith( paths[l] ) ) {
+
+							++l;
+
+						}
+
+					}
+
+					if(l && l == paths.length) {
+
+						logsEmitter("callFromSecureSession", callerPaths, {
 
 							grantRights: true,
 
@@ -285,7 +316,7 @@ const makeSession = function (
 
 				}
 
-				logsEmitter("callFromSecureSession", [nativePath, wrapPath], {
+				logsEmitter("callFromSecureSession", callerPaths, {
 
 					grantRights: false,
 
@@ -294,6 +325,8 @@ const makeSession = function (
 					args
 
 				});
+
+				debug.other("callFromSecureSession->", false);
 
 				return false;
 
