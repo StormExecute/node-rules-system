@@ -54,7 +54,13 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 
 			}
 
-			let l = 0;
+			if( !callerPaths[0].startsWith( paths[0] ) ) {
+
+				continue;
+
+			}
+
+			let l = 1;
 
 			for(let j = 0; j < callerPaths.length; ++j) {
 
