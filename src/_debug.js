@@ -1,5 +1,5 @@
-const debugMethods = ["integrate", "getCallerPaths", "fileNames", "timers"];
-const debugShortMethods = ["debugI", "debugP", "debugF", "debugT"];
+const debugMethods = ["integrate", "getCallerPaths", "fileNames", "timers", "other"];
+const debugShortMethods = ["debugI", "debugP", "debugF", "debugT", "debugO"];
 
 class debugC {
 
@@ -59,6 +59,7 @@ class debugC {
 	getCallerPaths(){}
 	fileNames(){}
 	timers(){}
+	other(){}
 
 }
 
