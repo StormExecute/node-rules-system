@@ -5,8 +5,11 @@ const { password, needToSetPassword, wrongPass } = require("../password");
 const { wrongPassEmitter } = require("../logs");
 
 const getCallerPaths = require("../getCallerPaths");
+const getCallerFnName = require("../getCallerFnName");
 
 const returnProxy = require("../returnProxy");
+
+const debug = require("../_debug");
 
 const { whiteList } = require("./addToWhiteList");
 
@@ -64,23 +67,51 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 			const callerPaths = getCallerPaths();
 
-			if (!callerPaths) {
+			if (!callerPaths.length) {
 
 				breakFileHandleProto(filehandle);
+
+				debug.integrate("fsPromisesOpen->false", callerPaths);
 
 				return filehandle;
 
 			}
 
-			const [callerFile, dependencyPath] = callerPaths;
+			debug.integrate("fsPromisesOpen->true", callerPaths);
 
 			for (let i = 0; i < whiteList.length; ++i) {
 
-				if (
-					callerFile.startsWith(whiteList[i][0])
-					&&
-					dependencyPath.startsWith(whiteList[i][1])
-				) {
+				const { callerFnName, paths } = whiteList[i];
+
+				if(typeof callerFnName == "string") {
+
+					if(getCallerFnName() != callerFnName) continue;
+
+				}
+
+				if( !callerPaths[0].startsWith( paths[0] ) ) {
+
+					continue;
+
+				}
+
+				let l = 1;
+
+				for(let j = 0; j < callerPaths.length; ++j) {
+
+					if((l + 1) > paths.length) break;
+
+					const callerPath = callerPaths[j];
+
+					if( callerPath.startsWith( paths[l] ) ) {
+
+						++l;
+
+					}
+
+				}
+
+				if(l && l == paths.length) {
 
 					return filehandle;
 
@@ -89,6 +120,8 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 			}
 
 			breakFileHandleProto(filehandle);
+
+			debug.integrate("fsPromisesOpen->", false);
 
 			return filehandle;
 
