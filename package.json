@@ -10,6 +10,7 @@
     "url": "https://github.com/StormExecute/node-rules-system.git"
   },
   "main": "lib/NRS.js",
+  "types": "@types/index.d.ts",
   "scripts": {
     "test": "node tests/index.js"
   },
