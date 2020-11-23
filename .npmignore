@@ -1,0 +1,11 @@
+dirty/
+dependencies/
+src/
+tests/
+
+.idea/
+
+node_modules/
+
+package-lock.json
+webpack.config.js
