@@ -77,7 +77,7 @@ function wrongPassEmitter(wrongPass, where, details) {
 
 	if(settings.throwIfWrongPassword) throw new Error(wrongPass);
 
-	return true;
+	return false;
 
 }
 
@@ -98,6 +98,8 @@ module.exports = {
 
 				recordAllLogs = true;
 
+				return true;
+
 			},
 
 			stopRecordLogs: function (tryPass) {
@@ -106,6 +108,8 @@ module.exports = {
 				if (tryPass != password.value) return wrongPassEmitter(wrongPass, "stopRecordLogs");
 
 				recordAllLogs = false;
+
+				return true;
 
 			},
 
