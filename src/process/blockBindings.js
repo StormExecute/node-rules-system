@@ -1,8 +1,11 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
 
 const getCallerPaths = require("../getCallerPaths");
+const getCallerFnName = require("../getCallerFnName");
 
 const returnProxy = require("../returnProxy");
+
+const debug = require("../_debug");
 
 const isObject = require("../../dependencies/isObject");
 
@@ -23,7 +26,7 @@ const block = {};
 
 ["binding", "_linkedBinding", "dlopen"].forEach(el => {
 
-	//{ returnProxyInsteadThrow, whiteList, whiteListType }
+	//{ returnProxyInsteadThrow, whiteLists }
 	block[el] = function (tryPass, options) {
 
 		if(password.value === null) throw new Error(needToSetPassword);
@@ -44,34 +47,47 @@ const block = {};
 		const whiteList = [];
 		whiteList.name = el;
 
-		if(typeof opts["whiteListType"] == "string" && Array.isArray(opts.whiteList)) {
+		if(Array.isArray(opts["whiteLists"])) {
 
-			if (opts["whiteListType"] == "custom") {
+			for (let i = 0; i < opts["whiteLists"].length; ++i) {
 
-				addCustomPathsToWhiteList(whiteList, tryPass, opts.whiteList);
+				const wList = opts["whiteLists"][i];
 
-			} else if (opts["whiteListType"] == "dependency") {
+				if(isObject(wList)) {
 
-				addDependencyAndPathsToWhiteList(whiteList, tryPass, opts.whiteList);
+					if (typeof wList["type"] == "string" && Array.isArray(wList.list)) {
 
-			} else if (opts["whiteListType"] == "dependencyPath") {
+						if (wList["type"] == "custom") {
 
-				addDependencyPathAndProjectPathsToWhiteList(whiteList, tryPass, opts.whiteList);
+							addCustomPathsToWhiteList(whiteList, tryPass, wList.list);
 
-			} else {
+						} else if (wList["type"] == "dependency") {
 
-				addPathsToWhiteList(whiteList, tryPass, opts.whiteList);
+							addDependencyAndPathsToWhiteList(whiteList, tryPass, wList.list);
+
+						} else if (wList["type"] == "dependencyPath") {
+
+							addDependencyPathAndProjectPathsToWhiteList(whiteList, tryPass, wList.list);
+
+						} else {
+
+							addPathsToWhiteList(whiteList, tryPass, wList.list);
+
+						}
+
+					}
+
+				}
 
 			}
 
 		}
 
-		const blockedReturn = function (module, nativePath, wrapPath) {
+		const blockedReturn = function (module, callerPaths) {
 
-			nativePath = nativePath || "";
-			wrapPath = wrapPath || "";
+			const nativePath = callerPaths[0] || "missing";
 
-			logsEmitter("callFn", [nativePath || undefined, wrapPath || undefined], {
+			logsEmitter("callFn", callerPaths, {
 
 				grantRights: false,
 
@@ -86,7 +102,7 @@ const block = {};
 
 			throw new Error("[node-rules-system] The script does not have access to process." + el + "!\n"
 				+ "NativePath: " + nativePath + "\n"
-				+ "WrapPath: " + wrapPath) + "\n";
+				+ "CallerPaths: " + callerPaths.slice(1).join(", ") ) + "\n";
 
 		}
 
@@ -96,21 +112,53 @@ const block = {};
 
 			const callerPaths = getCallerPaths();
 
-			if (!callerPaths) return blockedReturn(module);
+			if (!callerPaths.length) {
 
-			const [nativePath, wrapPath] = callerPaths;
+				debug.integrate("blockBindings->false", callerPaths);
 
-			if(nativePath == "dns.js" || nativePath == "zlib.js") return $process[el](module);
+				return blockedReturn(module, []);
+
+			}
+
+			debug.integrate("blockBindings->true", callerPaths);
+
+			if(callerPaths[0] == "dns.js" || callerPaths[0] == "zlib.js") return $process[el](module);
 
 			for (let i = 0; i < whiteList.length; ++i) {
 
-				if (
-					nativePath.startsWith(whiteList[i][0])
-					&&
-					wrapPath.startsWith(whiteList[i][1])
-				) {
+				const { callerFnName, paths } = whiteList[i];
 
-					logsEmitter("callFn", [nativePath, wrapPath], {
+				if(typeof callerFnName == "string") {
+
+					if(getCallerFnName() != callerFnName) continue;
+
+				}
+
+				if( !callerPaths[0].startsWith( paths[0] ) ) {
+
+					continue;
+
+				}
+
+				let l = 1;
+
+				for(let j = 0; j < callerPaths.length; ++j) {
+
+					if((l + 1) > paths.length) break;
+
+					const callerPath = callerPaths[j];
+
+					if( callerPath.startsWith( paths[l] ) ) {
+
+						++l;
+
+					}
+
+				}
+
+				if(l && l == paths.length) {
+
+					logsEmitter("callFn", callerPaths, {
 
 						grantRights: true,
 
@@ -127,7 +175,9 @@ const block = {};
 
 			}
 
-			return blockedReturn(module, nativePath, wrapPath);
+			debug.integrate("blockBindings->", false);
+
+			return blockedReturn(module, callerPaths);
 
 		};
 
