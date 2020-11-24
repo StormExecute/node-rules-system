@@ -351,6 +351,8 @@ module.exports = {
 	worker_threads,
 	cluster,
 
+	timers,
+
 	isReturnProxy,
 
 };
