@@ -59,6 +59,8 @@ function parseStack(errStack) {
 			&&
 			(
 
+				endsWithTranslationSlashes(path, "/node-rules-system/lib/NRS.js")
+				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/getCallerPaths.js")
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/secureSession.js")
