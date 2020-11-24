@@ -1,4 +1,6 @@
-const NRS = require("../src/index");
+const NRS = require("../lib/NRS");
+
+global.isReturnProxy = NRS.isReturnProxy;
 
 const {
 
@@ -333,10 +335,16 @@ const otherTests = [
 	() => NRS.process.blockBinding(NRS_PASSWORD, {
 
 		returnProxyInsteadThrow: true,
-		whiteListType: "project",
-		whiteList: [
-			"tests/allowed/others/binding.js",
-		]
+		whiteLists: [{
+
+			type: "project",
+			list: [
+
+				"tests/allowed/others/binding.js",
+
+			]
+
+		}],
 
 	}),
 
