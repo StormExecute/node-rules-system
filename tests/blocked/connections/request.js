@@ -2,9 +2,8 @@ const request = require("request");
 const nodePath = require("path");
 
 const { NRS_PASSWORD } = require("../../_settings");
-const returnProxy = require("../../../src/returnProxy");
 
-const NRS_SESSION = require("../../../src/index").session(NRS_PASSWORD);
+const NRS_SESSION = require("../../../" + NRS_PATH).session(NRS_PASSWORD);
 
 let then = false;
 
@@ -25,9 +24,9 @@ setImmediate(function () {
 	if (
 		lastLog.type == "callFn"
 		&&
-		lastLog.nativePath == nodePath.join(__dirname, "../../../node_modules/request/request.js")
+		lastLog.callerPaths[0] == nodePath.join(__dirname, "../../../node_modules/request/request.js")
 		&&
-		lastLog.wrapPath == __filename
+		lastLog.callerPaths.last() == __filename
 	) {
 
 		if(lastLog.grantRights == false) {

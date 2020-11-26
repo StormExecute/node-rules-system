@@ -1,8 +1,6 @@
 const { promises: fs } = require("fs");
 const nodePath = require("path");
 
-const returnProxy = require("../../../../src/returnProxy");
-
 (async () => {
 
 	const test = await fs.rename(
@@ -10,7 +8,7 @@ const returnProxy = require("../../../../src/returnProxy");
 		nodePath.join(__dirname, "../../../fsTemp/allowed/simpleRenamed.txt"),
 	);
 
-	if(test == returnProxy) {
+	if(isReturnProxy(test)) {
 
 		process.thenTest("must be allowed!");
 

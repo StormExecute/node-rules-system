@@ -1,7 +1,6 @@
 const https = require('https');
 
-const { TEST_SITE: host} = require("../_settings");
-const returnProxy = require("../../src/returnProxy");
+const { TEST_SITE: host } = require("../_settings");
 
 const options = { host, port: 443, method: "GET" };
 
@@ -19,7 +18,7 @@ const test = function(callback) {
 
 	}).end();
 
-	if(_test === returnProxy) return callback("block")
+	if(isReturnProxy(_test)) return callback("block")
 
 }
 

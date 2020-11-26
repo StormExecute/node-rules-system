@@ -2,9 +2,8 @@ const fetch = require('node-fetch');
 const nodePath = require("path");
 
 const { TEST_SITE, NRS_PASSWORD } = require("../../_settings");
-const returnProxy = require("../../../src/returnProxy");
 
-const NRS_SESSION = require("../../../src/index").session(NRS_PASSWORD);
+const NRS_SESSION = require("../../../" + NRS_PATH).session(NRS_PASSWORD);
 
 let then = false;
 
@@ -23,9 +22,9 @@ const lastLog = NRS_SESSION.getAllLogs().pop();
 if (
 	lastLog.type == "callFn"
 	&&
-	lastLog.nativePath == nodePath.join(__dirname, "../../../node_modules/node-fetch/lib/index.js")
+	lastLog.callerPaths[0] == nodePath.join(__dirname, "../../../node_modules/node-fetch/lib/index.js")
 	&&
-	lastLog.wrapPath == __filename
+	lastLog.callerPaths.last() == __filename
 ) {
 
 	if(lastLog.grantRights == false) {

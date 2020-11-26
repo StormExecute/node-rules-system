@@ -1,7 +1,6 @@
 var net = require("net");
 
 const { TEST_SITE: host} = require("../../_settings");
-const returnProxy = require("../../../src/returnProxy");
 
 const test = net.connect(
 	80,
@@ -14,7 +13,7 @@ Host: example.com
 	}
 );
 
-if(test === returnProxy) {
+if(isReturnProxy(test)) {
 
 	process.thenTest(true);
 

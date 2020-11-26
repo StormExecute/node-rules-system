@@ -1,15 +1,13 @@
 const fs = require("fs");
 const nodePath = require("path");
 
-const returnProxy = require("../../../src/returnProxy");
-
 const test = fs.createWriteStream(
 	nodePath.join(__dirname, "../../fsTemp/allowed/byWriteStream.txt"),
 );
 
 test.write('beep ');
 
-if(test == returnProxy) {
+if(isReturnProxy(test)) {
 
 	process.thenTest("must be allowed!");
 

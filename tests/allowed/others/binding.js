@@ -1,8 +1,6 @@
-const returnProxy = require("../../../src/returnProxy");
-
 const test = process.binding("v8");
 
-if(test == returnProxy) {
+if(isReturnProxy(test)) {
 
 	process.thenTest("must be allowed!");
 

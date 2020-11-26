@@ -1,13 +1,11 @@
 const fs = require("fs");
 const nodePath = require("path");
 
-const returnProxy = require("../../../src/returnProxy");
-
 const test = fs.mkdirSync(
 	nodePath.join(__dirname, "../../fsTemp/blocked/simpleDir")
 );
 
-if(test != returnProxy) {
+if(!isReturnProxy(test)) {
 
 	process.thenTest("must be blocked!");
 

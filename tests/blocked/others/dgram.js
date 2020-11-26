@@ -1,10 +1,8 @@
 const dgram = require('dgram');
 
-const returnProxy = require("../../../src/returnProxy");
-
 const test = dgram.createSocket('udp4');
 
-if(test != returnProxy) {
+if(!isReturnProxy(test)) {
 
 	process.thenTest("must be blocked!");
 
