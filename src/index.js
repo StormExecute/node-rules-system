@@ -231,6 +231,9 @@ const timers = {
 
 	integrateToEventEmitterOn: integrateIT.on,
 
+	integrateToFsReadFile: integrateIT.readFile,
+	integrateToFsWriteFile: integrateIT.writeFile,
+
 	integrate: integrateIT.all,
 
 	restoreImmediate: timersRestore.setImmediate,
@@ -243,6 +246,9 @@ const timers = {
 	restorePromiseCatch: timersRestore.catch,
 
 	restoreEventEmitterOn: timersRestore.on,
+
+	restoreFsReadFile: timersRestore.readFile,
+	restoreFsWriteFile: timersRestore.writeFile,
 
 	restore: timersRestore.all,
 
