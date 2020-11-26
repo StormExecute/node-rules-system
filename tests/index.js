@@ -1,4 +1,7 @@
-const NRS = require("../lib/NRS");
+global.NRS_PATH_SRC = true;
+global.NRS_PATH = NRS_PATH_SRC ? "src/index.js" : "lib/NRS.js";
+
+const NRS = require("../" + NRS_PATH);
 
 global.isReturnProxy = NRS.isReturnProxy;
 
