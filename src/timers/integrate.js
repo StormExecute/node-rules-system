@@ -5,6 +5,7 @@ const getCallerPaths = require("../getCallerPaths");
 const debug = require("../_debug");
 
 const events = require('events');
+const fs = require("fs");
 
 const pathsStore = require("./pathsStore");
 const $thisStore = require("./thisStore");
@@ -63,6 +64,9 @@ const integrateIT = {};
 
 	[events.EventEmitter.prototype, "on"],
 
+	[fs, "readFile"],
+	[fs, "writeFile"],
+
 ].forEach( ( [el, prop] ) => {
 
 	integrateIT[prop] = function (tryPass) {
@@ -81,11 +85,38 @@ const integrateIT = {};
 
 		if (prop == "on" && $thisStore.statusEventEmitterOn == true) return false;
 
+		if (prop == "readFile" && $thisStore.statusFsReadFile == true) return false;
+		if (prop == "writeFile" && $thisStore.statusFsWriteFile == true) return false;
+
 		$thisStore[prop] = el[prop];
 
 		el[prop] = function () {
 
-			const callbackI = prop == "on" ? 1 : 0;
+			const callbackI = (function (args) {
+
+				if(prop == "on") return 1;
+
+				if(prop == "readFile" || prop == "writeFile") {
+
+					for (let i = 1; i < args.length; ++i) {
+
+						if(typeof args[i] == "function") {
+
+							return i;
+
+						}
+
+					}
+
+					return null;
+
+				}
+
+				return 0;
+
+			})(arguments);
+
+			if(callbackI === null) return $thisStore[prop].apply(this, arguments);
 
 			const callback = arguments[callbackI];
 
@@ -138,6 +169,9 @@ const integrateIT = {};
 
 		if (prop == "on" && $thisStore.statusEventEmitterOn == false) return $thisStore.statusEventEmitterOn = true;
 
+		if (prop == "readFile" && $thisStore.statusFsReadFile == false) return $thisStore.statusFsReadFile = true;
+		if (prop == "writeFile" && $thisStore.statusFsWriteFile == false) return $thisStore.statusFsWriteFile = true;
+
 		return false;
 
 	};
@@ -161,6 +195,9 @@ integrateIT.all = function (tryPass) {
 		integrateIT.catch(tryPass),
 
 		integrateIT.on(tryPass),
+
+		integrateIT.readFile(tryPass),
+		integrateIT.writeFile(tryPass),
 
 	];
 

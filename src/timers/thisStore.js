@@ -11,6 +11,9 @@ module.exports = {
 
 	statusEventEmitterOn: false,
 
+	statusFsReadFile: false,
+	statusFsWriteFile: false,
+
 	setImmediate: null,
 	nextTick: null,
 
@@ -21,5 +24,8 @@ module.exports = {
 	"catch": null,
 
 	on: null,
+
+	fsReadFile: null,
+	fsWriteFile: null,
 
 };

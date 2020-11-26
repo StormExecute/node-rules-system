@@ -2,6 +2,7 @@ const { password, needToSetPassword, wrongPass } = require("../password");
 const { wrongPassEmitter } = require("../logs");
 
 const events = require('events');
+const fs = require('fs');
 
 const $thisStore = require("./thisStore");
 
@@ -20,6 +21,9 @@ const thisRestoreFunctionality = {
 
 	on(tryPass){},
 
+	readFile(tryPass){},
+	writeFile(tryPass){},
+
 };
 
 [
@@ -34,6 +38,9 @@ const thisRestoreFunctionality = {
 	[global.Promise.prototype, "catch"],
 
 	[events.EventEmitter.prototype, "on"],
+
+	[fs, "readFile"],
+	[fs, "writeFile"],
 
 ].forEach( ( [el, prop] ) => {
 
@@ -53,6 +60,9 @@ const thisRestoreFunctionality = {
 
 		if (prop == "on" && $thisStore.statusEventEmitterOn == false) return false;
 
+		if (prop == "readFile" && $thisStore.statusFsReadFile == false) return false;
+		if (prop == "writeFile" && $thisStore.statusFsWriteFile == false) return false;
+
 		restore([prop], el, $thisStore);
 
 		if (prop == "setImmediate" && $thisStore.statusImmediate == true) $thisStore.statusImmediate = false;
@@ -65,6 +75,9 @@ const thisRestoreFunctionality = {
 		if (prop == "catch" && $thisStore.statusPromiseCatch == true) $thisStore.statusPromiseCatch = false;
 
 		if (prop == "on" && $thisStore.statusEventEmitterOn == true) $thisStore.statusEventEmitterOn = false;
+
+		if (prop == "readFile" && $thisStore.statusFsReadFile == true) $thisStore.statusFsReadFile = false;
+		if (prop == "writeFile" && $thisStore.statusFsWriteFile == true) $thisStore.statusFsWriteFile = false;
 
 		return true;
 
@@ -89,6 +102,9 @@ thisRestoreFunctionality.all = function (tryPass) {
 		thisRestoreFunctionality.catch(tryPass),
 
 		thisRestoreFunctionality.on(tryPass),
+
+		thisRestoreFunctionality.readFile(tryPass),
+		thisRestoreFunctionality.writeFile(tryPass),
 
 	];
 
