@@ -359,6 +359,8 @@ module.exports = {
 
 	timers,
 
+	enableSecureRequire: require("./require/integrate"),
+
 	isReturnProxy,
 
 };
