@@ -201,6 +201,9 @@ const makeSession = function (
 
 				integrateToEventEmitterOn(){},
 
+				integrateToFsReadFile(){},
+				integrateToFsWriteFile(){},
+
 				integrate(){},
 
 				restoreImmediate(){},
@@ -213,6 +216,9 @@ const makeSession = function (
 				restorePromiseCatch(){},
 
 				restoreEventEmitterOn(){},
+
+				restoreFsReadFile(){},
+				restoreFsWriteFile(){},
 
 				restore(){},
 
@@ -585,6 +591,9 @@ const makeSession = function (
 
 			"integrateToEventEmitterOn",
 
+			"integrateToFsReadFile",
+			"integrateToFsWriteFile",
+
 			"integrate",
 
 			"restoreImmediate",
@@ -597,6 +606,9 @@ const makeSession = function (
 			"restorePromiseCatch",
 
 			"restoreEventEmitterOn",
+
+			"restoreFsReadFile",
+			"restoreFsWriteFile",
 
 			"restore",
 
