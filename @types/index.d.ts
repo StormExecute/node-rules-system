@@ -262,6 +262,9 @@ type timersBlockAllow = [
 
 	boolean,
 
+	boolean,
+	boolean,
+
 ];
 
 interface timersWithPassword {
@@ -279,6 +282,9 @@ interface timersWithPassword {
 
 	integrateToEventEmitterOn: (tryPass: string) => boolean,
 
+	integrateToFsReadFile: (tryPass: string) => boolean,
+	integrateToFsWriteFile: (tryPass: string) => boolean,
+
 	integrate: (tryPass: string) => timersBlockAllow,
 
 	restoreImmediate: (tryPass: string) => boolean,
@@ -291,6 +297,9 @@ interface timersWithPassword {
 	restorePromiseCatch: (tryPass: string) => boolean,
 
 	restoreEventEmitterOn: (tryPass: string) => boolean,
+
+	restoreFsReadFile: (tryPass: string) => boolean,
+	restoreFsWriteFile: (tryPass: string) => boolean,
 
 	restore: (tryPass: string) => timersBlockAllow,
 
@@ -313,6 +322,9 @@ interface timersWithoutPassword {
 
 	integrateToEventEmitterOn: () => boolean,
 
+	integrateToFsReadFile: () => boolean,
+	integrateToFsWriteFile: () => boolean,
+
 	integrate: () => timersBlockAllow,
 
 	restoreImmediate: () => boolean,
@@ -325,6 +337,9 @@ interface timersWithoutPassword {
 	restorePromiseCatch: () => boolean,
 
 	restoreEventEmitterOn: () => boolean,
+
+	restoreFsReadFile: () => boolean,
+	restoreFsWriteFile: () => boolean,
 
 	restore: () => timersBlockAllow,
 
