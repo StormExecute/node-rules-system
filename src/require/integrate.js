@@ -2,7 +2,11 @@ const { password, needToSetPassword, wrongPass } = require("../password");
 
 const { wrongPassEmitter } = require("../logs");
 
+const mRandom = require("../_data/random");
+
 const Module = require('module');
+
+const randomSaltForVar = () => mRandom().toString().slice(2);
 
 function enableSecureRequire(tryPass) {
 
@@ -11,10 +15,10 @@ function enableSecureRequire(tryPass) {
 
 	Module.wrap = function(script) {
 
-		const originRequire = "originRequire" + Math.random().toString().slice(2);
-		const originFilename = "originFilename" + Math.random().toString().slice(2);
-		const nodePathTemplate = "nodePath" + Math.random().toString().slice(2);
-		const returnProxyTemplate = "returnProxy" + Math.random().toString().slice(2);
+		const originRequire = "originRequire" + randomSaltForVar();
+		const originFilename = "originFilename" + randomSaltForVar();
+		const nodePathTemplate = "nodePath" + randomSaltForVar();
+		const returnProxyTemplate = "returnProxy" + randomSaltForVar();
 
 const secureRequireTemplate = `
 	const ${originRequire} = require;

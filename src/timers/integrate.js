@@ -3,6 +3,7 @@ const { wrongPassEmitter } = require("../logs");
 const getCallerPaths = require("../getCallerPaths");
 
 const debug = require("../_debug");
+const mRandom = require("../_data/random");
 
 const events = require('events');
 const fs = require("fs");
@@ -41,7 +42,7 @@ function getUniqFnName(prop, recurseI) {
 
 	}
 
-	const attemp =  "NRS-" + prop.toUpperCase() + "-FUNCTION-" + Math.random() + Math.random();
+	const attemp =  "NRS-" + prop.toUpperCase() + "-FUNCTION-" + mRandom() + mRandom();
 
 	if(!pathsStore[attemp]) return attemp;
 
