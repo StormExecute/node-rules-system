@@ -13,7 +13,7 @@ let recordAllLogs = false;
 const allLogs = [];
 
 //setPassword, passwordAlready, changePassword, wrongChangePassword, wrongPassword,
-//callFn, callObj, callProtoFn, get, callFromSecureSession, addToWhiteList
+//callFn, callObj, callProtoFn, get, callFromSecureSession, addToWhiteList, attempToChangeModuleWrap
 function logsEmitter(type, customCallerPaths, details, force) {
 
 	details = isObject(details) ? details : {};
