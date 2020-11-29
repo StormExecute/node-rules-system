@@ -4,11 +4,4 @@ module.exports = {
 
 	wrap: null,
 
-	prototypeLoad: null,
-	prototypeRequire: null,
-
-	_load: null,
-	createRequireFromPath: null,
-	createRequire: null,
-
 };
