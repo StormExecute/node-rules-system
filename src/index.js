@@ -257,6 +257,10 @@ const timers = {
 const timersStore = require("./timers/thisStore");
 timers.$fns = { get: makeGet(timersStore) };
 
+const modules = require("./module/extendWrap");
+modules.useSecureRequirePatch = require("./module/integrate");
+modules.restoreOriginalRequire = require("./module/restore");
+
 const settings = require("./_settings/main");
 
 const makeFullSecure = require("./fullSecure");
@@ -291,7 +295,7 @@ module.exports = {
 	session: makeSession(
 		connections, fs,
 		process, child_process, dgram, worker_threads, cluster,
-		timers,
+		timers, modules,
 		settings,
 		{
 
@@ -316,7 +320,7 @@ module.exports = {
 	secureSession: makeSecureSession(
 		connections, fs,
 		process, child_process, dgram, worker_threads, cluster,
-		timers,
+		timers, modules,
 		settings,
 		{
 
@@ -358,8 +362,7 @@ module.exports = {
 	cluster,
 
 	timers,
-
-	enableSecureRequire: require("./require/integrate"),
+	module: modules,
 
 	isReturnProxy,
 
