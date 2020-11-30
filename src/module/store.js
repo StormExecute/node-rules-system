@@ -4,4 +4,6 @@ module.exports = {
 
 	wrap: null,
 
+	secureRequireSecretEmitter: null,
+
 };
