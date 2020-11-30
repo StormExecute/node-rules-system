@@ -1,10 +1,7 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
 const { logsEmitter, wrongPassEmitter } = require("../logs");
-const getCallerFilename = require("../getCallerFilename");
 
 const mRandom = require("../_data/random");
-
-const { whiteList } = require("./addToWhiteList");
 
 const Module = require('module');
 
@@ -17,16 +14,18 @@ const integrateToProtoFn = require("../integrateFunctionality/toProtoFn");
 const getCode = arr => arr.join("");
 const randomSaltForVar = () => mRandom().toString().slice(2);
 
-function secureRequirePatch(tryPass, fullBlock, whiteFilenames) {
+function secureRequirePatch(tryPass, whiteFilenames) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "enableSecureRequire");
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "useSecureRequirePatch");
 
 	if($Module.status == true) return false;
 
 	$Module.wrap = Module.wrap;
 
 	const secureRequireSecretEmitter = "secureRequireSecretEmitter" + randomSaltForVar();
+
+	$Module.secureRequireSecretEmitter = secureRequireSecretEmitter;
 
 	Object.defineProperty(global, secureRequireSecretEmitter, {
 
@@ -68,6 +67,8 @@ function secureRequirePatch(tryPass, fullBlock, whiteFilenames) {
 		const moduleWrapTemplate = "moduleWrap" + randomSaltForVar();
 
 		const returnProxyTemplate = "returnProxy" + randomSaltForVar();
+		const cloneFnTemplate = "cloneFn" + randomSaltForVar();
+		const patchModuleTemplate = "patchModule" + randomSaltForVar();
 		const whiteFilenamesParsedTemplate = whiteFilenamesParsed.length
 			? "whiteFilenamesParsedTemplate" + randomSaltForVar()
 			: "undefined";
@@ -117,6 +118,114 @@ const secureRequireTemplate = `
 		
 	});
 	
+	const ${cloneFnTemplate} = function(fn) {
+	
+	    const that = fn;
+	    
+	    const temp = function temporary() { 
+	        return !new.target ? that.apply(this, arguments) : new that(...arguments) 
+	    };
+	    
+	    for(const key in fn) {
+	    
+	        if (fn.hasOwnProperty(key)) {
+	        
+	            temp[key] = fn[key];
+	            
+	        }
+	        
+	    }
+	    
+	    return temp;
+	    
+	};
+	
+	const ${patchModuleTemplate} = function(Module) {
+	
+		const store = {
+			
+			_extensionsJs: Module._extensions['.js'],
+			
+			protoLoad: Module.prototype.load,
+		
+		};
+		
+		["_load", "createRequireFromPath", "createRequire"].forEach(prop => {
+		
+			store[prop] = Module[prop];
+		
+			Module[prop] = function() {
+			
+				if(
+					typeof ${whiteFilenamesParsedTemplate} != "undefined"
+					&&
+					~${whiteFilenamesParsedTemplate}.indexOf( ${originFilename} )
+				) {
+				
+					return store[prop](...arguments);
+				
+				}
+				
+				return ${returnProxyTemplate};
+			
+			};
+			
+			Object.defineProperty(Module[prop], "toString", {
+			
+				value: () => "can't convert Module." + prop + " to string"
+				
+			});
+		
+		});
+		
+		Module._extensions['.js'] = function() {
+		
+			if(
+				typeof ${whiteFilenamesParsedTemplate} != "undefined"
+				&&
+				~${whiteFilenamesParsedTemplate}.indexOf( ${originFilename} )
+			) {
+			
+				return store._extensionsJs(...arguments);
+			
+			}
+			
+			return ${returnProxyTemplate};
+		
+		};
+		
+		Object.defineProperty(Module._extensions['.js'], "toString", {
+		
+			value: () => "can't convert Module._extensions['.js'] to string"
+			
+		});
+		
+		Module.prototype.load = function() {
+		
+			if(
+				typeof ${whiteFilenamesParsedTemplate} != "undefined"
+				&&
+				~${whiteFilenamesParsedTemplate}.indexOf( ${originFilename} )
+			) {
+			
+				return store.protoLoad.apply(this, arguments);
+			
+			}
+			
+			return ${returnProxyTemplate};
+		
+		};
+		
+		Object.defineProperty(Module.prototype.load, "toString", {
+		
+			value: () => "can't convert Module.prototype.load to string"
+			
+		});
+		
+		Module.Module = Module;
+	
+	};
+	
 	require = function(path) {
 	
 		if( ${moduleWrapTemplate} != ${originRequire}("module").wrap ) {
@@ -127,7 +236,19 @@ const secureRequireTemplate = `
 				~${whiteFilenamesParsedTemplate}.indexOf( ${originFilename} )
 			) {
 			
-				return ${originRequire}(path);
+				const result = ${originRequire}(path);
+		
+				if(result == ${originRequire}("module")) {
+				
+					const finalR = ${cloneFnTemplate}(result);
+				
+					${patchModuleTemplate}(finalR);
+					
+					return finalR;
+				
+				}
+				
+				return result;
 			
 			}
 		
@@ -145,7 +266,19 @@ const secureRequireTemplate = `
 			//if fastResolvePath doesn't extend beyond node_modules
 			if( fastResolvePath.includes("/node_modules") ) {
 			
-				return ${originRequire}(path);
+				const result = ${originRequire}(path);
+		
+				if(result == ${originRequire}("module")) {
+				
+					const finalR = ${cloneFnTemplate}(result);
+				
+					${patchModuleTemplate}(finalR);
+					
+					return finalR;
+				
+				}
+				
+				return result;
 			
 			}
 			
@@ -153,9 +286,27 @@ const secureRequireTemplate = `
 		
 		}
 	
-		return ${originRequire}(path);
+		const result = ${originRequire}(path);
+		
+		if(result == ${originRequire}("module")) {
+		
+			const finalR = ${cloneFnTemplate}(result);
+		
+			${patchModuleTemplate}(finalR);
+			
+			return finalR;
+		
+		}
+		
+		return result;
 	
 	};
+	
+	for(const prop in ${originRequire}) {
+	
+		require[prop] = ${originRequire}[prop];
+	
+	}
 	
 	Object.defineProperty(require, "toString", { value: () => "can't convert require to string" })
 `;
