@@ -17,7 +17,7 @@ const standartMethods = [
 const makeSession = function (
 	connections, fs,
 	process, child_process, dgram, worker_threads, cluster,
-	timers,
+	timers, modules,
 	settings, nrsCoreFns
 ) {
 
@@ -224,6 +224,22 @@ const makeSession = function (
 
 			},
 
+			module: {
+
+				beforeWrapper(code){},
+				beforeSecureRequire(code){},
+				beforeMainCode(code){},
+
+				afterMainCode(code){},
+				afterWrapper(code){},
+
+				getWrapper(){},
+
+				useSecureRequirePatch(whiteFilenames){},
+				restoreOriginalRequire(){},
+
+			},
+
 			settings: {
 
 				throwIfWrongPassword(){},
@@ -400,6 +416,7 @@ const makeSession = function (
 			"dontThrowIfWrongPassword",
 
 			"setCorePath",
+			"$getCorePath",
 
 		].forEach(fnProp => {
 
@@ -480,6 +497,30 @@ const makeSession = function (
 			$session.timers[fnProp] = function (...args) {
 
 				return standartWrapper(fnProp, timers, ...args);
+
+			}
+
+		});
+
+		[
+
+			"beforeWrapper",
+			"beforeSecureRequire",
+			"beforeMainCode",
+
+			"afterMainCode",
+			"afterWrapper",
+
+			"getWrapper",
+
+			"useSecureRequirePatch",
+			"restoreOriginalRequire",
+
+		].forEach(fnProp => {
+
+			$session.module[fnProp] = function (...args) {
+
+				return standartWrapper(fnProp, modules, ...args);
 
 			}
 
