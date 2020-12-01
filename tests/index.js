@@ -335,6 +335,17 @@ const otherTests = [
 
 	() => blockLogDash("Other Tests started"),
 
+	() => NRS.module.useSecureRequirePatch(NRS_PASSWORD, [
+
+		NRS.settings.$getCorePath() + "node_modules/$test/allowed/require.js",
+
+	]),
+
+	"$test/blocked/require",
+	"$test/allowed/require",
+
+	() => FAST_NRS_SESSION.module.restoreOriginalRequire(),
+
 	() => NRS.process.blockBinding(NRS_PASSWORD, {
 
 		returnProxyInsteadThrow: true,
