@@ -347,6 +347,38 @@ interface timersWithoutPassword {
 
 }
 
+interface moduleWithPassword {
+
+	beforeWrapper: (tryPass: string, code: string) => boolean,
+	beforeSecureRequire: (tryPass: string, code: string) => boolean,
+	beforeMainCode: (tryPass: string, code: string) => boolean,
+
+	afterMainCode: (tryPass: string, code: string) => boolean,
+	afterWrapper: (tryPass: string, code: string) => boolean,
+
+	getWrapper: (tryPass: string) => [string, string],
+
+	useSecureRequirePatch: (tryPass: string, whiteFilenames?: string[] | string) => boolean,
+	restoreOriginalRequire: (tryPass: string) => boolean,
+
+}
+
+interface moduleWithoutPassword {
+
+	beforeWrapper: (code: string) => boolean,
+	beforeSecureRequire: (code: string) => boolean,
+	beforeMainCode: (code: string) => boolean,
+
+	afterMainCode: (code: string) => boolean,
+	afterWrapper: (code: string) => boolean,
+
+	getWrapper: () => [string, string],
+
+	useSecureRequirePatch: (whiteFilenames?: string[] | string) => boolean,
+	restoreOriginalRequire: () => boolean,
+
+}
+
 type secureReturn = [
 
 	connectionsBlockAllow,
@@ -381,6 +413,7 @@ interface sessionT {
 		throwIfWrongPassword(): boolean,
 		dontThrowIfWrongPassword(): boolean,
 		setCorePath(path: string): boolean,
+		$getCorePath(): string,
 
 	},
 
@@ -403,6 +436,7 @@ interface sessionT {
 	cluster: standartMethodsWithoutPassword,
 
 	timers: timersWithoutPassword,
+	module: moduleWithoutPassword,
 
 	isReturnProxy(argument: any): boolean,
 
@@ -421,6 +455,7 @@ declare namespace NRS {
 		function throwIfWrongPassword(tryPass: string): boolean;
 		function dontThrowIfWrongPassword(tryPass: string): boolean;
 		function setCorePath(tryPass: string, path: string): boolean;
+		function $getCorePath(): string;
 
 	}
 
@@ -449,6 +484,7 @@ declare namespace NRS {
 	const cluster: standartMethodsWithPassword;
 
 	const timers: timersWithPassword;
+	const module: moduleWithPassword;
 
 	function isReturnProxy(argument: any): boolean;
 
