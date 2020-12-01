@@ -43,4 +43,10 @@ module.exports = {
 
 	},
 
+	$getCorePath() {
+
+		return $corePath.value;
+
+	},
+
 };
