@@ -63,12 +63,12 @@ function secureRequirePatch(tryPass, whiteFilenames) {
 		const originRequire = "originRequire" + randomSaltForVar();
 		const originFilename = "originFilename" + randomSaltForVar();
 
-		const nodePathTemplate = "nodePath" + randomSaltForVar();
 		const moduleWrapTemplate = "moduleWrap" + randomSaltForVar();
-
 		const returnProxyTemplate = "returnProxy" + randomSaltForVar();
+
 		const cloneFnTemplate = "cloneFn" + randomSaltForVar();
 		const patchModuleTemplate = "patchModule" + randomSaltForVar();
+
 		const whiteFilenamesParsedTemplate = whiteFilenamesParsed.length
 			? "whiteFilenamesParsedTemplate" + randomSaltForVar()
 			: "undefined";
@@ -77,7 +77,6 @@ const secureRequireTemplate = `
 	const ${originRequire} = require;
 	const ${originFilename} = __filename;
 	
-	const ${nodePathTemplate} = require("path");
 	const ${moduleWrapTemplate} = require("module").wrap;
 	
 	const ${returnProxyTemplate} = new Proxy(class {}, {
@@ -261,10 +260,18 @@ const secureRequireTemplate = `
 		//if require was called from node_modules
 		if( ${originFilename}.includes("/node_modules") ) {
 		
-			const fastResolvePath = ${nodePathTemplate}.join( ${originFilename} , path );
+			const fastResolvePath = ${originRequire}.resolve( path );
 			
 			//if fastResolvePath doesn't extend beyond node_modules
-			if( fastResolvePath.includes("/node_modules") ) {
+			if(
+				fastResolvePath.includes("/node_modules")
+				||
+				(
+					typeof ${whiteFilenamesParsedTemplate} != "undefined"
+					&&
+					~${whiteFilenamesParsedTemplate}.indexOf( ${originFilename} )
+				)
+			) {
 			
 				const result = ${originRequire}(path);
 		
