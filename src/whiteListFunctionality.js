@@ -12,6 +12,15 @@ const pathDelimiter = isWindows ? "\\" : "/";
 
 const $corePath = { value: null };
 
+const standardWhiteListMethods = [
+
+	"addCustomPathsToWhiteList",
+	"addPathsToWhiteList",
+	"addDependencyAndPathsToWhiteList",
+	"addDependencyPathAndProjectPathsToWhiteList",
+
+];
+
 function withLastDelimiter(str) {
 
 	if(typeof str != "string") return arguments[0];
@@ -298,6 +307,7 @@ function addDependencyPathAndProjectPathsToWhiteList(whiteList, tryPass, argsArr
 module.exports = {
 
 	$corePath,
+	standardWhiteListMethods,
 
 	addCustomPathsToWhiteList,
 	addPathsToWhiteList,
