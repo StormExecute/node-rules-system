@@ -2,7 +2,7 @@ const { password, mustBeString } = require("./password");
 
 const { logsEmitter } = require("./logs");
 
-const standartMethods = [
+const standardMethods = [
 
 	"addCustomPathsToWhiteList",
 	"addPathsToWhiteList",
@@ -260,7 +260,7 @@ const makeSession = function (
 
 		};
 
-		const standartWrapper = function (fnProp, factory, ...args) {
+		const standardWrapper = function (fnProp, factory, ...args) {
 
 			if($sessionConfigs.returnSession) {
 
@@ -326,17 +326,17 @@ const makeSession = function (
 
 			$session.connections[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, connections, ...args);
+				return standardWrapper(fnProp, connections, ...args);
 
 			}
 
 		});
 
-		standartMethods.forEach(fnProp => {
+		standardMethods.forEach(fnProp => {
 
 			$session.fs[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, fs, ...args);
+				return standardWrapper(fnProp, fs, ...args);
 
 			}
 
@@ -364,47 +364,47 @@ const makeSession = function (
 
 			$session.process[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, process, ...args);
+				return standardWrapper(fnProp, process, ...args);
 
 			}
 
 		});
 
-		standartMethods.forEach(fnProp => {
+		standardMethods.forEach(fnProp => {
 
 			$session.child_process[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, child_process, ...args);
+				return standardWrapper(fnProp, child_process, ...args);
 
 			}
 
 		});
 
-		standartMethods.forEach(fnProp => {
+		standardMethods.forEach(fnProp => {
 
 			$session.dgram[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, dgram, ...args);
+				return standardWrapper(fnProp, dgram, ...args);
 
 			}
 
 		});
 
-		standartMethods.forEach(fnProp => {
+		standardMethods.forEach(fnProp => {
 
 			$session.worker_threads[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, worker_threads, ...args);
+				return standardWrapper(fnProp, worker_threads, ...args);
 
 			}
 
 		});
 
-		standartMethods.forEach(fnProp => {
+		standardMethods.forEach(fnProp => {
 
 			$session.cluster[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, cluster, ...args);
+				return standardWrapper(fnProp, cluster, ...args);
 
 			}
 
@@ -422,7 +422,7 @@ const makeSession = function (
 
 			$session.settings[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, settings, ...args);
+				return standardWrapper(fnProp, settings, ...args);
 
 			}
 
@@ -450,7 +450,7 @@ const makeSession = function (
 
 			$session[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, nrsCoreFns, ...args);
+				return standardWrapper(fnProp, nrsCoreFns, ...args);
 
 			}
 
@@ -496,7 +496,7 @@ const makeSession = function (
 
 			$session.timers[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, timers, ...args);
+				return standardWrapper(fnProp, timers, ...args);
 
 			}
 
@@ -520,7 +520,7 @@ const makeSession = function (
 
 			$session.module[fnProp] = function (...args) {
 
-				return standartWrapper(fnProp, modules, ...args);
+				return standardWrapper(fnProp, modules, ...args);
 
 			}
 

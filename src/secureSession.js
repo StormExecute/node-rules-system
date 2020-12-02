@@ -9,7 +9,7 @@ const { logsEmitter, wrongPassEmitter } = require("./logs");
 
 const debug = require("./_debug");
 
-const standartMethods = [
+const standardMethods = [
 
 	"addCustomPathsToWhiteList",
 	"addPathsToWhiteList",
@@ -373,7 +373,7 @@ const makeSession = function (
 
 		});
 
-		const standartWrapper = function (fnProp, factory, ...args) {
+		const standardWrapper = function (fnProp, factory, ...args) {
 
 			if($sessionConfigs.returnSession) {
 
@@ -439,17 +439,17 @@ const makeSession = function (
 
 			$session.connections[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, connections, ...args);
+				return standardWrapper(fnProp, connections, ...args);
 
 			}, "connections", fnProp);
 
 		});
 
-		standartMethods.forEach(fnProp => {
+		standardMethods.forEach(fnProp => {
 
 			$session.fs[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, fs, ...args);
+				return standardWrapper(fnProp, fs, ...args);
 
 			}, "fs", fnProp);
 
@@ -477,47 +477,47 @@ const makeSession = function (
 
 			$session.process[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, process, ...args);
+				return standardWrapper(fnProp, process, ...args);
 
 			}, "process", fnProp);
 
 		});
 
-		standartMethods.forEach(fnProp => {
+		standardMethods.forEach(fnProp => {
 
 			$session.child_process[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, child_process, ...args);
+				return standardWrapper(fnProp, child_process, ...args);
 
 			}, "child_process", fnProp);
 
 		});
 
-		standartMethods.forEach(fnProp => {
+		standardMethods.forEach(fnProp => {
 
 			$session.dgram[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, dgram, ...args);
+				return standardWrapper(fnProp, dgram, ...args);
 
 			}, "dgram", fnProp);
 
 		});
 
-		standartMethods.forEach(fnProp => {
+		standardMethods.forEach(fnProp => {
 
 			$session.worker_threads[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, worker_threads, ...args);
+				return standardWrapper(fnProp, worker_threads, ...args);
 
 			}, "worker_threads", fnProp);
 
 		});
 
-		standartMethods.forEach(fnProp => {
+		standardMethods.forEach(fnProp => {
 
 			$session.cluster[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, cluster, ...args);
+				return standardWrapper(fnProp, cluster, ...args);
 
 			}, "cluster", fnProp);
 
@@ -535,7 +535,7 @@ const makeSession = function (
 
 			$session.settings[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, settings, ...args);
+				return standardWrapper(fnProp, settings, ...args);
 
 			}, "settings", fnProp);
 
@@ -553,7 +553,7 @@ const makeSession = function (
 
 			$session[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, nrsCoreFns, ...args);
+				return standardWrapper(fnProp, nrsCoreFns, ...args);
 
 			}, "logs", fnProp);
 
@@ -573,7 +573,7 @@ const makeSession = function (
 
 			$session[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, nrsCoreFns, ...args);
+				return standardWrapper(fnProp, nrsCoreFns, ...args);
 
 			}, "fullOrSetSecure", fnProp);
 
@@ -587,7 +587,7 @@ const makeSession = function (
 
 			$session[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, nrsCoreFns, ...args);
+				return standardWrapper(fnProp, nrsCoreFns, ...args);
 
 			}, "NRSCore", fnProp);
 
@@ -633,7 +633,7 @@ const makeSession = function (
 
 			$session.timers[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, timers, ...args);
+				return standardWrapper(fnProp, timers, ...args);
 
 			}, "timers", fnProp);
 
@@ -657,7 +657,7 @@ const makeSession = function (
 
 			$session.module[fnProp] = makeSecureWrapper(function (...args) {
 
-				return standartWrapper(fnProp, modules, ...args);
+				return standardWrapper(fnProp, modules, ...args);
 
 			}, module, fnProp);
 

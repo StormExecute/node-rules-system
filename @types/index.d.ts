@@ -40,7 +40,7 @@ type whiteListFunctionalityArgsFunction = ({}?: {
 
 type whiteListFunctionalityArgsNeedReal = whiteListFunctionalityArgsNeed | whiteListFunctionalityArgsFunction;
 
-interface standartWhiteListMethodsWithPassword {
+interface standardWhiteListMethodsWithPassword {
 
 	addCustomPathsToWhiteList(tryPass: string, ...args: whiteListFunctionalityArgsNeedReal[]): boolean,
 	addPathsToWhiteList(tryPass: string, ...args: whiteListFunctionalityArgsNeedReal[]): boolean,
@@ -49,7 +49,7 @@ interface standartWhiteListMethodsWithPassword {
 
 }
 
-interface standartWhiteListMethodsWithoutPassword {
+interface standardWhiteListMethodsWithoutPassword {
 
 	addCustomPathsToWhiteList(...args: whiteListFunctionalityArgsNeedReal[]): boolean,
 	addPathsToWhiteList(...args: whiteListFunctionalityArgsNeedReal[]): boolean,
@@ -70,27 +70,27 @@ interface getFnWithoutPassword {
 
 }
 
-interface standartBlockAllowWithPassword {
+interface standardBlockAllowWithPassword {
 
 	block(tryPass: string, fullBlock?: boolean): boolean,
 	allow(tryPass: string): boolean,
 
 }
 
-interface standartBlockAllowWithoutPassword {
+interface standardBlockAllowWithoutPassword {
 
 	block(fullBlock?: boolean): boolean,
 	allow(): boolean,
 
 }
 
-type standartMethodsWithPassword = {
+type standardMethodsWithPassword = {
 	$fns: getFnWithPassword
-} & standartWhiteListMethodsWithPassword & standartBlockAllowWithPassword;
+} & standardWhiteListMethodsWithPassword & standardBlockAllowWithPassword;
 
-type standartMethodsWithoutPassword = {
+type standardMethodsWithoutPassword = {
 	$fns: getFnWithoutPassword
-} & standartWhiteListMethodsWithoutPassword & standartBlockAllowWithoutPassword;
+} & standardWhiteListMethodsWithoutPassword & standardBlockAllowWithoutPassword;
 
 type connectionsBlockAllow = [
 
@@ -140,7 +140,7 @@ type connectionsWithPassword = {
 	restoreTls(tryPass: string): boolean,
 	restoreTlsWrap(tryPass: string): boolean,
 
-} & standartWhiteListMethodsWithPassword;
+} & standardWhiteListMethodsWithPassword;
 
 type connectionsWithoutPassword = {
 
@@ -173,7 +173,7 @@ type connectionsWithoutPassword = {
 	restoreTls(): boolean,
 	restoreTlsWrap(): boolean,
 
-} & standartWhiteListMethodsWithoutPassword;
+} & standardWhiteListMethodsWithoutPassword;
 
 type fsWithPassword = {
 
@@ -183,7 +183,7 @@ type fsWithPassword = {
 	block(tryPass: string, fullBlock?: boolean): [boolean, boolean],
 	allow(tryPass: string): [boolean, boolean],
 
-} & standartWhiteListMethodsWithPassword;
+} & standardWhiteListMethodsWithPassword;
 
 type fsWithoutPassword = {
 
@@ -193,7 +193,7 @@ type fsWithoutPassword = {
 	block(fullBlock?: boolean): [boolean, boolean],
 	allow(): [boolean, boolean],
 
-} & standartWhiteListMethodsWithoutPassword;
+} & standardWhiteListMethodsWithoutPassword;
 
 interface processBlockBindingOptionsWL {
 
@@ -430,10 +430,10 @@ interface sessionT {
 
 	process: processWithoutPassword,
 
-	child_process: standartMethodsWithoutPassword,
-	dgram: standartMethodsWithoutPassword,
-	worker_threads: standartMethodsWithoutPassword,
-	cluster: standartMethodsWithoutPassword,
+	child_process: standardMethodsWithoutPassword,
+	dgram: standardMethodsWithoutPassword,
+	worker_threads: standardMethodsWithoutPassword,
+	cluster: standardMethodsWithoutPassword,
 
 	timers: timersWithoutPassword,
 	module: moduleWithoutPassword,
@@ -478,10 +478,10 @@ declare namespace NRS {
 
 	const process: processWithPassword;
 
-	const child_process: standartMethodsWithPassword;
-	const dgram: standartMethodsWithPassword;
-	const worker_threads: standartMethodsWithPassword;
-	const cluster: standartMethodsWithPassword;
+	const child_process: standardMethodsWithPassword;
+	const dgram: standardMethodsWithPassword;
+	const worker_threads: standardMethodsWithPassword;
+	const cluster: standardMethodsWithPassword;
 
 	const timers: timersWithPassword;
 	const module: moduleWithPassword;
