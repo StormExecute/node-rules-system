@@ -64,6 +64,17 @@ const needProcessVersion = require("../dependencies/needProcessVersion");
 const bFPsV = filename => ~needProcessVersion("10.0.0") ? bFPs(filename) : () => {};
 const aFPsV = filename => ~needProcessVersion("10.0.0") ? aFPs(filename) : () => {};
 
+const workerSupport = (
+
+	(~require("process").execArgv.indexOf("--experimental-worker") && ~needProcessVersion("10.5.0"))
+	||
+	~needProcessVersion("11.7.0")
+
+);
+
+const aWorkerTestsIfVersion = workerSupport ? aOth("worker") : () => {};
+const bWorkerTestsIfVersion = workerSupport ? bOth("worker") : () => {};
+
 require("express")()
 	.get("/", (req, res) => res.send("hello"))
 	.listen(3000);
@@ -383,8 +394,8 @@ const otherTests = [
 
 	() => FAST_NRS_SESSION.worker_threads.addPathsToWhiteList("tests/allowed/others/worker.js"),
 
-	bOth("worker"),
-	aOth("worker"),
+	bWorkerTestsIfVersion,
+	aWorkerTestsIfVersion,
 
 	waitBeforeNextOther,
 
