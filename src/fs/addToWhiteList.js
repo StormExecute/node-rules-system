@@ -3,21 +3,14 @@ const main = require("../whiteListFunctionality");
 const fsWhiteList = [];
 fsWhiteList.name = "fs";
 
-[
+for (let i = 0; i < main.standardWhiteListMethods.length; ++i) {
 
-	"addCustomPathsToWhiteList",
-	"addPathsToWhiteList",
-	"addDependencyAndPathsToWhiteList",
-	"addDependencyPathAndProjectPathsToWhiteList",
+	module.exports[ main.standardWhiteListMethods[i] ] = function (tryPass, ...args) {
 
-].forEach(exportFn => {
-
-	module.exports[exportFn] = function (tryPass, ...args) {
-
-		return main[exportFn](fsWhiteList, tryPass, args);
+		return main[ main.standardWhiteListMethods[i] ] (fsWhiteList, tryPass, args);
 
 	};
 
-});
+}
 
 module.exports.whiteList = fsWhiteList;

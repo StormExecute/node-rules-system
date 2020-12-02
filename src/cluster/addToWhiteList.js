@@ -3,21 +3,14 @@ const main = require("../whiteListFunctionality");
 const clusterWhiteList = [];
 clusterWhiteList.name = "cluster";
 
-[
+for (let i = 0; i < main.standardWhiteListMethods.length; ++i) {
 
-	"addCustomPathsToWhiteList",
-	"addPathsToWhiteList",
-	"addDependencyAndPathsToWhiteList",
-	"addDependencyPathAndProjectPathsToWhiteList",
+	module.exports[ main.standardWhiteListMethods[i] ] = function (tryPass, ...args) {
 
-].forEach(exportFn => {
-
-	module.exports[exportFn] = function (tryPass, ...args) {
-
-		return main[exportFn](clusterWhiteList, tryPass, args);
+		return main[ main.standardWhiteListMethods[i] ] (clusterWhiteList, tryPass, args);
 
 	};
 
-});
+}
 
 module.exports.whiteList = clusterWhiteList;

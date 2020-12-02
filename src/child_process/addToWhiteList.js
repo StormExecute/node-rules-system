@@ -3,21 +3,14 @@ const main = require("../whiteListFunctionality");
 const childProcessWhiteList = [];
 childProcessWhiteList.name = "child_process";
 
-[
+for (let i = 0; i < main.standardWhiteListMethods.length; ++i) {
 
-	"addCustomPathsToWhiteList",
-	"addPathsToWhiteList",
-	"addDependencyAndPathsToWhiteList",
-	"addDependencyPathAndProjectPathsToWhiteList",
+	module.exports[ main.standardWhiteListMethods[i] ] = function (tryPass, ...args) {
 
-].forEach(exportFn => {
-
-	module.exports[exportFn] = function (tryPass, ...args) {
-
-		return main[exportFn](childProcessWhiteList, tryPass, args);
+		return main[ main.standardWhiteListMethods[i] ] (childProcessWhiteList, tryPass, args);
 
 	};
 
-});
+}
 
 module.exports.whiteList = childProcessWhiteList;

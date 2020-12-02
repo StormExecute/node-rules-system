@@ -3,29 +3,14 @@ const main = require("../whiteListFunctionality");
 const connectionsWhiteList = [];
 connectionsWhiteList.name = "connections";
 
-module.exports = {
+for (let i = 0; i < main.standardWhiteListMethods.length; ++i) {
 
-	addCustomPathsToWhiteList(){},
-	addPathsToWhiteList(){},
-	addDependencyAndPathsToWhiteList(){},
-	addDependencyPathAndProjectPathsToWhiteList(){},
-};
+	module.exports[ main.standardWhiteListMethods[i] ] = function (tryPass, ...args) {
 
-[
-
-	"addCustomPathsToWhiteList",
-	"addPathsToWhiteList",
-	"addDependencyAndPathsToWhiteList",
-	"addDependencyPathAndProjectPathsToWhiteList",
-
-].forEach(exportFn => {
-
-	module.exports[exportFn] = function (tryPass, ...args) {
-
-		return main[exportFn](connectionsWhiteList, tryPass, args);
+		return main[ main.standardWhiteListMethods[i] ] (connectionsWhiteList, tryPass, args);
 
 	};
 
-});
+}
 
 module.exports.whiteList = connectionsWhiteList;
