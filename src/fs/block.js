@@ -25,8 +25,6 @@ const {
 
 const integrateToFns = require("../integrateFunctionality/toFns");
 
-const breakFileHandleProto = require("./breakFileHandleProto");
-
 const needProcessVersion = require("../../dependencies/needProcessVersion");
 const fsPromisesSupport = ~needProcessVersion("10.0.0");
 
@@ -55,13 +53,9 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 		fs.promises.open = async function (path, flags, mode) {
 
-			const filehandle = await $fsPromises.open(path, flags, mode);
-
 			if(fullBlock) {
 
-				breakFileHandleProto(filehandle);
-
-				return filehandle;
+				return returnProxy;
 
 			}
 
@@ -69,11 +63,9 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 			if (!callerPaths.length) {
 
-				breakFileHandleProto(filehandle);
-
 				debug.integrate("fsPromisesOpen->false", callerPaths);
 
-				return filehandle;
+				return returnProxy;
 
 			}
 
@@ -113,17 +105,15 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 				if(l && l == paths.length) {
 
-					return filehandle;
+					return $fsPromises.open(path, flags, mode);
 
 				}
 
 			}
 
-			breakFileHandleProto(filehandle);
-
 			debug.integrate("fsPromisesOpen->", false);
 
-			return filehandle;
+			return returnProxy;
 
 		};
 
