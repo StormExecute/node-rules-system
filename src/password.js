@@ -1,12 +1,12 @@
-const prefix = "[node-rules-system]";
+const { prefixS } = require("./_data");
 
-const needToSetPassword = prefix + " To manage rules, you need to set a password!";
-const passAlready = prefix + " The password is already set!";
+const needToSetPassword = prefixS + "To manage rules, you need to set a password!";
+const passAlready = prefixS + "The password is already set!";
 
-const wrongPass = prefix + " Wrong password!";
-const wrongLastPass = prefix + " Wrong last password!";
+const wrongPass = prefixS + "Wrong password!";
+const wrongLastPass = prefixS + "Wrong last password!";
 
-const mustBeString = prefix + " The password must be a string!";
+const mustBeString = prefixS + "The password must be a string!";
 
 const password = { value: null };
 

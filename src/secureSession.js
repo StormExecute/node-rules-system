@@ -1,3 +1,4 @@
+const { prefixS } = require("./_data");
 const { password, mustBeString, wrongPass } = require("./password");
 
 const getCallerPaths = require("./getCallerPaths");
@@ -45,7 +46,7 @@ const makeSession = function (
 
 		const whiteListResult = addPathsToWhiteList(whiteList, tryPass, args);
 
-		if(!whiteListResult) throw new Error("[node-rules-system] To create a secure session, you need to give it paths!");
+		if(!whiteListResult) throw new Error(prefixS + "To create a secure session, you need to give it paths!");
 
 		const $sessionConfigs = {
 

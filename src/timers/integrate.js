@@ -1,3 +1,4 @@
+const { prefixS } = require("../_data");
 const { password, needToSetPassword, wrongPass } = require("../password");
 const { wrongPassEmitter } = require("../logs");
 const getCallerPaths = require("../getCallerPaths");
@@ -38,7 +39,7 @@ function getUniqFnName(prop, recurseI) {
 
 	if(recurseI == maxGetUniqFnNameRecursiveCalls) {
 
-		throw new Error("[node-rules-system-esm] src/immediateAndTick/integrate:getUniqFnName -> maximum recursion threshold reached.")
+		throw new Error(prefixS + "src/immediateAndTick/integrate:getUniqFnName -> maximum recursion threshold reached.")
 
 	}
 

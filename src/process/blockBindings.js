@@ -1,3 +1,4 @@
+const { prefixS } = require("../_data");
 const { password, needToSetPassword, wrongPass } = require("../password");
 
 const getCallerPaths = require("../getCallerPaths");
@@ -100,9 +101,9 @@ const block = {};
 
 			if(typeof opts["returnProxyInsteadThrow"] == "boolean") return returnProxy;
 
-			throw new Error("[node-rules-system] The script does not have access to process." + el + "!\n"
-				+ "NativePath: " + nativePath + "\n"
-				+ "CallerPaths: " + callerPaths.slice(1).join(", ") ) + "\n";
+			throw new Error(prefixS + "The script does not have access to process." + el + "!\n\n"
+				+ "NativePath: " + nativePath + "\n\n"
+				+ "CallerPaths: " + callerPaths.slice(1).join(", ") ) + "\n\n";
 
 		}
 
