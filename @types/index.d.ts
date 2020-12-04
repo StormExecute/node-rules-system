@@ -303,6 +303,8 @@ interface timersWithPassword {
 
 	restore: (tryPass: string) => timersBlockAllow,
 
+	reset: (tryPass: string, callback: () => any, type: string) => boolean,
+
 	$fns: getFnWithPassword,
 
 }
@@ -342,6 +344,8 @@ interface timersWithoutPassword {
 	restoreFsWriteFile: () => boolean,
 
 	restore: () => timersBlockAllow,
+
+	reset: (callback: () => any, type: string) => boolean,
 
 	$fns: getFnWithoutPassword,
 
