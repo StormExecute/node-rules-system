@@ -205,9 +205,71 @@ integrateIT.all = function (tryPass) {
 
 };
 
+const reset = function (tryPass, callback, type) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "timersReset");
+
+	type = type || "nextTick";
+
+	const originalFunc = Error.prepareStackTrace;
+
+	const err = new Error();
+
+	Error.prepareStackTrace = function (err, stack) { return stack; };
+	const stack = err.stack;
+	Error.prepareStackTrace = originalFunc;
+
+	let result = false;
+
+	for (let i = 0; i < stack.length; ++i) {
+
+		const fnName = stack[i].getFunctionName();
+
+		if(pathsStore[fnName]) {
+
+			delete pathsStore[fnName];
+
+			result = true;
+
+		}
+
+	}
+
+	let method;
+
+	if(type == "immediate") {
+
+		method = $thisStore.statusImmediate ? $thisStore.setImmediate : setImmediate;
+
+	} else if(type == "timeout") {
+
+		method = $thisStore.statusSetTimeout ? $thisStore.setTimeout : setTimeout;
+
+	} else {
+
+		method = $thisStore.statusNextTick ? $thisStore.nextTick : process.nextTick;
+
+	}
+
+	if(type == "timeout") {
+
+		method(callback, 0);
+
+	} else {
+
+		method(callback);
+
+	}
+
+	return result;
+
+}
+
 module.exports = {
 
 	integrateIT,
 	changeMaxGetUniqFnNameRecursiveCalls,
+	reset,
 
 };
