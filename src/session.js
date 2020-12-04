@@ -220,6 +220,8 @@ const makeSession = function (
 
 				restore(){},
 
+				reset(){},
+
 				$fns: { $get(propName){} },
 
 			},
@@ -491,6 +493,8 @@ const makeSession = function (
 			"restoreFsWriteFile",
 
 			"restore",
+
+			"reset",
 
 		].forEach(fnProp => {
 
