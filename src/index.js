@@ -211,6 +211,7 @@ const {
 
 	integrateIT,
 	changeMaxGetUniqFnNameRecursiveCalls,
+	reset,
 
 } = require("./timers/integrate");
 
@@ -251,6 +252,8 @@ const timers = {
 	restoreFsWriteFile: timersRestore.writeFile,
 
 	restore: timersRestore.all,
+
+	reset,
 
 };
 
