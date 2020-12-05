@@ -33,7 +33,7 @@ function endsWithTranslationSlashes(str, arg) {
 function parseStack(errStack) {
 
 	let inProcessScreening = true;
-	let mergeTimersPaths = false;
+	let parentTPId = false;
 
 	const result = [];
 
@@ -48,9 +48,9 @@ function parseStack(errStack) {
 
 		const fnName = errStack[i].getFunctionName();
 
-		if(!mergeTimersPaths && timersPathsStore[fnName]) {
+		if(!parentTPId && timersPathsStore[fnName]) {
 
-			mergeTimersPaths = fnName;
+			parentTPId = fnName;
 
 		}
 
@@ -161,23 +161,23 @@ function parseStack(errStack) {
 
 	}
 
-	if(mergeTimersPaths) {
+	if(parentTPId) {
+
+		const copyParent = timersPathsStore[parentTPId].slice();
 
 		for (let i = result.length - 1; i >= 0; i--) {
 
 			if(
-				!~timersPathsStore[mergeTimersPaths].indexOf(result[i])
-				&&
 				!endsWithTranslationSlashes(result[i], "node-rules-system/src/timers/integrate.js")
 			) {
 
-				timersPathsStore[mergeTimersPaths].splice(0, 0, result[i]);
+				copyParent.splice(0, 0, result[i]);
 
 			}
 
 		}
 
-		return timersPathsStore[mergeTimersPaths];
+		return copyParent;
 
 	}
 
@@ -192,10 +192,10 @@ function getCallerPaths() {
 	const err = new Error();
 
 	Error.prepareStackTrace = function (err, stack) { return stack; };
-
-	const callerPaths = parseStack(err.stack)
-
+	const errStack = err.stack;
 	Error.prepareStackTrace = originalFunc;
+
+	const callerPaths = parseStack(errStack);
 
 	debug.getCallerPaths("getCallerPaths", callerPaths);
 
