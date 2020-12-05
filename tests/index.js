@@ -226,6 +226,17 @@ const connectionTests = [
 	bConn("httpDependency-Project"),
 	aConn("httpDependency-Project"),
 
+	waitBeforeNextConnection,
+
+	() => NRS.connections.addDependencyAndPathsToWhiteList(NRS_PASSWORD, [
+
+		"request", "tests/functionality/requestController.js", "tests/allowed/connections/requestWithController"
+
+	]),
+
+	aConn("requestWithController"),
+	bConn("requestWithController"),
+
 ];
 
 const fsTests = [
