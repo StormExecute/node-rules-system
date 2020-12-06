@@ -1,3 +1,5 @@
+const checkAccess = require("./checkAccess");
+
 const getCallerPaths = require("../getCallerPaths");
 const getCallerFnName = require("../getCallerFnName");
 
@@ -42,37 +44,61 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 
 			for(let i = 0; i < whiteList.length; ++i) {
 
-				const { callerFnName, paths } = whiteList[i];
+				const {
 
-				if(typeof callerFnName == "string") {
+					customHandler,
 
-					if(getCallerFnName() != callerFnName) continue;
+				} = whiteList[i];
+
+				let access = false;
+
+				if(typeof customHandler == "function") {
+
+					access = !!customHandler("callObj", {
+
+						callerPaths,
+						callerFnName: getCallerFnName(),
+
+						args: arguments,
+
+						origin,
+
+						objName: name,
+						objProp: prop,
+
+					});
+
+				} else {
+
+					const {
+
+						paths,
+						blackPaths,
+
+						callerFnName,
+						onlyWhited,
+						everyWhite,
+						fullIdentify,
+
+					} = whiteList[i];
+
+					access = checkAccess({
+
+						callerPaths,
+
+						paths,
+						blackPaths,
+
+						callerFnName,
+						onlyWhited,
+						everyWhite,
+						fullIdentify,
+
+					});
 
 				}
 
-				if( !callerPaths[0].startsWith( paths[0] ) ) {
-
-					continue;
-
-				}
-
-				let l = 1;
-
-				for(let j = 0; j < callerPaths.length; ++j) {
-
-					if((l + 1) > paths.length) break;
-
-					const callerPath = callerPaths[j];
-
-					if( callerPath.startsWith( paths[l] ) ) {
-
-						++l;
-
-					}
-
-				}
-
-				if(l && l == paths.length) {
+				if(access) {
 
 					logsEmitter("callObj", callerPaths, {
 

@@ -1,3 +1,13 @@
+const isObject = require("../../dependencies/isObject");
+
+const tls = require('tls');
+const net = require("net");
+const http = require("http");
+const http2 = require("http2");
+const https = require("https");
+
+const checkAccess = require("./checkAccess");
+
 const getCallerPaths = require("../getCallerPaths");
 const getCallerFnName = require("../getCallerFnName");
 
@@ -52,37 +62,159 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 			for(let i = 0; i < whiteList.length; ++i) {
 
-				const { callerFnName, paths } = whiteList[i];
+				const {
 
-				if(typeof callerFnName == "string") {
+					customHandler,
 
-					if(getCallerFnName() != callerFnName) continue;
+				} = whiteList[i];
 
-				}
+				let access = false;
 
-				if( !callerPaths[0].startsWith( paths[0] ) ) {
+				if(typeof customHandler == "function") {
 
-					continue;
+					access = !!customHandler("callFn", {
 
-				}
+						callerPaths,
+						callerFnName: getCallerFnName(),
 
-				let l = 1;
+						args: arguments,
 
-				for(let j = 0; j < callerPaths.length; ++j) {
+						origin,
+						method: el,
 
-					if((l + 1) > paths.length) break;
+					});
 
-					const callerPath = callerPaths[j];
+				} else {
 
-					if( callerPath.startsWith( paths[l] ) ) {
+					const {
 
-						++l;
+						whiteListDomains,
+						blackListDomains,
+
+					} = whiteList[i];
+
+					const wLD = (whiteListDomains && whiteListDomains.length);
+					const bLD = (blackListDomains && blackListDomains.length)
+
+					if(
+						wLD
+						||
+						bLD
+					) {
+
+						if(
+							origin == http
+							||
+							origin == https
+							||
+							origin == http2
+							||
+							origin == net
+							||
+							origin == tls
+						) {
+
+							let url = null;
+
+							if (
+								(
+									(origin == http || origin == https)
+									&&
+									(el == "request" || el == "get")
+								)
+								||
+								(origin == http2 && el == "connect")
+							) {
+
+								url = isObject(arguments[0])
+									? arguments[0].protocol + "//" + (arguments[0].host || arguments[0].hostname)
+									: arguments[0];
+
+							} else if(
+								(origin == net && (el == "connect" || el == "createConnection"))
+								||
+								(origin == tls && el == "connect")
+							) {
+
+								url = isObject((arguments[0]))
+									? arguments[0].host
+									: arguments[1];
+
+							}
+
+							if(!url) continue;
+
+							let skipByDomains = false;
+
+							//wLD has more priorities than bLD
+							if(wLD) {
+
+								skipByDomains = true;
+
+								for (let j = 0; j < whiteListDomains.length; ++j) {
+
+									if(whiteListDomains[j] == url) {
+
+										skipByDomains = false;
+
+										break;
+
+									}
+
+								}
+
+							} else {
+
+								//bLD
+								for (let j = 0; j < blackListDomains.length; ++j) {
+
+									if(blackListDomains[j]) {
+
+										skipByDomains = true;
+
+										break;
+
+									}
+
+								}
+
+							}
+
+							if(skipByDomains) continue;
+
+						}
 
 					}
 
+					const {
+
+						paths,
+						blackPaths,
+
+						callerFnName,
+						onlyWhited,
+						everyWhite,
+						fullIdentify,
+
+					} = whiteList[i];
+
+					access = checkAccess({
+
+						callerPaths,
+
+						paths,
+						blackPaths,
+
+						callerFnName,
+						onlyWhited,
+						everyWhite,
+						fullIdentify,
+
+					});
+
 				}
 
-				if(l && l == paths.length) {
+				if(access) {
 
 					logsEmitter("callFn", callerPaths, {
 

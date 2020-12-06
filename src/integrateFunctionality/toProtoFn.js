@@ -1,3 +1,5 @@
+const checkAccess = require("./checkAccess");
+
 const getCallerPaths = require("../getCallerPaths");
 const getCallerFnName = require("../getCallerFnName");
 
@@ -46,37 +48,60 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 
 		for(let i = 0; i < whiteList.length; ++i) {
 
-			const { callerFnName, paths } = whiteList[i];
+			const {
 
-			if(typeof callerFnName == "string") {
+				customHandler,
 
-				if(getCallerFnName() != callerFnName) continue;
+			} = whiteList[i];
+
+			let access = false;
+
+			if(typeof customHandler == "function") {
+
+				access = !!customHandler("callProtoFn", {
+
+					callerPaths,
+					callerFnName: getCallerFnName(),
+
+					args,
+
+					origin,
+
+					protoFn: fnName,
+
+				});
+
+			} else {
+
+				const {
+
+					paths,
+					blackPaths,
+
+					callerFnName,
+					onlyWhited,
+					everyWhite,
+					fullIdentify,
+
+				} = whiteList[i];
+
+				access = checkAccess({
+
+					callerPaths,
+
+					paths,
+					blackPaths,
+
+					callerFnName,
+					onlyWhited,
+					everyWhite,
+					fullIdentify,
+
+				});
 
 			}
 
-			if( !callerPaths[0].startsWith( paths[0] ) ) {
-
-				continue;
-
-			}
-
-			let l = 1;
-
-			for(let j = 0; j < callerPaths.length; ++j) {
-
-				if((l + 1) > paths.length) break;
-
-				const callerPath = callerPaths[j];
-
-				if( callerPath.startsWith( paths[l] ) ) {
-
-					++l;
-
-				}
-
-			}
-
-			if(l && l == paths.length) {
+			if(access) {
 
 				logsEmitter("callProtoFn", callerPaths, {
 
