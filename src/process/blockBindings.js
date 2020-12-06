@@ -1,6 +1,8 @@
 const { prefixS } = require("../_data");
 const { password, needToSetPassword, wrongPass } = require("../password");
 
+const checkAccess = require("../integrateFunctionality/checkAccess");
+
 const getCallerPaths = require("../getCallerPaths");
 const getCallerFnName = require("../getCallerFnName");
 
@@ -127,44 +129,65 @@ const block = {};
 
 			for (let i = 0; i < whiteList.length; ++i) {
 
-				const { callerFnName, paths } = whiteList[i];
+				const {
 
-				if(typeof callerFnName == "string") {
+					customHandler,
 
-					if(getCallerFnName() != callerFnName) continue;
+				} = whiteList[i];
+
+				let access = false;
+
+				if(typeof customHandler == "function") {
+
+					access = !!customHandler("callBlockBindings", {
+
+						callerPaths,
+						callerFnName: getCallerFnName(),
+
+						args: arguments,
+
+						fn: el,
+
+					});
+
+				} else {
+
+					const {
+
+						paths,
+						blackPaths,
+
+						callerFnName,
+						onlyWhited,
+						everyWhite,
+						fullIdentify,
+
+					} = whiteList[i];
+
+					access = checkAccess({
+
+						callerPaths,
+
+						paths,
+						blackPaths,
+
+						callerFnName,
+						onlyWhited,
+						everyWhite,
+						fullIdentify,
+
+					});
 
 				}
 
-				if( !callerPaths[0].startsWith( paths[0] ) ) {
-
-					continue;
-
-				}
-
-				let l = 1;
-
-				for(let j = 0; j < callerPaths.length; ++j) {
-
-					if((l + 1) > paths.length) break;
-
-					const callerPath = callerPaths[j];
-
-					if( callerPath.startsWith( paths[l] ) ) {
-
-						++l;
-
-					}
-
-				}
-
-				if(l && l == paths.length) {
+				if(access) {
 
 					logsEmitter("callFn", callerPaths, {
 
 						grantRights: true,
 
 						fn: el,
-						args: module,
+						args: arguments,
 
 						calledAsClass: null,
 
