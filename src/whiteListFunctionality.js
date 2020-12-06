@@ -138,8 +138,15 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 
 			whiteList.push({
 
+				customHandler: null,
 				paths,
 				callerFnName: null,
+				onlyWhited: null,
+				blackPaths: null,
+				everyWhite: null,
+				fullIdentify: null,
+				whiteListDomains: null,
+				blackListDomains: null,
 
 			});
 
@@ -151,8 +158,15 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 
 		whiteList.push({
 
+			customHandler: null,
 			paths: [ typeof preFn == "function" ? preFn(arg) : arg ],
 			callerFnName: null,
+			onlyWhited: null,
+			blackPaths: null,
+			everyWhite: null,
+			fullIdentify: null,
+			whiteListDomains: null,
+			blackListDomains: null,
 
 		});
 
@@ -178,14 +192,77 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 
 		}
 
+		const blackPaths = typeof arg.blackPaths == "string"
+			? [typeof preFn == "function" ? preFn(arg.blackPaths) : arg.blackPaths]
+			: [];
+
+		if(Array.isArray(arg.blackPaths)) {
+
+			for(let i = 0; i < arg.blackPaths.length; ++i) {
+
+				if(typeof arg.blackPaths[i] == "string") {
+
+					typeof preFn == "function"
+						? blackPaths.push( preFn( arg.blackPaths[i] ) )
+						: blackPaths.push( arg.blackPaths[i] )
+
+				}
+
+			}
+
+		}
+
+		const whiteListDomains = typeof arg.whiteListDomains == "string"
+			? [arg.whiteListDomains]
+			: [];
+
+		if(Array.isArray(arg.whiteListDomains)) {
+
+			for(let i = 0; i < arg.whiteListDomains.length; ++i) {
+
+				if(typeof arg.whiteListDomains[i] == "string") {
+
+					whiteListDomains.push( arg.whiteListDomains[i] )
+
+				}
+
+			}
+
+		}
+
+		const blackListDomains = typeof arg.blackListDomains == "string"
+			? [arg.blackListDomains]
+			: [];
+
+		if(Array.isArray(arg.blackListDomains)) {
+
+			for(let i = 0; i < arg.blackListDomains.length; ++i) {
+
+				if(typeof arg.blackListDomains[i] == "string") {
+
+					blackListDomains.push( arg.blackListDomains[i] )
+
+				}
+
+			}
+
+		}
+
 		if(paths.length) {
 
 			!result && (result = true);
 
 			whiteList.push({
 
+				customHandler: typeof arg.customHandler == "function" ? arg.customHandler : null,
 				paths,
+				blackPaths,
+				whiteListDomains,
+				blackListDomains,
 				callerFnName: typeof arg.callerFnName == "string" ? arg.callerFnName : null,
+				onlyWhited: typeof arg.onlyWhited == "boolean" ? arg.onlyWhited : null,
+				everyWhite: typeof arg.everyWhite == "boolean" ? arg.everyWhite : null,
+				fullIdentify: typeof arg.fullIdentify == "boolean" ? arg.fullIdentify : null,
 
 			});
 
