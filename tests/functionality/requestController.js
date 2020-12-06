@@ -23,8 +23,6 @@ module.exports = function Request(should, callback) {
 
 		const lastLog = NRS_SESSION.getAllLogs().pop();
 
-		console.log(lastLog);
-
 		if (
 			lastLog.type == "callFn"
 			&&
