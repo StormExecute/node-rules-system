@@ -1,3 +1,9 @@
+type argumentsType = any[] | {
+
+	[key: string]: any
+
+};
+
 import events = require("events");
 declare class logs extends events.EventEmitter {}
 
@@ -19,10 +25,100 @@ interface $sessionConfigs {
 
 }
 
+import tls = require('tls');
+import net = require("net");
+import http = require("http");
+import http2 = require("http2");
+import https = require("https");
+
+interface whiteListFunctionalityCustomHandlerDefaults {
+
+	callerPaths?: string[],
+	callerFnName?: string,
+
+	args?: argumentsType,
+
+}
+
+type callFnT = "callFn";
+type callObjT = "callObj";
+type callPFnT = "callProtoFn";
+type callSST = "callFromSecureSession";
+type callBBT = "callFromBlockBindings";
+type callFsT = "callFromFsPromisesOpen";
+
+type whiteListFunctionalityCustomHandlerByFn =
+	(by: callFnT, args: whiteListFunctionalityCustomHandlerDefaults & {
+
+		origin?: typeof tls | typeof net | typeof http | typeof http2 | typeof https,
+		method?: string,
+
+	}) => boolean;
+
+type whiteListFunctionalityCustomHandlerByObj =
+	(by: callObjT, args: whiteListFunctionalityCustomHandlerDefaults & {
+
+		origin?: http.Agent,
+
+		objName?: string,
+		objProp?: string,
+
+	}) => boolean;
+
+type whiteListFunctionalityCustomHandlerByProtoFn =
+	(by: callPFnT, args: whiteListFunctionalityCustomHandlerDefaults & {
+
+		origin?: typeof net.Socket.prototype.connect | typeof tls.TLSSocket.prototype.connect,
+
+		protoFn?: string,
+
+	}) => boolean;
+
+type whiteListFunctionalityCustomHandlerBySession =
+	(by: callSST, args: whiteListFunctionalityCustomHandlerDefaults & {
+
+		NRSFnName: string,
+		NRSFnPropName: string,
+
+	}) => boolean;
+
+type whiteListFunctionalityCustomHandlerByBindings =
+	(by: callBBT, args: whiteListFunctionalityCustomHandlerDefaults & {
+
+		fn: string,
+
+	}) => boolean;
+
+type whiteListFunctionalityCustomHandlerByFs =
+	(by: callFsT, args: whiteListFunctionalityCustomHandlerDefaults) => boolean;
+
+type whiteListFunctionalityCustomHandler =
+		whiteListFunctionalityCustomHandlerByFn
+		|
+		whiteListFunctionalityCustomHandlerByObj
+		|
+		whiteListFunctionalityCustomHandlerByProtoFn
+		|
+		whiteListFunctionalityCustomHandlerBySession
+		|
+		whiteListFunctionalityCustomHandlerByBindings
+		|
+		whiteListFunctionalityCustomHandlerByFs;
+
 type whiteListFunctionalityArgsNeed = string | string[] | {
 
+	customHandler: whiteListFunctionalityCustomHandler,
+
 	paths: string | string[],
-	callerFnName?: string
+	blackPaths?: string | string[],
+	whiteListDomains?: string | string[],
+	blackListDomains?: string | string[],
+
+	callerFnName?: string,
+
+	onlyWhited?: boolean,
+	everyWhite?: boolean,
+	fullIdentify?: boolean,
 
 }
 
