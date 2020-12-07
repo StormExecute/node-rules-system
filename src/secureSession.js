@@ -305,7 +305,7 @@ const makeSession = function (
 
 					if(typeof customHandler == "function") {
 
-						access = !!customHandler("callSecureSession", {
+						access = !!customHandler("callFromSecureSession", {
 
 							callerPaths,
 							callerFnName: getCallerFnName(),

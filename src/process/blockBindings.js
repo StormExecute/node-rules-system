@@ -86,16 +86,16 @@ const block = {};
 
 		}
 
-		const blockedReturn = function (module, callerPaths) {
+		const blockedReturn = function (args, callerPaths) {
 
 			const nativePath = callerPaths[0] || "missing";
 
-			logsEmitter("callFn", callerPaths, {
+			logsEmitter("callFromBlockBindings", callerPaths, {
 
 				grantRights: false,
 
 				fn: el,
-				args: module,
+				args,
 
 				calledAsClass: null,
 
@@ -119,7 +119,7 @@ const block = {};
 
 				debug.integrate("blockBindings->false", callerPaths);
 
-				return blockedReturn(module, []);
+				return blockedReturn(arguments, []);
 
 			}
 
@@ -139,7 +139,7 @@ const block = {};
 
 				if(typeof customHandler == "function") {
 
-					access = !!customHandler("callBlockBindings", {
+					access = !!customHandler("callFromBlockBindings", {
 
 						callerPaths,
 						callerFnName: getCallerFnName(),
@@ -182,7 +182,7 @@ const block = {};
 
 				if(access) {
 
-					logsEmitter("callFn", callerPaths, {
+					logsEmitter("callFromBlockBindings", callerPaths, {
 
 						grantRights: true,
 
@@ -201,7 +201,7 @@ const block = {};
 
 			debug.integrate("blockBindings->", false);
 
-			return blockedReturn(module, callerPaths);
+			return blockedReturn(arguments, callerPaths);
 
 		};
 

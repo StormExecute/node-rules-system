@@ -2,7 +2,7 @@ const fs = require("fs");
 
 const { password, needToSetPassword, wrongPass } = require("../password");
 
-const { wrongPassEmitter } = require("../logs");
+const { logsEmitter, wrongPassEmitter } = require("../logs");
 
 const checkAccess = require("../integrateFunctionality/checkAccess");
 
@@ -65,6 +65,14 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 			if (!callerPaths.length) {
 
+				logsEmitter("callFromFsPromisesOpen", [], {
+
+					grantRights: false,
+
+					args: arguments,
+
+				});
+
 				debug.integrate("fsPromisesOpen->false", callerPaths);
 
 				return returnProxy;
@@ -85,7 +93,7 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 				if(typeof customHandler == "function") {
 
-					access = !!customHandler("callFsPromisesOpen", {
+					access = !!customHandler("callFromFsPromisesOpen", {
 
 						callerPaths,
 						callerFnName: getCallerFnName(),
@@ -126,11 +134,27 @@ function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 				if(access) {
 
+					logsEmitter("callFromFsPromisesOpen", [], {
+
+						grantRights: true,
+
+						args: arguments,
+
+					});
+
 					return $fsPromises.open(path, flags, mode);
 
 				}
 
 			}
+
+			logsEmitter("callFromFsPromisesOpen", [], {
+
+				grantRights: false,
+
+				args: arguments,
+
+			});
 
 			debug.integrate("fsPromisesOpen->", false);
 
