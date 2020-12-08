@@ -1,6 +1,6 @@
-const { password, mustBeString } = require("./password");
+const { password, mustBeString, wrongPass } = require("./password");
 
-const { logsEmitter } = require("./logs");
+const { logsEmitter, wrongPassEmitter } = require("./logs");
 
 const standardMethods = [
 
@@ -31,7 +31,7 @@ const makeSession = function (
 
 			logsEmitter.force("setPassword", null, { where: "session" });
 
-		}
+		} else if(tryPass != password.value) return wrongPassEmitter(wrongPass, "session");
 
 		const $sessionConfigs = {
 
