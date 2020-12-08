@@ -1,21 +1,241 @@
-type argumentsType = any[] | {
+interface plainObjectT {
 
 	[key: string]: any
 
-};
+}
+
+type argumentsType = any[] | plainObjectT;
 
 import events = require("events");
-declare class logs extends events.EventEmitter {}
 
-type callerPathsT = Array<string>;
-
-interface logMessage {
+interface defaultLogObj {
 
 	type: string,
+	callerPaths: string[],
 
-	callerPaths: callerPathsT,
+}
 
-	[key: string]: any,
+type defaultLogObjWithGrants = defaultLogObj & {
+
+	grantRights: boolean
+
+}
+
+type defaultLogObjWithArgsAndGrants = defaultLogObjWithGrants & {
+
+	args: argumentsType
+
+};
+
+type logsSetPasswordT = defaultLogObj & {
+
+	where: string
+
+};
+
+type logsWrongChangePasswordT = defaultLogObj & {
+
+	wrongLastPass: string
+
+};
+
+type logsWrongPasswordT = defaultLogObjWithGrants & {
+
+	where:
+		"throwIfWrongPassword" | "dontThrowIfWrongPassword" | "setCorePath" |
+
+		"allowChildProcess" | "blockChildProcess" | "allowCluster" | "blockCluster" |
+
+		"allowTls" | "allowTlsWrap" | "allowNet" | "allowHttpAgent" | "allowHttpClient" |
+		"allowHttp" | "allowHttps" | "allowHttp2" | "allowConnections" |
+
+		"blockTls" | "blockTlsWrap" | "blockNet" | "blockHttpAgent" | "blockHttpClient" |
+		"blockHttp" | "blockHttps" | "blockHttp2" | "blockConnections" |
+
+		"allowDgram" | "blockDgram" | "allowFs" | "blockFs" |
+
+		"beforeWrapper" | "beforeSecureRequire" | "beforeMainCode" | "afterMainCode" | "afterWrapper" |
+		"getWrapper" | "useSecureRequirePatch" | "restoreOriginalRequire" |
+
+		"allowProcessBinding" | "allowProcessLinkedBinding" | "allowProcessDlopen" |
+		"allowProcessBindingLinkedBindingAndDlopen" |
+
+		"blockProcessBinding" | "blockProcessLinkedBinding" | "blockProcessDlopen" |
+		"blockProcessBindingLinkedBindingAndDlopen" |
+
+		"changeMaxGetUniqFnNameRecursiveCalls" |
+
+		"integrateTimers" | "integrateTimersAll" | "timersReset" |
+		"restoreTimers" | "restoreTimersAll" |
+
+		"allowWorkerThreads" | "blockWorkerThreads" |
+
+		"fullSecure" |
+
+		"get" |
+
+		"startRecordLogs" | "stopRecordLogs" | "getAllLogs" |  "getLogsEmitter" |
+
+		"secureSession" | "session" |
+
+		"setSecure" |
+
+		"addCustomPathsToWhiteList" | "addPathsToWhiteList" |
+		"addDependencyAndPathsToWhiteList" | "addDependencyPathAndProjectPathsToWhiteList"
+
+	,
+
+	//setCorePath
+	path?: string,
+
+	//blockX
+	fullBlock?: boolean,
+
+	options?: processBlockBindingsOptions,
+
+	//changeMaxGetUniqFnNameRecursiveCalls
+	newValue?: number,
+
+	//integrateTimers, restoreTimers
+	prop?: string,
+
+	//fullSecure
+	status?: string,
+
+	//get
+	propName?: string,
+
+	//secureSession
+	args?: whiteListFunctionalityArgsNeedReal[],
+
+	//setSecure
+	secureElements?: string[],
+
+	//whiteListMethods
+	argsArray?: whiteListFunctionalityArgsNeedReal[],
+
+};
+
+type logsCallFnT = defaultLogObjWithArgsAndGrants & {
+
+	fn: string,
+	calledAsClass: boolean,
+
+};
+
+type logsCallObjT = defaultLogObjWithArgsAndGrants & {
+
+	obj: string,
+	prop: string,
+
+};
+
+type logsCallProtoFnT = defaultLogObjWithArgsAndGrants & {
+
+	protoFn: string,
+
+};
+
+type logsCallFromSecureSessionT = defaultLogObjWithArgsAndGrants & {
+
+	NRSFnName: string,
+	NRSFnPropName: string,
+
+};
+
+type logsGet = defaultLogObjWithGrants & {
+
+	propName: string
+
+};
+
+type logsAddToWhiteList = defaultLogObjWithArgsAndGrants & {
+
+	$corePath: string,
+	whiteList: string,
+
+};
+
+type logsAttempToChangeModuleWrap = defaultLogObj & {
+
+	filename: string,
+	path: string,
+
+	failedWrapper: (...args: any[]) => string | any,
+
+};
+
+type logMessage = defaultLogObj & {
+
+	grantRights?: boolean,
+
+	args?: argumentsType | whiteListFunctionalityArgsNeedReal[],
+
+	where: string,
+
+	wrongLastPass: string,
+
+	path?: string,
+
+	fullBlock?: boolean,
+
+	options?: processBlockBindingsOptions,
+
+	newValue?: number,
+
+	prop?: string,
+
+	status?: string,
+
+	propName?: string,
+
+	secureElements?: string[],
+
+	argsArray?: whiteListFunctionalityArgsNeedReal[],
+
+	fn?: string,
+
+	calledAsClass?: boolean,
+
+	obj?: string,
+
+	protoFn?: string,
+
+	NRSFnName?: string,
+
+	NRSFnPropName?: string,
+
+	$corePath?: string,
+
+	whiteList?: string,
+
+};
+
+declare class logs extends events.EventEmitter {
+
+	on(event: "*", listener: (logObj: logMessage) => void): this;
+
+	on(event: "setPassword", listener: (logObj: logsSetPasswordT) => void): this;
+
+	on(event: "passwordAlready", listener: (logObj: defaultLogObj) => void): this;
+	on(event: "changePassword", listener: (logObj: defaultLogObj) => void): this;
+
+	on(event: "wrongChangePassword", listener: (logObj: logsWrongChangePasswordT) => void): this;
+	on(event: "wrongPassword", listener: (logObj: logsWrongPasswordT) => void): this;
+
+	on(event: "callFn", listener: (logObj: logsCallFnT) => void): this;
+	on(event: "callObj", listener: (logObj: logsCallObjT) => void): this;
+	on(event: "callProtoFn", listener: (logObj: logsCallProtoFnT) => void): this;
+
+	on(event: "callFromBlockBindings", listener: (logObj: logsCallFnT) => void): this;
+	on(event: "callFromSecureSession", listener: (logObj: logsCallFromSecureSessionT) => void): this;
+	on(event: "callFromFsPromisesOpen", listener: (logObj: defaultLogObjWithArgsAndGrants) => void): this;
+
+	on(event: "get", listener: (logObj: logsGet) => void): this;
+
+	on(event: "addToWhiteList", listener: (logObj: logsAddToWhiteList) => void): this;
+
+	on(event: "attempToChangeModuleWrap", listener: (logObj: logsAttempToChangeModuleWrap) => void): this;
 
 }
 
@@ -107,8 +327,6 @@ type whiteListFunctionalityCustomHandler =
 
 type whiteListFunctionalityArgsNeed = string | string[] | {
 
-	customHandler: whiteListFunctionalityCustomHandler,
-
 	paths: string | string[],
 	blackPaths?: string | string[],
 	whiteListDomains?: string | string[],
@@ -119,6 +337,10 @@ type whiteListFunctionalityArgsNeed = string | string[] | {
 	onlyWhited?: boolean,
 	everyWhite?: boolean,
 	fullIdentify?: boolean,
+
+} | {
+
+	customHandler: whiteListFunctionalityCustomHandler,
 
 }
 
@@ -298,7 +520,9 @@ interface processBlockBindingOptionsWL {
 
 }
 
-interface processBlockBindingOptions {
+interface processBlockBindingsOptions {
+
+	fullBlock?: boolean,
 
 	returnProxyInsteadThrow?: boolean,
 	whiteLists?: processBlockBindingOptionsWL[]
@@ -307,12 +531,12 @@ interface processBlockBindingOptions {
 
 type processWithPassword = {
 
-	blockBinding: (tryPass: string, options?: processBlockBindingOptions) => boolean,
-	blockLinkedBinding: (tryPass: string, options?: processBlockBindingOptions) => boolean,
-	blockDlopen: (tryPass: string, options?: processBlockBindingOptions) => boolean,
+	blockBinding: (tryPass: string, options?: processBlockBindingsOptions) => boolean,
+	blockLinkedBinding: (tryPass: string, options?: processBlockBindingsOptions) => boolean,
+	blockDlopen: (tryPass: string, options?: processBlockBindingsOptions) => boolean,
 
-	blockBindingLinkedBindingAndDlopen: (tryPass: string, options?: processBlockBindingOptions) => [boolean, boolean, boolean],
-	block: (tryPass: string, options?: processBlockBindingOptions) => [boolean, boolean, boolean],
+	blockBindingLinkedBindingAndDlopen: (tryPass: string, options?: processBlockBindingsOptions) => [boolean, boolean, boolean],
+	block: (tryPass: string, options?: processBlockBindingsOptions) => [boolean, boolean, boolean],
 
 	allowBinding: (tryPass: string) => boolean,
 	allowLinkedBinding: (tryPass: string) => boolean,
@@ -327,12 +551,12 @@ type processWithPassword = {
 
 type processWithoutPassword = {
 
-	blockBinding: (options?: processBlockBindingOptions) => boolean,
-	blockLinkedBinding: (options?: processBlockBindingOptions) => boolean,
-	blockDlopen: (options?: processBlockBindingOptions) => boolean,
+	blockBinding: (options?: processBlockBindingsOptions) => boolean,
+	blockLinkedBinding: (options?: processBlockBindingsOptions) => boolean,
+	blockDlopen: (options?: processBlockBindingsOptions) => boolean,
 
-	blockBindingLinkedBindingAndDlopen: (options?: processBlockBindingOptions) => [boolean, boolean, boolean],
-	block: (options?: processBlockBindingOptions) => [boolean, boolean, boolean],
+	blockBindingLinkedBindingAndDlopen: (options?: processBlockBindingsOptions) => [boolean, boolean, boolean],
+	block: (options?: processBlockBindingsOptions) => [boolean, boolean, boolean],
 
 	allowBinding: () => boolean,
 	allowLinkedBinding: () => boolean,
