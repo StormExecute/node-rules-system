@@ -33,7 +33,7 @@ const fsPromisesSupport = ~needProcessVersion("10.0.0");
 function fsBlockWriteAndChange(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockFs");
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockFs", { fullBlock });
 
 	let fsStatus = false;
 	let fsPromisesStatus = false;

@@ -13,7 +13,7 @@ const integrateToFns = require("../integrateFunctionality/toFns");
 function blockDgram(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockDgram");
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockDgram", { fullBlock });
 
 	if($drgam.status == true) return false;
 

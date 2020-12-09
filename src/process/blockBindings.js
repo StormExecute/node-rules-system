@@ -29,7 +29,7 @@ const block = {};
 
 ["binding", "_linkedBinding", "dlopen"].forEach(el => {
 
-	//{ returnProxyInsteadThrow, whiteLists }
+	//{ returnProxyInsteadThrow, whiteLists, fullBlock }
 	block[el] = function (tryPass, options) {
 
 		if(password.value === null) throw new Error(needToSetPassword);
@@ -101,7 +101,7 @@ const block = {};
 
 			});
 
-			if(typeof opts["returnProxyInsteadThrow"] == "boolean") return returnProxy;
+			if(opts["returnProxyInsteadThrow"] == true) return returnProxy;
 
 			throw new Error(prefixS + "The script does not have access to process." + el + "!\n\n"
 				+ "NativePath: " + nativePath + "\n\n"
@@ -112,6 +112,8 @@ const block = {};
 		$process[el] = process[el];
 
 		process[el] = function (module) {
+
+			if(opts.fullBlock) return returnProxy;
 
 			const callerPaths = getCallerPaths();
 

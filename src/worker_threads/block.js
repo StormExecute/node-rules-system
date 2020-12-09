@@ -13,7 +13,7 @@ const integrateToFns = require("../integrateFunctionality/toFns");
 function blockWorker(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockWorkerThreads");
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockWorkerThreads", { fullBlock });
 
 	if($worker_threads.status == true) return false;
 

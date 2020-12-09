@@ -13,7 +13,7 @@ const integrateToFns = require("../integrateFunctionality/toFns");
 function blockFork(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockCluster");
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockCluster", { fullBlock });
 
 	if($cluster.status == true) return false;
 

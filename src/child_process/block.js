@@ -13,7 +13,7 @@ const integrateToFns = require("../integrateFunctionality/toFns");
 function blockChildProcess(tryPass, fullBlock) {
 
 	if(password.value === null) throw new Error(needToSetPassword);
-	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockChildProcess");
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "blockChildProcess", { fullBlock });
 
 	if($childProcess.status == true) return false;
 
