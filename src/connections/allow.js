@@ -135,7 +135,7 @@ function restoreHttp(tryPass) {
 
 	if($http.status == false) return false;
 
-	restore(["Agent", "globalAgent", "ClientRequest", "get", "request"], http, $http);
+	restore(["Agent", "globalAgent", "ClientRequest", "get", "request", "Client", "createClient"], http, $http);
 
 	$http.status = false;
 
