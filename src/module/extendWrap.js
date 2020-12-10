@@ -16,16 +16,45 @@ const methods = [
 
 for (let i = 0; i < methods.length; ++i) {
 
-	module.exports[methods[i]] = function (tryPass, code) {
+	module.exports[methods[i]] = function (tryPass, id, code) {
 
 		if(password.value === null) throw new Error(needToSetPassword);
 		if(tryPass != password.value) return wrongPassEmitter(wrongPass, methods[i]);
 
-		if(typeof code != "string") return false;
+		if(typeof code != "string" || typeof id != "string") return false;
 
-		store[methods[i]].push(code);
+		store[methods[i]].push([id, code]);
 
 		return true;
+
+	}
+
+	module.exports[methods[i] + "Remove"] = function (tryPass, id) {
+
+		if(password.value === null) throw new Error(needToSetPassword);
+		if(tryPass != password.value) return wrongPassEmitter(wrongPass, methods[i] + "Remove");
+
+		if(typeof id != "string") return false;
+
+		let r = false;
+
+		for (let i = 0; i < store[methods[i]].length; ++i) {
+
+			const storeId = store[methods[i]][i][0];
+
+			if(id == storeId) {
+
+				store[methods[i]].splice(i, 1);
+
+				r = true;
+
+				break;
+
+			}
+
+		}
+
+		return r;
 
 	}
 
