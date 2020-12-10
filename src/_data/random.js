@@ -1,2 +1,10 @@
 const mathRandom = Math.random;
-module.exports = mathRandom;
+
+const getRandomSaltForVar = () => mathRandom().toString().slice(2);
+
+module.exports = {
+
+	mathRandom,
+	getRandomSaltForVar,
+
+};
