@@ -1,3 +1,5 @@
+const TerserPlugin = require('terser-webpack-plugin');
+
 const nodePath = require("path");
 
 const webpackOptions = {
@@ -19,6 +21,36 @@ const webpackOptions = {
 		"_http_agent": "_http_agent",
 		"_http_client": "_http_client",
 		"_tls_wrap": "_tls_wrap",
+
+	},
+
+	optimization: {
+
+		minimize: true,
+
+		minimizer: [
+
+			new TerserPlugin({
+
+				terserOptions: {
+
+					format: {
+
+						comments: function (_, { value }) {
+
+							if(value.match(/NODE-RULES-SYSTEM-SIGNATURE/)) return true;
+
+							return false;
+
+						},
+
+					},
+
+				},
+
+			}),
+
+		],
 
 	},
 
