@@ -67,4 +67,17 @@ module.exports.getWrapper = function (tryPass) {
 
 	return store.wrapper;
 
-}
+};
+
+module.exports.allowChangeAndUseTo = function (tryPass, filename) {
+
+	if(password.value === null) throw new Error(needToSetPassword);
+	if(tryPass != password.value) return wrongPassEmitter(wrongPass, "allowChangeAndUseTo");
+
+	if(typeof filename != "string") return false;
+
+	store.whiteFilenamesForWrap.push(filename);
+
+	return true;
+
+};
