@@ -1,9 +1,16 @@
 module.exports = {
 
-	status: false,
+	statusSecureRequire: false,
+	statusDependencyController: false,
+
+	statusPatchWrap: false,
+
+	secureRequire: null,
+
+	dependencyController: null,
+	dependencyControllerRules: null,
 
 	wrap: null,
-
-	secureRequireSecretEmitter: null,
+	wrapUtils: null,
 
 };
