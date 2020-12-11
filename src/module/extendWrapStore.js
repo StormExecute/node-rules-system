@@ -7,6 +7,10 @@ module.exports = {
 	"afterMainCode": [],
 	"afterWrapper": [],
 
+	"customCode": [],
+
+	"whiteFilenamesForWrap": [],
+
 	wrapper: [
 		'(function (exports, require, module, __filename, __dirname) { ',
 		'\n});'
