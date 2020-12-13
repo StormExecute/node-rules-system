@@ -106,6 +106,8 @@ function parseStack(errStack) {
 				endsWithTranslationSlashes(path, "/node-rules-system/src/fs/allow.js")
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/timers/restore.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/module/restore.js")
 
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/cluster/block.js")
@@ -123,6 +125,14 @@ function parseStack(errStack) {
 				endsWithTranslationSlashes(path, "/node-rules-system/src/fs/block.js")
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/timers/integrate.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/module/secureRequirePatch.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/module/dependencyController.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/module/wrap.js")
+				||
+				endsWithTranslationSlashes(path, "/node-rules-system/src/module/extendWrap.js")
 
 				||
 				endsWithTranslationSlashes(path, "/node-rules-system/src/integrateFunctionality/toFns.js")
