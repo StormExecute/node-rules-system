@@ -4,9 +4,24 @@ const { wrongPassEmitter } = require("../logs");
 
 const storeSettings = require("./store");
 
+const { randomSignChanger } = require("../module/wrap");
+
 const { $corePath } = require("../whiteListFunctionality");
 
 module.exports = {
+
+	setChangeModuleRandomSignInterval(tryPass, ms, immediately) {
+
+		if (password.value === null) throw new Error(needToSetPassword);
+		if (tryPass != password.value) return wrongPassEmitter(wrongPass, "setChangeModuleRandomSignInterval", { ms, immediately });
+
+		if(typeof ms != "number") return false;
+
+		storeSettings.changeModuleRandomSignInterval = ms;
+
+		return randomSignChanger(!!immediately);
+
+	},
 
 	throwIfWrongPassword(tryPass) {
 
