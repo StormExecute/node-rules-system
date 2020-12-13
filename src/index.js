@@ -260,9 +260,14 @@ const timers = {
 const timersStore = require("./timers/thisStore");
 timers.$fns = { get: makeGet(timersStore) };
 
-const modules = require("./module/extendWrap");
-modules.useSecureRequirePatch = require("./module/integrate");
-modules.restoreOriginalRequire = require("./module/restore");
+const modules = Object.assign(
+	{},
+	require("./module/extendWrap"),
+	require("./module/restore")
+);
+
+modules.useSecureRequirePatch = require("./module/secureRequirePatch");
+modules.useDependencyController = require("./module/dependencyController");
 
 const settings = require("./_settings/main");
 
