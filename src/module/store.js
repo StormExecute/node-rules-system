@@ -6,11 +6,10 @@ module.exports = {
 	statusPatchWrap: false,
 
 	secureRequire: null,
+	secureRequireArgsLink: null,
 
 	dependencyController: null,
-	dependencyControllerRules: null,
 
 	wrap: null,
-	wrapUtils: null,
 
 };
