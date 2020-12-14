@@ -6,6 +6,7 @@ module.exports = {
 	u: {
 
 		requireOrigin: null,
+		requireResolve: null,
 
 		originFilename: null,
 		returnProxyTemplate: null,
