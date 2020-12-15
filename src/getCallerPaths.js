@@ -1,3 +1,12 @@
+const {
+
+	ArraySplice,
+	ArrayPush,
+
+	StringMatch,
+
+} = require("./_data/primordials");
+
 const debug = require("./_debug");
 
 const timersPathsStore = require("./timers/pathsStore");
@@ -6,7 +15,7 @@ const isWindows = require("../dependencies/isWindows");
 
 const isCallerPath = !isWindows
 	? path => path && path[0] == "/"
-	: path => path && path.match(/^[a-zA-Z]:\\/);
+	: path => path && StringMatch( path, /^[a-zA-Z]:\\/ );
 
 function endsWithTranslationSlashes(str, arg) {
 
@@ -37,11 +46,19 @@ function parseStack(errStack) {
 
 	const result = [];
 
-	debug.fileNames("debugFileNames", errStack.map(el => el.getFileName()));
+	const debugFileNames = [];
+
+	for (let i = 0; i < errStack.length; ++i) {
+
+		debugFileNames[ debugFileNames.length ] = errStack[i].getFileName();
+
+	}
+
+	debug.fileNames("debugFileNames", debugFileNames);
 
 	for(let i = 0; i < errStack.length; ++i) {
 
-		const path = errStack[i].getFileName();
+		const path = debugFileNames[i];
 
 		//to skip nulls in state "inProcessScreening"
 		if(!path) continue;
@@ -153,7 +170,7 @@ function parseStack(errStack) {
 			inProcessScreening = false;
 
 			//anyway push path
-			result.push(path);
+			result[ result.length ] = path;
 
 			continue;
 
@@ -161,7 +178,7 @@ function parseStack(errStack) {
 
 		if(isCallerPath(path)) {
 
-			result.push(path);
+			result[ result.length ] = path;
 
 		} else {
 
@@ -173,7 +190,13 @@ function parseStack(errStack) {
 
 	if(parentTPId) {
 
-		const copyParent = timersPathsStore[parentTPId].slice();
+		const copyParent = [];
+
+		for (let i = 0; i < timersPathsStore[parentTPId].length; ++i) {
+
+			copyParent[ copyParent.length ] = timersPathsStore[parentTPId][i];
+
+		}
 
 		for (let i = result.length - 1; i >= 0; i--) {
 
@@ -181,7 +204,7 @@ function parseStack(errStack) {
 				!endsWithTranslationSlashes(result[i], "node-rules-system/src/timers/integrate.js")
 			) {
 
-				copyParent.splice(0, 0, result[i]);
+				ArraySplice(copyParent, 0, 0, result[i]);
 
 			}
 
