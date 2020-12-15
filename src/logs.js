@@ -1,11 +1,40 @@
+const {
+
+	ObjectAssign,
+	ArrayIsArray,
+
+	EventEmitter,
+
+} = require("./_data/primordials");
+
 const isObject = require("../dependencies/isObject");
 
 const getCallerPaths = require("./getCallerPaths");
 
 const settings = require("./_settings/store");
 
-const EventEmitter = require('events');
-class NRSLogs extends EventEmitter {}
+class NRSLogs extends EventEmitter {
+
+	onMany(eventsArray, listener) {
+
+		if(!ArrayIsArray(eventsArray)) return this;
+
+		for (let i = 0; i < eventsArray.length; ++i) {
+
+			if(typeof eventsArray[i] == "string") {
+
+				this.on(eventsArray[i], listener);
+
+			}
+
+		}
+
+		return this;
+
+	}
+
+}
+
 const logs = new NRSLogs();
 
 let recordAllLogs = false;
@@ -37,22 +66,18 @@ function logsEmitter(type, customCallerPaths, details, force) {
 
 	}
 
-	if(recordAllLogs) allLogs.push(message);
+	if(recordAllLogs || force) allLogs[ allLogs.length ] = message;
 
 	logs.emit(message.type, message);
 	logs.emit("*", message);
 
-	return force ? message : true;
+	return message;
 
 }
 
 logsEmitter.force = function (type, customCallerPaths, details) {
 
-	const message = this(type, customCallerPaths, details, true);
-
-	allLogs.push(message);
-
-	return true;
+	return this(type, customCallerPaths, details, true);
 
 };
 
@@ -119,7 +144,7 @@ module.exports = {
 				if (password.value === null) throw new Error(needToSetPassword);
 				if (tryPass != password.value) return wrongPassEmitter(wrongPass, "getAllLogs");
 
-				return Object.assign([], allLogs);
+				return ObjectAssign([], allLogs);
 
 			},
 
