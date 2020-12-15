@@ -4,13 +4,68 @@ const primordialsStore = require("http");
 //if this is the first launch
 if(!primordialsStore["NRS_PRIMORDIALS"]) {
 
+	const tempApply = Reflect.apply;
+	const tempHasOwnProperty = Object.prototype.hasOwnProperty;
+
+	function cloneFn(fn) {
+
+		const that = fn;
+
+		const temp = function temporary() {
+
+			return !new.target ? tempApply(that, this, arguments) : new that(...arguments)
+
+		};
+
+		for(const key in fn) {
+
+			if( Reflect.apply( tempHasOwnProperty, fn, [key] ) ) {
+
+				temp[key] = fn[key];
+
+			}
+
+		}
+
+		for(const key in fn.prototype) {
+
+			if( Reflect.apply( tempHasOwnProperty, fn.prototype, [key] ) ) {
+
+				temp.prototype[key] = fn.prototype[key];
+
+			}
+
+		}
+
+		return temp;
+
+	}
+
+	const EventEmitter = cloneFn(require("events"));
+	const { join, resolve } = require("path");
+
+	Object.freeze(EventEmitter.prototype);
+	Object.freeze(EventEmitter);
+
 	Object.defineProperty(primordialsStore, "NRS_PRIMORDIALS", {
 
+		enumerable: true,
+
 		value: Object.freeze({
+
+			processArgv: Object.assign([], process.argv),
+
+			nodePathJoin: join,
+			nodePathResolve: resolve,
+
+			EventEmitter,
+
+			Proxy,
 
 			String,
 			StringPrototypeMatch: String.prototype.match,
 			StringPrototypeReplace: String.prototype.replace,
+			StringPrototypeSlice: String.prototype.slice,
 
 			StringMatch: (string, matchRegex) => {
 
@@ -28,6 +83,17 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 					primordialsStore["NRS_PRIMORDIALS"].StringPrototypeReplace,
 					string,
 					[regexp, newSubStr]
+				);
+
+			},
+
+
+			StringSlice: (string, ...args) => {
+
+				return primordialsStore["NRS_PRIMORDIALS"].ReflectApply(
+					primordialsStore["NRS_PRIMORDIALS"].StringPrototypeSlice,
+					string,
+					args
 				);
 
 			},
@@ -65,6 +131,7 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 			ArrayPrototypeSlice: Array.prototype.slice,
 			ArrayPrototypeSplice: Array.prototype.splice,
 			ArrayPrototypeJoin: Array.prototype.join,
+			ArrayPrototypeConcat: Array.prototype.concat,
 
 			ArrayForEach: (array, callbackFn) => {
 
@@ -106,6 +173,16 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 
 			},
 
+			ArrayConcat: (array, ...args) => {
+
+				return primordialsStore["NRS_PRIMORDIALS"].ReflectApply(
+					primordialsStore["NRS_PRIMORDIALS"].ArrayPrototypeConcat,
+					array,
+					args
+				);
+
+			},
+
 			ArrayIndexOf: (array, searchElement) => {
 
 				//fromIndex not needed
@@ -138,8 +215,11 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 			ObjectPrototypeToString: Object.prototype.toString,
 
 			ReflectApply: Reflect.apply,
+
 			MathRandom: Math.random,
+
 			SetTimeout: setTimeout,
+			ClearTimeout: clearTimeout,
 
 		})
 
