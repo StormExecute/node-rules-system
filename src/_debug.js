@@ -1,3 +1,5 @@
+const { processArgv } = require("./_data/primordials");
+
 const debugMethods = ["integrate", "getCallerPaths", "fileNames", "timers", "other"];
 const debugShortMethods = ["debugI", "debugP", "debugF", "debugT", "debugO"];
 
@@ -29,7 +31,19 @@ class debugC {
 
 	haveArg(arg) {
 
-		return !!process.argv.filter(el => el == "--nrs-" + arg).length || process.env[arg];
+		if(process.env[arg]) return true;
+
+		for (let i = 0; i < processArgv.length; ++i) {
+
+			if( processArgv[i] == "--nrs-" + arg ) {
+
+				return true;
+
+			}
+
+		}
+
+		return false;
 
 	}
 
