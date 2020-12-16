@@ -53,6 +53,7 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 
 		value: Object.freeze({
 
+			execArgv: Object.assign([], process.execArgv),
 			processArgv: Object.assign([], process.argv),
 
 			nodePathJoin: join,
@@ -66,6 +67,7 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 			StringPrototypeMatch: String.prototype.match,
 			StringPrototypeReplace: String.prototype.replace,
 			StringPrototypeSlice: String.prototype.slice,
+			StringPrototypeToUpperCase: String.prototype.toUpperCase,
 
 			StringMatch: (string, matchRegex) => {
 
@@ -98,6 +100,16 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 
 			},
 
+			StringToUpperCase: string => {
+
+				return primordialsStore["NRS_PRIMORDIALS"].ReflectApply(
+					primordialsStore["NRS_PRIMORDIALS"].StringPrototypeToUpperCase,
+					string,
+					[]
+				);
+
+			},
+
 			StringIncludes: (string, argument) => {
 
 				//argument is 100% string > 0
@@ -121,6 +133,22 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 				}
 
 				return false;
+
+			},
+
+			StringStartsWith: (str, arg) => {
+
+				if(!arg || arg.length > str.length) return false;
+
+				for (let i = 0; i < str.length; ++i) {
+
+					if( (i + 1) > arg.length ) break;
+
+					if( str[i] != arg[i] ) return false;
+
+				}
+
+				return true;
 
 			},
 
