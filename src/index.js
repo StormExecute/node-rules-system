@@ -1,3 +1,13 @@
+const {
+
+	execArgv,
+
+	ObjectDefineProperty,
+	ObjectFreeze,
+	ObjectAssign,
+
+} = require("./_data/primordials");
+
 const makeGet = require("./getFunctionality");
 
 const getWhiteListFunctionality = function (fns) {
@@ -146,7 +156,7 @@ let worker_threads;
 const needProcessVersion = require("../dependencies/needProcessVersion");
 
 if(
-	(~require("process").execArgv.indexOf("--experimental-worker") && ~needProcessVersion("10.5.0"))
+	(~execArgv.indexOf("--experimental-worker") && ~needProcessVersion("10.5.0"))
 	||
 	~needProcessVersion("11.7.0")
 ) {
@@ -260,7 +270,7 @@ const timers = {
 const timersStore = require("./timers/thisStore");
 timers.$fns = { get: makeGet(timersStore) };
 
-const modules = Object.assign(
+const modules = ObjectAssign(
 	{},
 	require("./module/extendWrap"),
 	require("./module/restore")
@@ -287,7 +297,27 @@ const { setSecure, setSecureEnable, setSecureDisable } = makeSetSecure(
 
 const isReturnProxy = require("./isReturnProxy");
 
-module.exports = {
+const freeze = object => {
+
+	for(const prop in object) {
+
+		const value = object[prop];
+
+		//we also prohibit writing properties to functions
+		ObjectFreeze(value);
+
+		//to correct ObjectDefineProperty
+		delete object[prop];
+
+		ObjectDefineProperty(object, prop, { enumerable: true, value });
+
+	}
+
+	return object;
+
+};
+
+module.exports = freeze({
 
 	getAllLogs,
 	getLogsEmitter,
@@ -374,4 +404,4 @@ module.exports = {
 
 	isReturnProxy,
 
-};
+});
