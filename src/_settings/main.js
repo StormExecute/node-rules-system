@@ -1,5 +1,7 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
 
+const { ObjectAssign } = require("../_data/primordials");
+
 const { wrongPassEmitter } = require("../logs");
 
 const storeSettings = require("./store");
@@ -9,6 +11,15 @@ const { randomSignChanger } = require("../module/wrap");
 const { $corePath } = require("../whiteListFunctionality");
 
 module.exports = {
+
+	get(tryPass) {
+
+		if (password.value === null) throw new Error(needToSetPassword);
+		if (tryPass != password.value) return wrongPassEmitter(wrongPass, "getSettings");
+
+		return ObjectAssign({}, storeSettings);
+
+	},
 
 	setChangeModuleRandomSignInterval(tryPass, ms, immediately) {
 
