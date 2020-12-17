@@ -21,6 +21,19 @@ module.exports = {
 
 	},
 
+	useIsCallerPathInsteadTrustedAllowList(tryPass, status) {
+
+		if (password.value === null) throw new Error(needToSetPassword);
+		if (tryPass != password.value) return wrongPassEmitter(wrongPass, "useIsCallerPathInsteadTrustedAllowList", { status });
+
+		if(typeof status != "boolean") return false;
+
+		storeSettings.useIsCallerPathInsteadTrustedAllowList = status;
+
+		return true;
+
+	},
+
 	setChangeModuleRandomSignInterval(tryPass, ms, immediately) {
 
 		if (password.value === null) throw new Error(needToSetPassword);
