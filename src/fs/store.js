@@ -1,3 +1,5 @@
+const { ArrayConcat } = require("../_data/primordials");
+
 const $fs = {
 
 	status: false,
@@ -196,6 +198,8 @@ const $fsPromisesList = [
 
 ];
 
+const $fsPromisesListWithOpen = ArrayConcat( $fsPromisesList, [ "open" ] );
+
 module.exports = {
 
 	$fs,
@@ -203,5 +207,6 @@ module.exports = {
 
 	$fsList,
 	$fsPromisesList,
+	$fsPromisesListWithOpen,
 
 };

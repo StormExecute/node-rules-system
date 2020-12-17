@@ -11,6 +11,7 @@ const {
 
 	$fsList,
 	$fsPromisesList,
+	$fsPromisesListWithOpen,
 
 } = require("./store");
 
@@ -38,7 +39,7 @@ function fsAllowWriteAndChange(tryPass) {
 
 	if(fsPromisesSupport && $fsPromises.status == true) {
 
-		restore($fsPromisesList.concat( [ "open" ] ), fs.promises, $fsPromises);
+		restore($fsPromisesListWithOpen, fs.promises, $fsPromises);
 
 		fsPromisesStatus = true;
 		$fsPromises.status = false;
