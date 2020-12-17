@@ -43,6 +43,7 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 
 	const EventEmitter = cloneFn(require("events"));
 	const { join, resolve } = require("path");
+	const { existsSync } = require("fs");
 
 	Object.freeze(EventEmitter.prototype);
 	Object.freeze(EventEmitter);
@@ -56,8 +57,12 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 			execArgv: Object.assign([], process.execArgv),
 			processArgv: Object.assign([], process.argv),
 
+			consoleLog: console.log,
+
 			nodePathJoin: join,
 			nodePathResolve: resolve,
+
+			fsExistsSync: existsSync,
 
 			EventEmitter,
 
