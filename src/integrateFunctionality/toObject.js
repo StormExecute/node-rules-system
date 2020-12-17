@@ -1,3 +1,5 @@
+const { ArrayIndexOf } = require("../_data/primordials");
+
 const checkAccess = require("./checkAccess");
 
 const getCallerPaths = require("../getCallerPaths");
@@ -40,7 +42,7 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 
 			debug.integrate("toObj->true", name, prop, callerPaths);
 
-			if(~allowList.indexOf(callerPaths[0])) return backup[name][prop];
+			if( ~ArrayIndexOf( allowList, callerPaths[0] ) ) return backup[name][prop];
 
 			for(let i = 0; i < whiteList.length; ++i) {
 

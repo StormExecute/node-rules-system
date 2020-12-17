@@ -1,10 +1,12 @@
+const { StringMatch } = require("./_data/primordials");
+
 function getCallerFnName() {
 
 	const error = new Error();
 
-	const allMatches = error.stack.match(/(\w+)@|at (\w+) \(/g);
+	const allMatches = StringMatch( error.stack, /(\w+)@|at (\w+) \(/g );
 
-	const parentMatches = allMatches[2].match(/(\w+)@|at (\w+) \(/);
+	const parentMatches = StringMatch( allMatches[2], /(\w+)@|at (\w+) \(/ );
 
 	return parentMatches[1] || parentMatches[2];
 

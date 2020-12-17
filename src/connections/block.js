@@ -1,5 +1,12 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
 
+const {
+
+	String,
+	StringMatch,
+
+} = require("../_data/primordials");
+
 const { wrongPassEmitter } = require("../logs");
 
 const { whiteList } = require("./addToWhiteList");
@@ -41,7 +48,7 @@ function integrateToTls(tryPass, fullBlock) {
 
 	integrateToFns(whiteList, ["connect"], tls, $tls, ["https.js", "internal/http2/core.js"], fullBlock);
 
-	if(!tls.TLSSocket.prototype.connect.toString().match(/\/\/NODE-RULES-SYSTEM-SIGNATURE/)) {
+	if( !StringMatch( String(tls.TLSSocket.prototype.connect), /\/\/NODE-RULES-SYSTEM-SIGNATURE/ ) ) {
 
 		integrateToProtoFn(whiteList, "connect", tls.TLSSocket, $tls, "socketProtoConnect", ["net.js", "_tls_wrap.js", "https.js"], fullBlock);
 
@@ -60,7 +67,7 @@ function integrateToTlsWrap(tryPass, fullBlock) {
 
 	integrateToFns(whiteList, ["connect"], _tls_wrap, _tls, ["https.js", "internal/http2/core.js"], fullBlock);
 
-	if(!_tls_wrap.TLSSocket.prototype.connect.toString().match(/\/\/NODE-RULES-SYSTEM-SIGNATURE/)) {
+	if( !StringMatch( String(_tls_wrap.TLSSocket.prototype.connect), /\/\/NODE-RULES-SYSTEM-SIGNATURE/ ) ) {
 
 		integrateToProtoFn(whiteList, "connect", _tls_wrap.TLSSocket, _tls, "socketProtoConnect", ["net.js", "_tls_wrap.js", "https.js"], fullBlock);
 
@@ -81,7 +88,7 @@ function integrateToNet(tryPass, fullBlock) {
 
 	integrateToProtoFn(whiteList, "connect", net.Socket, $net, "SocketPrototypeConnect", ["net.js", "_tls_wrap.js"], fullBlock);
 
-	if(!net.Stream.prototype.connect.toString().match(/\/\/NODE-RULES-SYSTEM-SIGNATURE/)) {
+	if( !StringMatch( String(net.Stream.prototype.connect), /\/\/NODE-RULES-SYSTEM-SIGNATURE/ ) ) {
 
 		integrateToProtoFn(whiteList, "connect", net.Stream, $net, "StreamPrototypeConnect", ["net.js", "_tls_wrap.js"], fullBlock);
 

@@ -1,5 +1,7 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
 
+const { ArrayForEach } = require("../_data/primordials");
+
 const { wrongPassEmitter } = require("../logs");
 
 const tls = require('tls');
@@ -81,7 +83,7 @@ function restoreNet(tryPass) {
 
 	restore(["connect", "createConnection", "createQuicSocket"], net, $net);
 
-	["Socket", "Stream"].forEach(el => {
+	ArrayForEach(["Socket", "Stream"], el => {
 
 		if($net[el + "PrototypeConnect"]) {
 

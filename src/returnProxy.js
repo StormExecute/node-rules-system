@@ -1,3 +1,5 @@
+const { Proxy } = require("./_data/primordials");
+
 const get = (_, prop) => {
 
 	if(prop == Symbol.toPrimitive) {

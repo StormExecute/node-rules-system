@@ -1,6 +1,17 @@
 const { prefixS } = require("../_data");
 const { password, needToSetPassword, wrongPass } = require("../password");
 
+const {
+
+	ObjectAssign,
+
+	ArrayIsArray,
+	ArrayForEach,
+	ArraySlice,
+	ArrayJoin,
+
+} = require("../_data/primordials");
+
 const checkAccess = require("../integrateFunctionality/checkAccess");
 
 const getCallerPaths = require("../getCallerPaths");
@@ -27,7 +38,7 @@ const $process = require("./storeBindings");
 
 const block = {};
 
-["binding", "_linkedBinding", "dlopen"].forEach(el => {
+ArrayForEach(["binding", "_linkedBinding", "dlopen"], el => {
 
 	//{ returnProxyInsteadThrow, whiteLists, fullBlock }
 	block[el] = function (tryPass, options) {
@@ -45,12 +56,12 @@ const block = {};
 		if(el == "_linkedBinding" && $process.statusLinkedBinding == true) return false;
 		if(el == "dlopen" && $process.statusDlopen == true) return false;
 
-		const opts = isObject(options) ? Object.assign({}, options) : {};
+		const opts = isObject(options) ? ObjectAssign({}, options) : {};
 
 		const whiteList = [];
 		whiteList.name = el;
 
-		if(Array.isArray(opts["whiteLists"])) {
+		if(ArrayIsArray(opts["whiteLists"])) {
 
 			for (let i = 0; i < opts["whiteLists"].length; ++i) {
 
@@ -58,7 +69,7 @@ const block = {};
 
 				if(isObject(wList)) {
 
-					if (typeof wList["type"] == "string" && Array.isArray(wList.list)) {
+					if (typeof wList["type"] == "string" && ArrayIsArray(wList.list)) {
 
 						if (wList["type"] == "custom") {
 
@@ -105,7 +116,7 @@ const block = {};
 
 			throw new Error(prefixS + "The script does not have access to process." + el + "!\n\n"
 				+ "NativePath: " + nativePath + "\n\n"
-				+ "CallerPaths: " + callerPaths.slice(1).join(", ") ) + "\n\n";
+				+ "CallerPaths: " + ArrayJoin( ArraySlice(callerPaths, 1), ", ") ) + "\n\n";
 
 		}
 

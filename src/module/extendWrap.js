@@ -1,4 +1,7 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
+
+const { ArraySplice } = require("../_data/primordials");
+
 const { wrongPassEmitter } = require("../logs");
 
 const store = require("./extendWrapStore");
@@ -23,7 +26,7 @@ for (let i = 0; i < methods.length; ++i) {
 
 		if(typeof code != "string" || typeof id != "string") return false;
 
-		store[methods[i]].push([id, code]);
+		store[methods[i]][ store[methods[i]].length ] = [id, code];
 
 		return true;
 
@@ -44,7 +47,7 @@ for (let i = 0; i < methods.length; ++i) {
 
 			if(id == storeId) {
 
-				store[methods[i]].splice(i, 1);
+				ArraySplice( store[methods[i]], i, 1 );
 
 				r = true;
 
@@ -76,7 +79,7 @@ module.exports.allowChangeAndUseTo = function (tryPass, filename) {
 
 	if(typeof filename != "string") return false;
 
-	store.whiteFilenamesForWrap.push(filename);
+	store.whiteFilenamesForWrap[ store.whiteFilenamesForWrap.length ] = filename;
 
 	return true;
 

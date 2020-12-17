@@ -1,5 +1,7 @@
 const { password, needToSetPassword, wrongPass } = require("./password");
 
+const { ArrayIsArray } = require("./_data/primordials");
+
 const { wrongPassEmitter } = require("./logs");
 
 module.exports = function makeSetSecure (
@@ -13,7 +15,7 @@ module.exports = function makeSetSecure (
 		if(password.value === null) throw new Error(needToSetPassword);
 		if(tryPass != password.value) return wrongPassEmitter(wrongPass, "setSecure", { status, secureElements });
 
-		if(!Array.isArray(secureElements)) secureElements = [];
+		if(!ArrayIsArray(secureElements)) secureElements = [];
 
 		const elements = [];
 
@@ -21,7 +23,7 @@ module.exports = function makeSetSecure (
 
 			if(typeof secureElements[i] == "string") {
 
-				elements.push(secureElements[i]);
+				elements[elements.length] = secureElements[i];
 
 			}
 
@@ -69,7 +71,7 @@ module.exports = function makeSetSecure (
 
 			if(method == null) {
 
-				results.push(null);
+				results[ results.length ] = null;
 
 				continue;
 
@@ -79,7 +81,7 @@ module.exports = function makeSetSecure (
 				? method == timers ? "integrate" : "block"
 				: method == timers ? "restore" : "allow";
 
-			results.push( method[action](tryPass) );
+			results[ results.length ] = method[action](tryPass);
 
 		}
 

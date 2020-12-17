@@ -1,3 +1,10 @@
+const {
+
+	ArrayIndexOf,
+	ReflectApply,
+
+} = require("../_data/primordials");
+
 const checkAccess = require("./checkAccess");
 
 const getCallerPaths = require("../getCallerPaths");
@@ -40,9 +47,9 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 
 		debug.integrate("toProtoFn->true", callerPaths);
 
-		if(~allowList.indexOf(callerPaths[0])) {
+		if( ~ArrayIndexOf( allowList, callerPaths[0] ) ) {
 
-			return backup[backupProp].apply(this, args);
+			return ReflectApply(backup[backupProp], this, args);
 
 		}
 
@@ -112,7 +119,7 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 
 				});
 
-				return backup[backupProp].apply(this, args);
+				return ReflectApply(backup[backupProp], this, args);
 
 			}
 

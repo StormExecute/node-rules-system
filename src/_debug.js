@@ -1,4 +1,9 @@
-const { processArgv } = require("./_data/primordials");
+const {
+
+	processArgv,
+	consoleLog,
+
+} = require("./_data/primordials");
 
 const debugMethods = ["integrate", "getCallerPaths", "fileNames", "timers", "other"];
 const debugShortMethods = ["debugI", "debugP", "debugF", "debugT", "debugO"];
@@ -6,8 +11,6 @@ const debugShortMethods = ["debugI", "debugP", "debugF", "debugT", "debugO"];
 class debugC {
 
 	constructor() {
-
-		this.consoleLog = console.log;
 
 		if(this.haveArg("debugAll")) {
 
@@ -49,7 +52,7 @@ class debugC {
 
 	log() {
 
-		this.consoleLog(...arguments);
+		consoleLog(...arguments);
 
 		return true;
 
@@ -61,7 +64,7 @@ class debugC {
 
 		this["inProcessLog" + method] = true;
 
-		this.consoleLog(...args);
+		consoleLog(...args);
 
 		this["inProcessLog" + method] = false;
 

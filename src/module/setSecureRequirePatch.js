@@ -1,3 +1,5 @@
+const { JSONStringify } = require("../_data/primordials");
+
 const $Module = require("./store");
 
 const wrapStore = require("./wrapStore");
@@ -25,7 +27,7 @@ const setSecureRequirePatch = whiteFilenamesParsed => {
 $Module.secureRequire = `
 	const ${originRequire} = require;${!whiteFilenamesParsed.length ? "" : `
 	
-	const ${whiteFilenamesParsedTemplate} = ${ JSON.stringify( whiteFilenamesParsed ) }
+	const ${whiteFilenamesParsedTemplate} = ${ JSONStringify( whiteFilenamesParsed ) }
 	
 `}
 	
@@ -33,27 +35,43 @@ $Module.secureRequire = `
 	
 		if(typeof path != "string") return ${originRequire}(path);
 	
-		if( ~${ wrapStore.u.requireOrigin }("module").builtinModules.indexOf(path) ) {
-		
-			return ${originRequire}(path);
-		
-		}
+		if( 
+				~${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"].ArrayIndexOf(
+					${ wrapStore.u.requireOrigin }("module").builtinModules,
+					path
+				)
+			) {
+			
+				return ${originRequire}(path);
+			
+			}
 	
 		//if require was called from node_modules
-		if( ${ wrapStore.u.originFilename }.includes("/node_modules") ) {
+		if( 
+			${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"].StringIncludes(
+				${ wrapStore.u.originFilename },
+				"/node_modules"
+			)
+		) {
 		
-			const fastResolvePath = ${originRequire}.resolve( path );
+			const fastResolvePath = ${ wrapStore.u.requireResolve }( path );
 			
 			//NOTE: DO NOT USE COMMENTS WITH QUOTES, BECAUSE THIS VIOLATES PARSING IN parseRandomInCode.
 			//ALSO: DO NOT ADD WAYS TO FIX THIS FEATURE, AS THIS WILL AFFECT THE PARSING SPEED.
 			//if fastResolvePath doesnt extend beyond node_modules
 			if(
-				fastResolvePath.includes("/node_modules")
+				${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"].StringIncludes(
+					fastResolvePath,
+					"/node_modules"
+				)
 				||
 				(
 					typeof ${whiteFilenamesParsedTemplate} != "undefined"
 					&&
-					~${whiteFilenamesParsedTemplate}.indexOf( ${ wrapStore.u.originFilename } )
+					~${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"].ArrayIndexOf(
+						${whiteFilenamesParsedTemplate},
+						${ wrapStore.u.originFilename } 
+					)
 				)
 			) {
 			

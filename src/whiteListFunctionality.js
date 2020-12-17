@@ -1,9 +1,19 @@
 const { password, needToSetPassword, wrongPass } = require("./password");
 
-const { logsEmitter, wrongPassEmitter } = require("./logs");
+const {
 
-const fs = require("fs");
-const nodePath = require("path");
+	ArrayIsArray,
+
+	StringStartsWith,
+
+	nodePathJoin,
+	nodePathResolve,
+
+	fsExistsSync,
+
+} = require("./_data/primordials");
+
+const { logsEmitter, wrongPassEmitter } = require("./logs");
 
 const isObject = require("../dependencies/isObject");
 
@@ -33,9 +43,9 @@ function findCorePath(path, lastPath) {
 
 	const cwd = path || process.cwd();
 
-	if(fs.existsSync(cwd + pathDelimiter + "package.json")) return withLastDelimiter(cwd);
+	if(fsExistsSync(cwd + pathDelimiter + "package.json")) return withLastDelimiter(cwd);
 
-	const newPath = nodePath.resolve(cwd, "..");
+	const newPath = nodePathResolve(cwd, "..");
 
 	if(newPath == lastPath) return withLastDelimiter(process.cwd());
 
@@ -51,7 +61,7 @@ function dep(path) {
 
 	if(typeof path != "string") return false;
 
-	if(path.startsWith($corePath.value)) {
+	if(StringStartsWith( path, $corePath.value )) {
 
 		return nm() + path;
 
@@ -67,7 +77,7 @@ function depD(path) {
 
 	if(typeof path != "string") return false;
 
-	if(path.startsWith($corePath.value)) {
+	if(StringStartsWith( path, $corePath.value )) {
 
 		return withLastDelimiter(nm() + path);
 
@@ -83,7 +93,7 @@ function core(path) {
 
 	if(typeof path != "string") return false;
 
-	if(path.startsWith($corePath.value)) return path;
+	if(StringStartsWith( path, $corePath.value )) return path;
 
 	return $corePath.value + path;
 
@@ -93,7 +103,7 @@ function coreD(path) {
 
 	if(typeof path != "string") return false;
 
-	if(path.startsWith($corePath.value)) return path;
+	if(StringStartsWith( path, $corePath.value )) return path;
 
 	return withLastDelimiter($corePath.value + path);
 
@@ -116,7 +126,7 @@ function emitWhiteList(grantRights, whiteList, args) {
 
 function parseWhiteListArg(whiteList, arg, preFn, result) {
 
-	if(Array.isArray(arg)) {
+	if(ArrayIsArray(arg)) {
 
 		const paths = [];
 
@@ -125,8 +135,8 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 			if(typeof arg[i] == "string") {
 
 				typeof preFn == "function"
-					? paths.push( preFn( arg[i] ) )
-					: paths.push( arg[i] )
+					? paths[ paths.length ] = preFn( arg[i] )
+					: paths[ paths.length ] = arg[i]
 
 			}
 
@@ -136,7 +146,7 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 
 			!result && (result = true);
 
-			whiteList.push({
+			whiteList[ whiteList.length ] = {
 
 				customHandler: null,
 				paths,
@@ -148,7 +158,7 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 				whiteListDomains: null,
 				blackListDomains: null,
 
-			});
+			};
 
 		}
 
@@ -156,7 +166,7 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 
 		!result && (result = true);
 
-		whiteList.push({
+		whiteList[ whiteList.length ] = {
 
 			customHandler: null,
 			paths: [ typeof preFn == "function" ? preFn(arg) : arg ],
@@ -168,7 +178,7 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 			whiteListDomains: null,
 			blackListDomains: null,
 
-		});
+		};
 
 	} else if(isObject(arg)) {
 
@@ -176,15 +186,15 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 			? [typeof preFn == "function" ? preFn(arg.paths) : arg.paths]
 			: [];
 
-		if(Array.isArray(arg.paths)) {
+		if(ArrayIsArray(arg.paths)) {
 
 			for(let i = 0; i < arg.paths.length; ++i) {
 
 				if(typeof arg.paths[i] == "string") {
 
 					typeof preFn == "function"
-						? paths.push( preFn( arg.paths[i] ) )
-						: paths.push( arg.paths[i] )
+						? paths[ paths.length ] = preFn( arg.paths[i] )
+						: paths[ paths.length ] = arg.paths[i]
 
 				}
 
@@ -196,15 +206,15 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 			? [typeof preFn == "function" ? preFn(arg.blackPaths) : arg.blackPaths]
 			: [];
 
-		if(Array.isArray(arg.blackPaths)) {
+		if(ArrayIsArray(arg.blackPaths)) {
 
 			for(let i = 0; i < arg.blackPaths.length; ++i) {
 
 				if(typeof arg.blackPaths[i] == "string") {
 
 					typeof preFn == "function"
-						? blackPaths.push( preFn( arg.blackPaths[i] ) )
-						: blackPaths.push( arg.blackPaths[i] )
+						? blackPaths[ paths.length ] = preFn( arg.blackPaths[i] )
+						: blackPaths[ paths.length ] = arg.blackPaths[i]
 
 				}
 
@@ -216,13 +226,13 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 			? [arg.whiteListDomains]
 			: [];
 
-		if(Array.isArray(arg.whiteListDomains)) {
+		if(ArrayIsArray(arg.whiteListDomains)) {
 
 			for(let i = 0; i < arg.whiteListDomains.length; ++i) {
 
 				if(typeof arg.whiteListDomains[i] == "string") {
 
-					whiteListDomains.push( arg.whiteListDomains[i] )
+					whiteListDomains[ whiteListDomains.length ] = arg.whiteListDomains[i];
 
 				}
 
@@ -234,13 +244,13 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 			? [arg.blackListDomains]
 			: [];
 
-		if(Array.isArray(arg.blackListDomains)) {
+		if(ArrayIsArray(arg.blackListDomains)) {
 
 			for(let i = 0; i < arg.blackListDomains.length; ++i) {
 
 				if(typeof arg.blackListDomains[i] == "string") {
 
-					blackListDomains.push( arg.blackListDomains[i] )
+					blackListDomains[ blackListDomains.length ] = arg.blackListDomains[i];
 
 				}
 
@@ -248,25 +258,21 @@ function parseWhiteListArg(whiteList, arg, preFn, result) {
 
 		}
 
-		if(paths.length) {
+		!result && (result = true);
 
-			!result && (result = true);
+		whiteList[ whiteList.length ] = {
 
-			whiteList.push({
+			customHandler: typeof arg.customHandler == "function" ? arg.customHandler : null,
+			paths,
+			blackPaths,
+			whiteListDomains,
+			blackListDomains,
+			callerFnName: typeof arg.callerFnName == "string" ? arg.callerFnName : null,
+			onlyWhited: typeof arg.onlyWhited == "boolean" ? arg.onlyWhited : null,
+			everyWhite: typeof arg.everyWhite == "boolean" ? arg.everyWhite : null,
+			fullIdentify: typeof arg.fullIdentify == "boolean" ? arg.fullIdentify : null,
 
-				customHandler: typeof arg.customHandler == "function" ? arg.customHandler : null,
-				paths,
-				blackPaths,
-				whiteListDomains,
-				blackListDomains,
-				callerFnName: typeof arg.callerFnName == "string" ? arg.callerFnName : null,
-				onlyWhited: typeof arg.onlyWhited == "boolean" ? arg.onlyWhited : null,
-				everyWhite: typeof arg.everyWhite == "boolean" ? arg.everyWhite : null,
-				fullIdentify: typeof arg.fullIdentify == "boolean" ? arg.fullIdentify : null,
-
-			});
-
-		}
+		};
 
 	}
 
@@ -329,7 +335,7 @@ function addPathsToWhiteList(whiteList, tryPass, argsArray) {
 
 	return addToWhiteList(whiteList, path => {
 
-		return nodePath.join($corePath.value, path);
+		return nodePathJoin($corePath.value, path);
 
 	}, argsArray);
 
@@ -348,11 +354,11 @@ function addDependencyAndPathsToWhiteList(whiteList, tryPass, argsArray) {
 
 			dependencyI = false;
 
-			return withLastDelimiter( nodePath.join($corePath.value + nm(), path) );
+			return withLastDelimiter( nodePathJoin($corePath.value + nm(), path) );
 
 		}
 
-		return nodePath.join($corePath.value, path);
+		return nodePathJoin($corePath.value, path);
 
 	}, argsArray);
 
@@ -371,11 +377,11 @@ function addDependencyPathAndProjectPathsToWhiteList(whiteList, tryPass, argsArr
 
 			dependencyI = false;
 
-			return nodePath.join($corePath.value + nm(), path);
+			return nodePathJoin($corePath.value + nm(), path);
 
 		}
 
-		return nodePath.join($corePath.value, path);
+		return nodePathJoin($corePath.value, path);
 
 	}, argsArray);
 

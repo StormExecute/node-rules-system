@@ -1,3 +1,10 @@
+const {
+
+	ArrayIndexOf,
+	ReflectApply,
+
+} = require("../_data/primordials");
+
 const isObject = require("../../dependencies/isObject");
 
 const tls = require('tls');
@@ -21,7 +28,9 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 	allowList = allowList || [];
 
-	fnArray.forEach(el => {
+	for (let i = 0; i < fnArray.length; ++i) {
+
+		const el = fnArray[i];
 
 		backup[el] = origin[el];
 
@@ -52,21 +61,23 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 			debug.integrate("toFns->true", el, callerPaths);
 
-			if(~allowList.indexOf(callerPaths[0])) {
+			if( ~ArrayIndexOf( allowList, callerPaths[0] ) ) {
 
 				//dont emit
 
-				return new.target ? new backup[el](...arguments) : backup[el].apply(this, arguments);
+				return new.target
+					? new backup[el](...arguments)
+					: ReflectApply(backup[el], this, arguments);
 
 			}
 
-			for(let i = 0; i < whiteList.length; ++i) {
+			for(let j = 0; j < whiteList.length; ++j) {
 
 				const {
 
 					customHandler,
 
-				} = whiteList[i];
+				} = whiteList[j];
 
 				let access = false;
 
@@ -91,10 +102,10 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 						whiteListDomains,
 						blackListDomains,
 
-					} = whiteList[i];
+					} = whiteList[j];
 
 					const wLD = (whiteListDomains && whiteListDomains.length);
-					const bLD = (blackListDomains && blackListDomains.length)
+					const bLD = (blackListDomains && blackListDomains.length);
 
 					if(
 						wLD
@@ -151,9 +162,9 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 								skipByDomains = true;
 
-								for (let j = 0; j < whiteListDomains.length; ++j) {
+								for (let k = 0; k < whiteListDomains.length; ++k) {
 
-									if(whiteListDomains[j] == url) {
+									if(whiteListDomains[k] == url) {
 
 										skipByDomains = false;
 
@@ -166,9 +177,9 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 							} else {
 
 								//bLD
-								for (let j = 0; j < blackListDomains.length; ++j) {
+								for (let k = 0; k < blackListDomains.length; ++k) {
 
-									if(blackListDomains[j]) {
+									if(blackListDomains[k]) {
 
 										skipByDomains = true;
 
@@ -196,7 +207,7 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 						everyWhite,
 						fullIdentify,
 
-					} = whiteList[i];
+					} = whiteList[j];
 
 					access = checkAccess({
 
@@ -227,7 +238,9 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 					});
 
-					return new.target ? new backup[el](...arguments): backup[el].apply(this, arguments);
+					return new.target
+						? new backup[el](...arguments):
+						ReflectApply(backup[el], this, arguments);
 
 				}
 
@@ -250,7 +263,7 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 		};
 
-	});
+	};
 
 }
 

@@ -71,14 +71,22 @@ $Module.dependencyController = `
 		
 			if(typeof path != "string") return ${originalRequire}(path);
 			
-			if( ~${ wrapStore.u.requireOrigin }("module").builtinModules.indexOf(path) ) {
+			if( 
+				~${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"].ArrayIndexOf(
+					${ wrapStore.u.requireOrigin }("module").builtinModules,
+					path
+				)
+			) {
 			
 				return ${originalRequire}(path);
 			
 			}
 			
 			if(
-				path.match( /^[^._][a-zA-Z0-9._-]+$|^[a-zA-Z0-9-]$/ )
+				${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"].StringMatch(
+					path,
+					/^[^._][a-zA-Z0-9._-]+$|^[a-zA-Z0-9-]$/
+				)
 				&&
 				global[ "${ wrapStore.dRules }" ][ ${dependencyName} ]
 			) {

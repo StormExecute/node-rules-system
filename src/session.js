@@ -1,5 +1,12 @@
 const { password, mustBeString, wrongPass } = require("./password");
 
+const {
+
+	ObjectAssign,
+	ArrayForEach,
+
+} = require("./_data/primordials");
+
 const { logsEmitter, wrongPassEmitter } = require("./logs");
 
 const standardMethods = [
@@ -43,7 +50,7 @@ const makeSession = function (
 
 			getConfigs() {
 
-				return Object.assign({}, $sessionConfigs);
+				return ObjectAssign({}, $sessionConfigs);
 
 			},
 
@@ -268,7 +275,7 @@ const makeSession = function (
 
 				factory[fnProp](tryPass, ...args);
 
-				return Object.assign({}, $session);
+				return ObjectAssign({}, $session);
 
 			} else {
 
@@ -284,7 +291,7 @@ const makeSession = function (
 
 				factory[fnProp].get(tryPass, propName);
 
-				return Object.assign({}, $session);
+				return ObjectAssign({}, $session);
 
 			} else {
 
@@ -294,7 +301,7 @@ const makeSession = function (
 
 		};
 
-		[
+		ArrayForEach([
 
 			"addCustomPathsToWhiteList",
 			"addPathsToWhiteList",
@@ -324,7 +331,7 @@ const makeSession = function (
 			"block",
 			"allow",
 
-		].forEach(fnProp => {
+		], fnProp => {
 
 			$session.connections[fnProp] = function (...args) {
 
@@ -334,17 +341,17 @@ const makeSession = function (
 
 		});
 
-		standardMethods.forEach(fnProp => {
+		for (let i = 0; i < standardMethods.length; ++i) {
 
-			$session.fs[fnProp] = function (...args) {
+			$session.fs[ standardMethods[i] ] = function (...args) {
 
-				return standardWrapper(fnProp, fs, ...args);
+				return standardWrapper(standardMethods[i], fs, ...args);
 
 			}
 
-		});
+		}
 
-		[
+		ArrayForEach([
 
 			"blockBinding",
 			"blockLinkedBinding",
@@ -362,7 +369,7 @@ const makeSession = function (
 
 			"allow",
 
-		].forEach(fnProp => {
+		], fnProp => {
 
 			$session.process[fnProp] = function (...args) {
 
@@ -372,47 +379,47 @@ const makeSession = function (
 
 		});
 
-		standardMethods.forEach(fnProp => {
+		for (let i = 0; i < standardMethods.length; ++i) {
 
-			$session.child_process[fnProp] = function (...args) {
+			$session.child_process[ standardMethods[i] ] = function (...args) {
 
-				return standardWrapper(fnProp, child_process, ...args);
-
-			}
-
-		});
-
-		standardMethods.forEach(fnProp => {
-
-			$session.dgram[fnProp] = function (...args) {
-
-				return standardWrapper(fnProp, dgram, ...args);
+				return standardWrapper(standardMethods[i], child_process, ...args);
 
 			}
 
-		});
+		}
 
-		standardMethods.forEach(fnProp => {
+		for (let i = 0; i < standardMethods.length; ++i) {
 
-			$session.worker_threads[fnProp] = function (...args) {
+			$session.dgram[ standardMethods[i] ] = function (...args) {
 
-				return standardWrapper(fnProp, worker_threads, ...args);
-
-			}
-
-		});
-
-		standardMethods.forEach(fnProp => {
-
-			$session.cluster[fnProp] = function (...args) {
-
-				return standardWrapper(fnProp, cluster, ...args);
+				return standardWrapper(standardMethods[i], dgram, ...args);
 
 			}
 
-		});
+		}
 
-		[
+		for (let i = 0; i < standardMethods.length; ++i) {
+
+			$session.worker_threads[ standardMethods[i] ] = function (...args) {
+
+				return standardWrapper(standardMethods[i], worker_threads, ...args);
+
+			}
+
+		}
+
+		for (let i = 0; i < standardMethods.length; ++i) {
+
+			$session.cluster[ standardMethods[i] ] = function (...args) {
+
+				return standardWrapper(standardMethods[i], cluster, ...args);
+
+			}
+
+		}
+
+		ArrayForEach([
 
 			"throwIfWrongPassword",
 			"dontThrowIfWrongPassword",
@@ -420,7 +427,7 @@ const makeSession = function (
 			"setCorePath",
 			"$getCorePath",
 
-		].forEach(fnProp => {
+		], fnProp => {
 
 			$session.settings[fnProp] = function (...args) {
 
@@ -430,7 +437,7 @@ const makeSession = function (
 
 		});
 
-		[
+		ArrayForEach([
 
 			"getAllLogs",
 			"getLogsEmitter",
@@ -448,7 +455,7 @@ const makeSession = function (
 
 			"isReturnProxy",
 
-		].forEach(fnProp => {
+		], fnProp => {
 
 			$session[fnProp] = function (...args) {
 
@@ -458,7 +465,7 @@ const makeSession = function (
 
 		});
 
-		[
+		ArrayForEach([
 
 			"changeMaxGetUniqFnNameRecursiveCalls",
 
@@ -496,7 +503,7 @@ const makeSession = function (
 
 			"reset",
 
-		].forEach(fnProp => {
+		], fnProp => {
 
 			$session.timers[fnProp] = function (...args) {
 
@@ -506,7 +513,7 @@ const makeSession = function (
 
 		});
 
-		[
+		ArrayForEach([
 
 			"beforeWrapper",
 			"beforeSecureRequire",
@@ -520,7 +527,7 @@ const makeSession = function (
 			"useSecureRequirePatch",
 			"restoreOriginalRequire",
 
-		].forEach(fnProp => {
+		], fnProp => {
 
 			$session.module[fnProp] = function (...args) {
 
@@ -530,7 +537,7 @@ const makeSession = function (
 
 		});
 
-		[
+		ArrayForEach([
 
 			"$tls",
 			"$net",
@@ -538,7 +545,7 @@ const makeSession = function (
 			"$https",
 			"$http2",
 
-		].forEach(fnProp => {
+		], fnProp => {
 
 			$session.connections[fnProp] = {
 
@@ -552,12 +559,12 @@ const makeSession = function (
 
 		});
 
-		[
+		ArrayForEach([
 
 			"$fs",
 			"$fsPromises",
 
-		].forEach(fnProp => {
+		], fnProp => {
 
 			$session.fs[fnProp] = {
 
@@ -631,7 +638,7 @@ const makeSession = function (
 
 		};
 
-		return Object.assign({}, $session);
+		return ObjectAssign({}, $session);
 
 	}
 

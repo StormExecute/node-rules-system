@@ -4,9 +4,17 @@ const { wrongPassEmitter } = require("../logs");
 const getCallerPaths = require("../getCallerPaths");
 
 const debug = require("../_debug");
-const { mathRandom } = require("../_data/random");
 
-const events = require('events');
+const {
+
+	MathRandom,
+	ArrayForEach,
+	StringToUpperCase,
+	ReflectApply,
+
+} = require("../_data/primordials");
+
+const events = require("events");
 const fs = require("fs");
 
 const pathsStore = require("./pathsStore");
@@ -43,7 +51,7 @@ function getUniqFnName(prop, recurseI) {
 
 	}
 
-	const attemp =  "NRS-" + prop.toUpperCase() + "-FUNCTION-" + mathRandom() + mathRandom();
+	const attemp =  "NRS-" + StringToUpperCase(prop) + "-FUNCTION-" + MathRandom() + MathRandom();
 
 	if(!pathsStore[attemp]) return attemp;
 
@@ -53,7 +61,7 @@ function getUniqFnName(prop, recurseI) {
 
 const integrateIT = {};
 
-[
+ArrayForEach([
 
 	[global, "setImmediate"],
 	[process, "nextTick"],
@@ -69,7 +77,7 @@ const integrateIT = {};
 	[fs, "readFile"],
 	[fs, "writeFile"],
 
-].forEach( ( [el, prop] ) => {
+], ( [el, prop] ) => {
 
 	integrateIT[prop] = function (tryPass) {
 
@@ -118,7 +126,7 @@ const integrateIT = {};
 
 			})(arguments);
 
-			if(callbackI === null) return $thisStore[prop].apply(this, arguments);
+			if(callbackI === null) return ReflectApply($thisStore[prop], this, arguments);
 
 			const callback = arguments[callbackI];
 
@@ -130,7 +138,7 @@ const integrateIT = {};
 				!getCallerPaths.isCallerPath(callerPaths[0])
 			) {
 
-				return $thisStore[prop].apply(this, arguments);
+				return ReflectApply($thisStore[prop], this, arguments);
 
 			}
 
@@ -142,7 +150,7 @@ const integrateIT = {};
 
 				[uniqFunctionName]: function (...args) {
 
-					const result = callback.apply(this, args);
+					const result = ReflectApply(callback, this, args);
 
 					if(pathsStore[uniqFunctionName]) delete pathsStore[uniqFunctionName];
 
@@ -156,7 +164,7 @@ const integrateIT = {};
 
 			debug.timers("timers", uniqFunctionName, callerPaths, arguments);
 
-			return $thisStore[prop].apply(this, arguments);
+			return ReflectApply($thisStore[prop], this, arguments);
 
 		};
 

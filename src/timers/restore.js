@@ -1,8 +1,11 @@
 const { password, needToSetPassword, wrongPass } = require("../password");
+
+const { ArrayForEach } = require("../_data/primordials");
+
 const { wrongPassEmitter } = require("../logs");
 
-const events = require('events');
-const fs = require('fs');
+const events = require("events");
+const fs = require("fs");
 
 const $thisStore = require("./thisStore");
 
@@ -26,7 +29,7 @@ const thisRestoreFunctionality = {
 
 };
 
-[
+ArrayForEach([
 
 	[global, "setImmediate"],
 	[process, "nextTick"],
@@ -42,7 +45,7 @@ const thisRestoreFunctionality = {
 	[fs, "readFile"],
 	[fs, "writeFile"],
 
-].forEach( ( [el, prop] ) => {
+], ( [el, prop] ) => {
 
 	thisRestoreFunctionality[prop] = function (tryPass) {
 
