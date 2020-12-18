@@ -363,8 +363,19 @@ const otherTests = [
 
 	]),
 
+	() => NRS.settings.setChangeModuleRandomSignInterval(NRS_PASSWORD, 200),
+
 	"$test/blocked/require",
 	"$test/allowed/require",
+
+	waitBeforeNextOther,
+
+	() => NRS.module.useDependencyController(NRS_PASSWORD, {
+		"$test": "request",
+	}),
+
+	"$test/blocked/dependencyController",
+	"$test/allowed/dependencyController",
 
 	() => FAST_NRS_SESSION.module.restoreOriginalRequire(),
 
