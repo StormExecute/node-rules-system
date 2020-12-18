@@ -1,3 +1,5 @@
+const settings = require("../_settings/store");
+
 const {
 
 	ArrayIndexOf,
@@ -23,6 +25,17 @@ const returnProxy = require("../returnProxy");
 const debug = require("../_debug");
 
 const { logsEmitter } = require("../logs");
+
+function getProtocol(options) {
+
+	if(options.protocol) return options.protocol;
+
+	if(options.port == 443) return "https:";
+	if(options.port == 21 || options.port == 20) return "ftp:";
+
+	return "http:";
+
+}
 
 function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock) {
 
@@ -61,7 +74,19 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 			debug.integrate("toFns->true", el, callerPaths);
 
-			if( ~ArrayIndexOf( allowList, callerPaths[0] ) ) {
+			if(
+				(
+					!settings.useIsCallerPathInsteadTrustedAllowList
+					&&
+					~ArrayIndexOf( allowList, callerPaths[0] )
+				)
+				||
+				(
+					settings.useIsCallerPathInsteadTrustedAllowList
+					&&
+					getCallerPaths.isCallerPath( callerPaths[0] )
+				)
+			) {
 
 				//dont emit
 
@@ -138,7 +163,7 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 							) {
 
 								url = isObject(arguments[0])
-									? arguments[0].protocol + "//" + (arguments[0].host || arguments[0].hostname)
+									? getProtocol(arguments[0]) + "//" + (arguments[0].host || arguments[0].hostname)
 									: arguments[0];
 
 							} else if(

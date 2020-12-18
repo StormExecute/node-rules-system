@@ -1,3 +1,5 @@
+const settings = require("../_settings/store");
+
 const {
 
 	ArrayIndexOf,
@@ -47,7 +49,19 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 
 		debug.integrate("toProtoFn->true", callerPaths);
 
-		if( ~ArrayIndexOf( allowList, callerPaths[0] ) ) {
+		if(
+			(
+				!settings.useIsCallerPathInsteadTrustedAllowList
+				&&
+				~ArrayIndexOf( allowList, callerPaths[0] )
+			)
+			||
+			(
+				settings.useIsCallerPathInsteadTrustedAllowList
+				&&
+				getCallerPaths.isCallerPath( callerPaths[0] )
+			)
+		) {
 
 			return ReflectApply(backup[backupProp], this, args);
 

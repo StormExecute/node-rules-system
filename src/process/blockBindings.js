@@ -1,3 +1,4 @@
+const settings = require("../_settings/store");
 const { prefixS } = require("../_data");
 const { password, needToSetPassword, wrongPass } = require("../password");
 
@@ -138,7 +139,23 @@ ArrayForEach(["binding", "_linkedBinding", "dlopen"], el => {
 
 			debug.integrate("blockBindings->true", callerPaths);
 
-			if(callerPaths[0] == "dns.js" || callerPaths[0] == "zlib.js") return $process[el](module);
+			if(
+				(
+					!settings.useIsCallerPathInsteadTrustedAllowList
+					&&
+					(callerPaths[0] == "dns.js" || callerPaths[0] == "zlib.js")
+				)
+				||
+				(
+					settings.useIsCallerPathInsteadTrustedAllowList
+					&&
+					getCallerPaths.isCallerPath( callerPaths[0] )
+				)
+			) {
+
+				return $process[el](module);
+
+			}
 
 			for (let i = 0; i < whiteList.length; ++i) {
 

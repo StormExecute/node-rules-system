@@ -1,3 +1,5 @@
+const settings = require("../_settings/store");
+
 const { ArrayIndexOf } = require("../_data/primordials");
 
 const checkAccess = require("./checkAccess");
@@ -42,7 +44,23 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 
 			debug.integrate("toObj->true", name, prop, callerPaths);
 
-			if( ~ArrayIndexOf( allowList, callerPaths[0] ) ) return backup[name][prop];
+			if(
+				(
+					!settings.useIsCallerPathInsteadTrustedAllowList
+					&&
+					~ArrayIndexOf( allowList, callerPaths[0] )
+				)
+				||
+				(
+					settings.useIsCallerPathInsteadTrustedAllowList
+					&&
+					getCallerPaths.isCallerPath( callerPaths[0] )
+				)
+			) {
+
+				return backup[name][prop];
+
+			}
 
 			for(let i = 0; i < whiteList.length; ++i) {
 
