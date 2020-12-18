@@ -139,7 +139,7 @@ const makeParentRequire = () => `
 	const ${ wrapStore.u.originFilename } = __filename;
 	
 	const ${ wrapStore.u.returnProxyTemplate } = 
-		new ${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"].Proxy(class {}, {
+		new (${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"]).Proxy(class {}, {
 		
 			get: (_, prop) => {
 				
