@@ -42,6 +42,8 @@ type logsWrongChangePasswordT = defaultLogObj & {
 type logsWrongPasswordT = defaultLogObjWithGrants & {
 
 	where:
+		"getSettings" |
+		"useIsCallerPathInsteadTrustedAllowList" | "setChangeModuleRandomSignInterval" |
 		"throwIfWrongPassword" | "dontThrowIfWrongPassword" | "setCorePath" |
 
 		"allowChildProcess" | "blockChildProcess" | "allowCluster" | "blockCluster" |
@@ -54,8 +56,14 @@ type logsWrongPasswordT = defaultLogObjWithGrants & {
 
 		"allowDgram" | "blockDgram" | "allowFs" | "blockFs" |
 
-		"beforeWrapper" | "beforeSecureRequire" | "beforeMainCode" | "afterMainCode" | "afterWrapper" |
-		"getWrapper" | "useSecureRequirePatch" | "restoreOriginalRequire" |
+		"beforeWrapper" | "beforeSecureRequire" | "beforeMainCode" |
+		"afterMainCode" | "afterWrapper" |
+
+		"beforeWrapperRemove" | "beforeSecureRequireRemove" | "beforeMainCodeRemove" |
+		"afterMainCodeRemove" | "afterWrapperRemove" |
+
+		"getWrapper" | "useDependencyController" | "useSecureRequirePatch" |
+		"restoreOriginalRequire" | "offSecureRequirePatch" | "offDependencyController" |
 
 		"allowProcessBinding" | "allowProcessLinkedBinding" | "allowProcessDlopen" |
 		"allowProcessBindingLinkedBindingAndDlopen" |
@@ -85,6 +93,10 @@ type logsWrongPasswordT = defaultLogObjWithGrants & {
 
 	,
 
+	//setChangeModuleRandomSignInterval
+	ms?: number,
+	immediately?: boolean,
+
 	//setCorePath
 	path?: string,
 
@@ -99,7 +111,7 @@ type logsWrongPasswordT = defaultLogObjWithGrants & {
 	//integrateTimers, restoreTimers
 	prop?: string,
 
-	//fullSecure
+	//fullSecure & settings.useIsCallerPathInsteadTrustedAllowList
 	status?: string,
 
 	//get
@@ -156,12 +168,19 @@ type logsAddToWhiteList = defaultLogObjWithArgsAndGrants & {
 
 };
 
-type logsAttempToChangeModuleWrap = defaultLogObj & {
+type logsUseModuleFns = defaultLogObjWithArgsAndGrants & {
+
+	type: "Module.prototype.load" | "Module._extensions['.js']" |
+		"Module._load" | "Module.createRequireFromPath" | "Module.createRequire"
+
+};
+
+type logsUpModuleWrap = defaultLogObjWithGrants & {
+
+	type: "change" | "customCode",
 
 	filename: string,
-	path: string,
-
-	failedWrapper: (...args: any[]) => string | any,
+	value: (...args: any[]) => string | any,
 
 };
 
@@ -174,6 +193,10 @@ type logMessage = defaultLogObj & {
 	where: string,
 
 	wrongLastPass: string,
+
+	ms?: number,
+
+	immediately?: boolean,
 
 	path?: string,
 
@@ -209,9 +232,15 @@ type logMessage = defaultLogObj & {
 
 	whiteList?: string,
 
+	type?: string,
+
+	value?: string,
+
 };
 
 declare class logs extends events.EventEmitter {
+
+	onMany(eventsArray: string[], listener: (...args: any[]) => void): this;
 
 	on(event: "*", listener: (logObj: logMessage) => void): this;
 
@@ -235,7 +264,8 @@ declare class logs extends events.EventEmitter {
 
 	on(event: "addToWhiteList", listener: (logObj: logsAddToWhiteList) => void): this;
 
-	on(event: "attempToChangeModuleWrap", listener: (logObj: logsAttempToChangeModuleWrap) => void): this;
+	on(event: "useModuleFns", listener: (logObj: logsUseModuleFns) => void): this;
+	on(event: "upModuleWrap", listener: (logObj: logsUpModuleWrap) => void): this;
 
 }
 
@@ -327,7 +357,7 @@ type whiteListFunctionalityCustomHandler =
 
 type whiteListFunctionalityArgsNeed = string | string[] | {
 
-	paths: string | string[],
+	paths?: string | string[],
 	blackPaths?: string | string[],
 	whiteListDomains?: string | string[],
 	blackListDomains?: string | string[],
@@ -671,35 +701,65 @@ interface timersWithoutPassword {
 
 }
 
+interface dControllerArgsObjectT {
+
+	[key: string]: string[] | string,
+
+}
+
 interface moduleWithPassword {
 
-	beforeWrapper: (tryPass: string, code: string) => boolean,
-	beforeSecureRequire: (tryPass: string, code: string) => boolean,
-	beforeMainCode: (tryPass: string, code: string) => boolean,
+	beforeWrapper: (tryPass: string, id: string, code: string) => boolean,
+	beforeSecureRequire: (tryPass: string, id: string, code: string) => boolean,
+	beforeMainCode: (tryPass: string, id: string, code: string) => boolean,
 
-	afterMainCode: (tryPass: string, code: string) => boolean,
-	afterWrapper: (tryPass: string, code: string) => boolean,
+	afterMainCode: (tryPass: string, id: string, code: string) => boolean,
+	afterWrapper: (tryPass: string, id: string, code: string) => boolean,
+
+	beforeWrapperRemove: (tryPass: string, id: string) => boolean,
+	beforeSecureRequireRemove: (tryPass: string, id: string) => boolean,
+	beforeMainCodeRemove: (tryPass: string, id: string) => boolean,
+
+	afterMainCodeRemove: (tryPass: string, id: string) => boolean,
+	afterWrapperRemove: (tryPass: string, id: string) => boolean,
 
 	getWrapper: (tryPass: string) => [string, string],
 
 	useSecureRequirePatch: (tryPass: string, whiteFilenames?: string[] | string) => boolean,
-	restoreOriginalRequire: (tryPass: string) => boolean,
+	useDependencyController: (tryPass: string, argsObject: dControllerArgsObjectT) => boolean,
+
+	offSecureRequirePatch: (tryPass: string) => [boolean, boolean],
+	offDependencyController: (tryPass: string) => [boolean, boolean],
+
+	restoreOriginalRequire: (tryPass: string) => [boolean, boolean, boolean],
 
 }
 
 interface moduleWithoutPassword {
 
-	beforeWrapper: (code: string) => boolean,
-	beforeSecureRequire: (code: string) => boolean,
-	beforeMainCode: (code: string) => boolean,
+	beforeWrapper: (id: string, code: string) => boolean,
+	beforeSecureRequire: (id: string, code: string) => boolean,
+	beforeMainCode: (id: string, code: string) => boolean,
 
-	afterMainCode: (code: string) => boolean,
-	afterWrapper: (code: string) => boolean,
+	afterMainCode: (id: string, code: string) => boolean,
+	afterWrapper: (id: string, code: string) => boolean,
+
+	beforeWrapperRemove: (id: string) => boolean,
+	beforeSecureRequireRemove: (id: string) => boolean,
+	beforeMainCodeRemove: (id: string) => boolean,
+
+	afterMainCodeRemove: (id: string) => boolean,
+	afterWrapperRemove: (id: string) => boolean,
 
 	getWrapper: () => [string, string],
 
 	useSecureRequirePatch: (whiteFilenames?: string[] | string) => boolean,
-	restoreOriginalRequire: () => boolean,
+	useDependencyController: (argsObject: dControllerArgsObjectT) => boolean,
+
+	offSecureRequirePatch: () => [boolean, boolean],
+	offDependencyController: () => [boolean, boolean],
+
+	restoreOriginalRequire: () => [boolean, boolean, boolean],
 
 }
 
@@ -721,6 +781,14 @@ type secureReturn = [
 
 type secureSetReturn = secureReturn | (null | boolean | boolean[])[];
 
+interface settingsStoreT {
+
+	throwIfWrongPassword: boolean,
+	changeModuleRandomSignInterval: number,
+	useIsCallerPathInsteadTrustedAllowList: boolean,
+
+}
+
 interface sessionT {
 
 	getConfigs: () => $sessionConfigs,
@@ -734,8 +802,15 @@ interface sessionT {
 
 	settings: {
 
+		get(): settingsStoreT,
+
+		useIsCallerPathInsteadTrustedAllowList(status: boolean): boolean,
+
+		setChangeModuleRandomSignInterval(ms: number, immediately?: boolean): boolean | number,
+
 		throwIfWrongPassword(): boolean,
 		dontThrowIfWrongPassword(): boolean,
+
 		setCorePath(path: string): boolean,
 		$getCorePath(): string,
 
@@ -776,8 +851,15 @@ declare namespace NRS {
 
 	namespace settings {
 
+		function get(tryPass: string): settingsStoreT;
+
+		function useIsCallerPathInsteadTrustedAllowList(tryPass: string, status: boolean): boolean;
+
+		function setChangeModuleRandomSignInterval(tryPass: string, ms: number, immediately?: boolean): boolean | number;
+
 		function throwIfWrongPassword(tryPass: string): boolean;
 		function dontThrowIfWrongPassword(tryPass: string): boolean;
+
 		function setCorePath(tryPass: string, path: string): boolean;
 		function $getCorePath(): string;
 
