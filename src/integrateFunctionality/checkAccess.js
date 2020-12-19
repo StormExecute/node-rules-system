@@ -1,3 +1,5 @@
+const { StringStartsWith } = require("../_data/primordials");
+
 const getCallerFnName = require("../getCallerFnName");
 
 module.exports = function ({
@@ -22,17 +24,15 @@ module.exports = function ({
 
 	}
 
-	if (!callerPaths[0].startsWith(paths[0])) {
+	let l = paths.length ? 1 : 0;
+
+	if ( l && !StringStartsWith( callerPaths[0], paths[0] ) ) {
 
 		return false;
 
 	}
 
-	let l = 1;
-
 	for (let j = 0; j < callerPaths.length; ++j) {
-
-		if ((l + 1) > paths.length) break;
 
 		const callerPath = callerPaths[j];
 
@@ -40,7 +40,7 @@ module.exports = function ({
 
 			for (let k = 0; k < blackPaths.length; ++k) {
 
-				if(callerPath.startsWith(blackPaths[k])) {
+				if( StringStartsWith( callerPath, blackPaths[k] ) ) {
 
 					return false;
 
@@ -56,7 +56,7 @@ module.exports = function ({
 
 			for (let k = 0; k < paths.length; ++k) {
 
-				if (callerPath.startsWith(paths[k])) {
+				if ( StringStartsWith( callerPath, paths[k] ) ) {
 
 					ow = true;
 
@@ -70,18 +70,28 @@ module.exports = function ({
 
 		}
 
-		if (callerPath.startsWith(paths[l])) {
+		if( (l + 1) <= paths.length ) {
 
-			++l;
+			if (StringStartsWith(callerPath, paths[l])) {
 
-		} else if(everyWhite || fullIdentify) {
+				++l;
 
-			return false;
+			} else if (everyWhite || fullIdentify) {
+
+				return false;
+
+			}
 
 		}
 
 	}
 
-	return l && l == paths.length;
+	if(l) {
+
+		return l == paths.length;
+
+	}
+
+	return true;
 
 };
