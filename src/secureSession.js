@@ -240,26 +240,45 @@ const makeSession = function (
 
 			module: {
 
-				beforeWrapper(code){},
-				beforeSecureRequire(code){},
-				beforeMainCode(code){},
+				beforeWrapper(id, code){},
+				beforeSecureRequire(id, code){},
+				beforeMainCode(id, code){},
 
-				afterMainCode(code){},
-				afterWrapper(code){},
+				afterMainCode(id, code){},
+				afterWrapper(id, code){},
+
+				beforeWrapperRemove(id){},
+				beforeSecureRequireRemove(id){},
+				beforeMainCodeRemove(id){},
+
+				afterMainCodeRemove(id){},
+				afterWrapperRemove(id){},
 
 				getWrapper(){},
 
 				useSecureRequirePatch(whiteFilenames){},
+				useDependencyController(argsObject){},
+
+				offSecureRequirePatch(){},
+				offDependencyController(){},
+
 				restoreOriginalRequire(){},
 
 			},
 
 			settings: {
 
+				get(){},
+
+				useIsCallerPathInsteadTrustedAllowList(status){},
+
+				setChangeModuleRandomSignInterval(ms, immediately){},
+
 				throwIfWrongPassword(){},
 				dontThrowIfWrongPassword(){},
 
 				setCorePath(path){},
+				$getCorePath(){},
 
 			},
 
@@ -559,6 +578,12 @@ const makeSession = function (
 
 		ArrayForEach([
 
+			"get",
+
+			"useIsCallerPathInsteadTrustedAllowList",
+
+			"setChangeModuleRandomSignInterval",
+
 			"throwIfWrongPassword",
 			"dontThrowIfWrongPassword",
 
@@ -683,9 +708,21 @@ const makeSession = function (
 			"afterMainCode",
 			"afterWrapper",
 
+			"beforeWrapperRemove",
+			"beforeSecureRequireRemove",
+			"beforeMainCodeRemove",
+
+			"afterMainCodeRemove",
+			"afterWrapperRemove",
+
 			"getWrapper",
 
 			"useSecureRequirePatch",
+			"useDependencyController",
+
+			"offSecureRequirePatch",
+			"offDependencyController",
+
 			"restoreOriginalRequire",
 
 		], fnProp => {
