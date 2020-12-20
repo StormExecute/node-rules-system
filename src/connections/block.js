@@ -11,7 +11,7 @@ const { wrongPassEmitter } = require("../logs");
 
 const { whiteList } = require("./addToWhiteList");
 
-const tls = require('tls');
+const tls = require("tls");
 const net = require("net");
 const http = require("http");
 const http2 = require("http2");

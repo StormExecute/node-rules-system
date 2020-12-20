@@ -4,7 +4,7 @@ const settings = require("../_settings/store");
 
 const { wrongPassEmitter } = require("../logs");
 
-const Module = require('module');
+const Module = require("module");
 const $Module = require("./store");
 
 const restore = require("../restore");

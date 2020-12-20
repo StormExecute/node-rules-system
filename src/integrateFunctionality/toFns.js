@@ -9,7 +9,7 @@ const {
 
 const isObject = require("../../dependencies/isObject");
 
-const tls = require('tls');
+const tls = require("tls");
 const net = require("net");
 const http = require("http");
 const http2 = require("http2");

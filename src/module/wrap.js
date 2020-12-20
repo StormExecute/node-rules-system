@@ -27,7 +27,7 @@ const { parseRandomInCodeMatch } = require("../_data");
 
 const { findCorePath } = require("../whiteListFunctionality");
 
-const Module = require('module');
+const Module = require("module");
 
 const wrapStore = require("./wrapStore");
 const extendWrapStore = require("./extendWrapStore");

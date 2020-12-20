@@ -4,7 +4,7 @@ const { ArrayForEach } = require("../_data/primordials");
 
 const { wrongPassEmitter } = require("../logs");
 
-const tls = require('tls');
+const tls = require("tls");
 const net = require("net");
 const http = require("http");
 const http2 = require("http2");

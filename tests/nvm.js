@@ -4,7 +4,7 @@ if(!process.platform.includes("linux")) {
 
 }
 
-const { spawn } = require('child_process');
+const { spawn } = require("child_process");
 
 const { BLOCK_CONSOLE_LOG_DASH_REPEATS: repeats } = require("./_settings");
 

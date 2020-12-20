@@ -1,4 +1,4 @@
-const TerserPlugin = require('terser-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 
 const nodePath = require("path");
 

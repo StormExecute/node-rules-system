@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 const nodePath = require("path");
 
 const { TEST_SITE, NRS_PASSWORD } = require("../../_settings");
