@@ -371,7 +371,7 @@ const otherTests = [
 	waitBeforeNextOther,
 
 	() => NRS.module.useDependencyController(NRS_PASSWORD, {
-		"$test": "request",
+		"$test": ["<ownDependencies>"],
 	}),
 
 	"$test/blocked/dependencyController",
