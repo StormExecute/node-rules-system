@@ -19,13 +19,13 @@ $Module.dependencyController = `
 	
 		let result = "";
 	
-		for(let i = 0; i < __filename.length; ++i) {
+		for(let i = 0; i < ${ wrapStore.u.originFilename }.length; ++i) {
 		
-			const thSym = __filename[i];
+			const thSym = ${ wrapStore.u.originFilename }[i];
 			
 			if(inProcessGetDName) {
 			
-				if(thSym == "/") {
+				if(thSym == "/" || thSym == "\\\\") {
 				
 					inProcessGetDName = false;
 				
@@ -37,7 +37,15 @@ $Module.dependencyController = `
 			
 			} else {
 				
-				if(thSym == match[matchI]) {
+				if(
+					thSym == match[matchI]
+					||
+					(
+						(matchI + 1) == match.length
+						&&
+						thSym == "\\\\"
+					)
+				) {
 				
 					if( (matchI + 1) == match.length ) {
 					
@@ -99,7 +107,64 @@ $Module.dependencyController = `
 					
 				for(let i = 0; i < paths.length; ++i) {
 				
-					if( paths[i] == path ) {
+					if( paths[i] == "<ownDependencies>" || paths[i] == "<ownDevDependencies>" ) {
+					
+						const dependencyCorePath = global[ "${ wrapStore.utils }" ].findCorePath(
+							${ wrapStore.u.originFilename }
+						);
+						
+						if(
+							dependencyCorePath != process.cwd()
+							&&
+							(
+								${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"].StringIncludes(
+									dependencyCorePath,
+									"/node_modules/"
+								)
+								||
+								${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"].StringIncludes(
+									dependencyCorePath,
+									"\\\\node_modules\\\\"
+								)
+							)
+						) {
+						
+							const packageJson = ${ wrapStore.u.requireOrigin }(
+								${ wrapStore.u.requireOrigin }("http")["NRS_PRIMORDIALS"].nodePathJoin(
+									dependencyCorePath,
+									"package.json"
+								)
+							);
+							
+							if( paths[i] == "<ownDependencies>" ) {
+							
+								if( packageJson.dependencies ) {
+								
+									for(const dep in packageJson.dependencies) {
+									
+										paths[ paths.length ] = dep;
+									
+									}
+								
+								}
+							
+							} else {
+							
+								if( packageJson.devDependencies ) {
+								
+									for(const dep in packageJson.devDependencies) {
+									
+										paths[ paths.length ] = dep;
+									
+									}
+								
+								}
+							
+							}
+						
+						}
+					
+					} else if( paths[i] == path ) {
 					
 						return ${originalRequire}(path);
 					
