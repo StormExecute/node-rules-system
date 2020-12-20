@@ -25,6 +25,8 @@ const { logsEmitter } = require("../logs")
 
 const { parseRandomInCodeMatch } = require("../_data");
 
+const { findCorePath } = require("../whiteListFunctionality");
+
 const Module = require('module');
 
 const wrapStore = require("./wrapStore");
@@ -248,6 +250,8 @@ const parseRandomInCode = code => {
 				||
 				code[i + 1] == '"'
 			)
+			&&
+			code[i - 1] != "\\"
 
 		) {
 
@@ -545,6 +549,8 @@ const setGlobalWrapUtils = () => {
 				ModuleCopy.Module = ModuleCopy;
 
 			},
+
+			findCorePath,
 
 		}
 
