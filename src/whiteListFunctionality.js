@@ -389,6 +389,8 @@ function addDependencyPathAndProjectPathsToWhiteList(whiteList, tryPass, argsArr
 
 module.exports = {
 
+	findCorePath,
+
 	$corePath,
 	standardWhiteListMethods,
 
