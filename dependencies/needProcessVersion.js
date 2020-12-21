@@ -10,6 +10,8 @@
  *
 */
 
+const { parseInt } = require("../src/_data/primordials");
+
 let cachedProcessVersionArr = null;
 
 function gerVersionArr(arg) {
@@ -76,7 +78,7 @@ module.exports = function needProcessVersion(version) {
 
 	if(!cachedProcessVersionArr) {
 
-		cachedProcessVersionArr = new Array(3);
+		cachedProcessVersionArr = [undefined, undefined, undefined];
 
 		for (let i = 0; i < 3; ++i) {
 
