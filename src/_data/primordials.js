@@ -54,6 +54,8 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 
 		value: Object.freeze({
 
+			parseInt,
+
 			execArgv: Object.assign([], process.execArgv),
 			processArgv: Object.assign([], process.argv),
 
