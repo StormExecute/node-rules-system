@@ -56,8 +56,8 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 
 			parseInt,
 
-			execArgv: Object.assign([], process.execArgv),
-			processArgv: Object.assign([], process.argv),
+			execArgv: Object.freeze( Object.assign([], process.execArgv) ),
+			processArgv: Object.freeze( Object.assign([], process.argv) ),
 
 			consoleLog: console.log,
 
