@@ -58,10 +58,14 @@ function parseStack(errStack) {
 
 	for(let i = 0; i < errStack.length; ++i) {
 
-		const path = debugFileNames[i];
+		let path = debugFileNames[i];
 
-		//to skip nulls in state "inProcessScreening"
+		//to skip ALL nulls, it is assumed that they are in the "inProcessScreening" state
+		//but they may also be in a different state
 		if(!path) continue;
+
+		//for esm
+		path = path.replace("file://", "");
 
 		const fnName = errStack[i].getFunctionName();
 
