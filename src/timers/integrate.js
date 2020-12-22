@@ -122,6 +122,19 @@ ArrayForEach([
 
 				}
 
+				//.catch is alias for then(undefined, () => { ... })
+				if(
+					prop == "then"
+					&&
+					args.length == 2
+					&&
+					args[0] === undefined
+				) {
+
+					return 1;
+
+				}
+
 				return 0;
 
 			})(arguments);
