@@ -117,7 +117,8 @@ ArrayForEach(["binding", "_linkedBinding", "dlopen"], el => {
 
 			throw new Error(prefixS + "The script does not have access to process." + el + "!\n\n"
 				+ "NativePath: " + nativePath + "\n\n"
-				+ "CallerPaths: " + ArrayJoin( ArraySlice(callerPaths, 1), ", ") ) + "\n\n";
+				+ "CallerPaths: " + ArrayJoin( ArraySlice(callerPaths, 1), ", ") + "\n\n"
+			);
 
 		}
 
