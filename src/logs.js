@@ -1,6 +1,5 @@
 const {
 
-	ObjectAssign,
 	ArrayIsArray,
 
 	EventEmitter,
@@ -38,6 +37,7 @@ class NRSLogs extends EventEmitter {
 const logs = new NRSLogs();
 
 let recordAllLogs = false;
+let uniqLogs = 0;
 
 const allLogs = [];
 
@@ -144,7 +144,34 @@ module.exports = {
 				if (password.value === null) throw new Error(needToSetPassword);
 				if (tryPass != password.value) return wrongPassEmitter(wrongPass, "getAllLogs");
 
-				return ObjectAssign([], allLogs);
+				const result = [];
+
+				for (let i = 0; i < allLogs.length; ++i) {
+
+					result[ result.length ] = allLogs[i];
+
+				}
+
+				return result;
+
+			},
+
+			getUniqLogs: function (tryPass) {
+
+				if (password.value === null) throw new Error(needToSetPassword);
+				if (tryPass != password.value) return wrongPassEmitter(wrongPass, "getUniqLogs");
+
+				const result = [];
+
+				for(let i = uniqLogs; i < allLogs.length; ++i) {
+
+					result[ result.length ] = allLogs[i];
+
+				}
+
+				uniqLogs = allLogs.length;
+
+				return result;
 
 			},
 
