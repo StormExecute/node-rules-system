@@ -82,7 +82,8 @@ type logsWrongPasswordT = defaultLogObjWithGrants & {
 
 		"get" |
 
-		"startRecordLogs" | "stopRecordLogs" | "getAllLogs" |  "getLogsEmitter" |
+		"startRecordLogs" | "stopRecordLogs" | "getAllLogs" | "getUniqLogs" |
+		"getLogsEmitter" |
 
 		"secureSession" | "session" |
 
@@ -794,8 +795,10 @@ interface sessionT {
 	getConfigs: () => $sessionConfigs,
 	setReturn: (newState: boolean) => boolean,
 
-	getAllLogs(): Array<logMessage>,
 	getLogsEmitter(): logs,
+
+	getAllLogs(): Array<logMessage>,
+	getUniqLogs(): Array<logMessage>,
 
 	startRecordLogs(): boolean,
 	stopRecordLogs(): boolean,
@@ -843,8 +846,10 @@ interface sessionT {
 
 declare namespace NRS {
 
-	function getAllLogs(tryPass: string): Array<logMessage>;
 	function getLogsEmitter(tryPass: string): logs;
+
+	function getAllLogs(tryPass: string): Array<logMessage>;
+	function getUniqLogs(tryPass: string): Array<logMessage>;
 
 	function startRecordLogs(tryPass: string): boolean;
 	function stopRecordLogs(tryPass: string): boolean;
