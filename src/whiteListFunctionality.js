@@ -288,8 +288,6 @@ function addToWhiteList(whiteList, preFn, nextArgsArray) {
 
 	for(let i = 0; i < nextArgsArray.length; ++i) {
 
-		result = parseWhiteListArg( whiteList, nextArgsArray[i], preFn, result );
-
 		if(typeof nextArgsArray[i] == "function") {
 
 			result = parseWhiteListArg( whiteList, nextArgsArray[i]({
@@ -304,6 +302,10 @@ function addToWhiteList(whiteList, preFn, nextArgsArray) {
 				findCorePath,
 
 			}), preFn, result );
+
+		} else {
+
+			result = parseWhiteListArg( whiteList, nextArgsArray[i], preFn, result );
 
 		}
 
