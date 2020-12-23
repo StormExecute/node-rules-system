@@ -209,8 +209,10 @@ const makeSecureSession = require("./secureSession");
 
 const {
 
-	getAllLogs,
 	getLogsEmitter,
+
+	getAllLogs,
+	getUniqLogs,
 
 	startRecordLogs,
 	stopRecordLogs,
@@ -319,8 +321,10 @@ const freeze = object => {
 
 module.exports = freeze({
 
-	getAllLogs,
 	getLogsEmitter,
+
+	getAllLogs,
+	getUniqLogs,
 
 	startRecordLogs,
 	stopRecordLogs,
@@ -337,8 +341,10 @@ module.exports = freeze({
 		settings,
 		{
 
-			getAllLogs,
 			getLogsEmitter,
+
+			getAllLogs,
+			getUniqLogs,
 
 			startRecordLogs,
 			stopRecordLogs,
@@ -362,8 +368,10 @@ module.exports = freeze({
 		settings,
 		{
 
-			getAllLogs,
 			getLogsEmitter,
+
+			getAllLogs,
+			getUniqLogs,
 
 			startRecordLogs,
 			stopRecordLogs,
