@@ -277,8 +277,10 @@ const makeSession = function (
 
 			},
 
-			getAllLogs(){},
 			getLogsEmitter(){},
+
+			getAllLogs(){},
+			getUniqLogs(){},
 
 			startRecordLogs(){},
 			stopRecordLogs(){},
@@ -464,8 +466,10 @@ const makeSession = function (
 
 		ArrayForEach([
 
-			"getAllLogs",
 			"getLogsEmitter",
+
+			"getAllLogs",
+			"getUniqLogs",
 
 			"startRecordLogs",
 			"stopRecordLogs",
