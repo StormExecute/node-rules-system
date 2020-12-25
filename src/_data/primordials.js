@@ -17,11 +17,37 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 
 		};
 
+		const m = require("module");
+
+		if(fn == m) {
+
+			//Module.wrap->enumerable = false
+
+			temp.wrap = fn.wrap;
+
+		}
+
 		for(const key in fn) {
 
 			if( Reflect.apply( tempHasOwnProperty, fn, [key] ) ) {
 
-				temp[key] = fn[key];
+				if( fn == m && fn[key] == m["_extensions"] ) {
+
+					//to copy Module["_extensions"] fns
+
+					temp[key] = {};
+
+					for(const keyExt in fn[key]) {
+
+						temp[key][keyExt] = fn[key][keyExt];
+
+					}
+
+				} else {
+
+					temp[key] = fn[key];
+
+				}
 
 			}
 
@@ -53,6 +79,8 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 		enumerable: true,
 
 		value: Object.freeze({
+
+			cloneFn,
 
 			parseInt,
 
@@ -249,7 +277,7 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 			ObjectAssign: Object.assign,
 			ObjectPrototypeToString: Object.prototype.toString,
 
-			ReflectApply: Reflect.apply,
+			ReflectApply: tempApply,
 
 			MathRandom: Math.random,
 
