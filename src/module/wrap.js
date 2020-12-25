@@ -472,7 +472,7 @@ const setGlobalWrapUtils = () => {
 
 						if(typeof value != "function") return false;
 
-						let v = value();
+						let v = value("/* NRS-MODULE-WRAP-SET */");
 
 						if(typeof v != "string") return false;
 
@@ -495,7 +495,7 @@ const setGlobalWrapUtils = () => {
 
 						}
 
-						extendWrapStore.customCode[ extendWrapStore.customCode.length] = v;
+						extendWrapStore.customCode[ extendWrapStore.customCode.length ] = v;
 						wrap = value;
 
 						logsEmitter("upModuleWrap", null, {
@@ -547,6 +547,8 @@ const setGlobalWrapUtils = () => {
 				};
 
 				ModuleCopy.Module = ModuleCopy;
+
+				return ModuleCopy;
 
 			},
 
