@@ -19,6 +19,11 @@ const {
 
 } = require("./_settings");
 
+NRS.settings = 1;
+NRS.settings.a = 2;
+NRS.init = 3;
+NRS.settings.throwIfWrongPassword = 4;
+
 NRS.init(NRS_PASSWORD);
 
 NRS.connections.block(NRS_PASSWORD);
