@@ -256,6 +256,8 @@ const makeSession = function (
 
 				getWrapper(){},
 
+				allowChangeAndUseTo(){},
+
 				useSecureRequirePatch(whiteFilenames){},
 				useDependencyController(argsObject){},
 
@@ -720,6 +722,8 @@ const makeSession = function (
 			"afterWrapperRemove",
 
 			"getWrapper",
+
+			"allowChangeAndUseTo",
 
 			"useSecureRequirePatch",
 			"useDependencyController",
