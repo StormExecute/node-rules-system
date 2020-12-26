@@ -150,7 +150,7 @@ ArrayForEach(["binding", "_linkedBinding", "dlopen"], el => {
 				(
 					settings.useIsCallerPathInsteadTrustedAllowList
 					&&
-					getCallerPaths.isCallerPath( callerPaths[0] )
+					!getCallerPaths.isCallerPath( callerPaths[0] )
 				)
 			) {
 

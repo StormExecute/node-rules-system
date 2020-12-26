@@ -59,7 +59,7 @@ function integrateToProtoFns (whiteList, fnName, origin, backup, backupProp, all
 			(
 				settings.useIsCallerPathInsteadTrustedAllowList
 				&&
-				getCallerPaths.isCallerPath( callerPaths[0] )
+				!getCallerPaths.isCallerPath( callerPaths[0] )
 			)
 		) {
 

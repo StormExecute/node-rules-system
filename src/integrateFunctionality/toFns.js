@@ -84,7 +84,7 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 				(
 					settings.useIsCallerPathInsteadTrustedAllowList
 					&&
-					getCallerPaths.isCallerPath( callerPaths[0] )
+					!getCallerPaths.isCallerPath( callerPaths[0] )
 				)
 			) {
 
@@ -288,7 +288,7 @@ function integrateToFns(whiteList, fnArray, origin, backup, allowList, fullBlock
 
 		};
 
-	};
+	}
 
 }
 

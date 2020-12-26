@@ -54,7 +54,7 @@ function integrateToObject(whiteList, name, origin, backup, allowList, fullBlock
 				(
 					settings.useIsCallerPathInsteadTrustedAllowList
 					&&
-					getCallerPaths.isCallerPath( callerPaths[0] )
+					!getCallerPaths.isCallerPath( callerPaths[0] )
 				)
 			) {
 
