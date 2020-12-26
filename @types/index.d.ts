@@ -62,7 +62,8 @@ type logsWrongPasswordT = defaultLogObjWithGrants & {
 		"beforeWrapperRemove" | "beforeSecureRequireRemove" | "beforeMainCodeRemove" |
 		"afterMainCodeRemove" | "afterWrapperRemove" |
 
-		"getWrapper" | "useDependencyController" | "useSecureRequirePatch" |
+		"getWrapper" | "allowChangeAndUseTo" |
+		"useDependencyController" | "useSecureRequirePatch" |
 		"restoreOriginalRequire" | "offSecureRequirePatch" | "offDependencyController" |
 
 		"allowProcessBinding" | "allowProcessLinkedBinding" | "allowProcessDlopen" |
@@ -618,6 +619,8 @@ type timersBlockAllow = [
 
 ];
 
+type timersResetT = "nextTick" | "immediate" | "timeout";
+
 interface timersWithPassword {
 
 	changeMaxGetUniqFnNameRecursiveCalls: (tryPass: string, newValue: number) => boolean,
@@ -654,7 +657,7 @@ interface timersWithPassword {
 
 	restore: (tryPass: string) => timersBlockAllow,
 
-	reset: (tryPass: string, callback: () => any, type: string) => boolean,
+	reset: (tryPass: string, callback: () => any, type?: timersResetT) => boolean,
 
 	$fns: getFnWithPassword,
 
@@ -696,7 +699,7 @@ interface timersWithoutPassword {
 
 	restore: () => timersBlockAllow,
 
-	reset: (callback: () => any, type: string) => boolean,
+	reset: (callback: () => any, type?: timersResetT) => boolean,
 
 	$fns: getFnWithoutPassword,
 
@@ -726,6 +729,8 @@ interface moduleWithPassword {
 
 	getWrapper: (tryPass: string) => [string, string],
 
+	allowChangeAndUseTo: (tryPass: string, filename: string) => boolean,
+
 	useSecureRequirePatch: (tryPass: string, whiteFilenames?: string[] | string) => boolean,
 	useDependencyController: (tryPass: string, argsObject: dControllerArgsObjectT) => boolean,
 
@@ -753,6 +758,8 @@ interface moduleWithoutPassword {
 	afterWrapperRemove: (id: string) => boolean,
 
 	getWrapper: () => [string, string],
+
+	allowChangeAndUseTo: (filename: string) => boolean,
 
 	useSecureRequirePatch: (whiteFilenames?: string[] | string) => boolean,
 	useDependencyController: (argsObject: dControllerArgsObjectT) => boolean,
@@ -790,6 +797,9 @@ interface settingsStoreT {
 
 }
 
+type secureElementsList = "connections" | "fs" | "process" | "child_process" |
+	"dgram" | "worker_threads" | "cluster" | "timers";
+
 interface sessionT {
 
 	getConfigs: () => $sessionConfigs,
@@ -823,9 +833,9 @@ interface sessionT {
 	enableFullSecure: () => secureReturn,
 	disableFullSecure: () => secureReturn,
 
-	setSecure: (status: string, secureElements: string[]) => secureSetReturn,
-	setSecureEnable: (secureElements: string[]) => secureSetReturn,
-	setSecureDisable: (secureElements: string[]) => secureSetReturn,
+	setSecure: (status: string, secureElements: secureElementsList[]) => secureSetReturn,
+	setSecureEnable: (secureElements: secureElementsList[]) => secureSetReturn,
+	setSecureDisable: (secureElements: secureElementsList[]) => secureSetReturn,
 
 	connections: connectionsWithoutPassword,
 	fs: fsWithoutPassword,
@@ -876,13 +886,13 @@ declare namespace NRS {
 	const session: (tryPass: string) => sessionT;
 	const secureSession: (tryPass: string, ...args: whiteListFunctionalityArgsNeedReal[]) => sessionT;
 
-	function fullSecure(tryPass: string): secureReturn;
+	function fullSecure(tryPass: string, status: string): secureReturn;
 	function enableFullSecure(tryPass: string): secureReturn;
 	function disableFullSecure(tryPass: string): secureReturn;
 
-	function setSecure(tryPass: string, status: string, secureElements: string[]): secureSetReturn;
-	function setSecureEnable(tryPass: string, secureElements: string[]): secureSetReturn;
-	function setSecureDisable(tryPass: string, secureElements: string[]): secureSetReturn;
+	function setSecure(tryPass: string, status: string, secureElements: secureElementsList[]): secureSetReturn;
+	function setSecureEnable(tryPass: string, secureElements: secureElementsList[]): secureSetReturn;
+	function setSecureDisable(tryPass: string, secureElements: secureElementsList[]): secureSetReturn;
 
 	const connections: connectionsWithPassword;
 	const fs: fsWithPassword;
