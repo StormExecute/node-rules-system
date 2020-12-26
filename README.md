@@ -78,8 +78,6 @@ NRS.fullSecure(NRS_PASSWORD, "enable");
 const FAST_NRS_SESSION = NRS.session(NRS_PASSWORD);
 FAST_NRS_SESSION.startRecordLogs();
 
-//wrapPath = index.js, has access rights if nativePath is equal to onlyForExport.js
-//nativePath = onlyForExport.js, has rights to an http request only within a wrapPath call
 //FOR MORE SECURITY, USE ENDINGS .JS ALWAYS!
 NRS.connections.addPathsToWhiteList(NRS_PASSWORD,
 	["examples/indexFunctionality.js", "examples/index.js"]
