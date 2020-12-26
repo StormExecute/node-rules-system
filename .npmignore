@@ -1,11 +1,18 @@
 dirty/
+backup/
 dependencies/
 src/
 tests/
+examples/
 
+.git/
 .idea/
 
 node_modules/
 
+.gitignore
+.npmignore
 package-lock.json
+
 webpack.config.js
+replaceSingleQuotesForRequire.js
