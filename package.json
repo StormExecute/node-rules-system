@@ -14,6 +14,7 @@
   "scripts": {
     "test": "node tests/index.js",
     "malware": "node tests/_someMalware/run.js",
+    "trapper": "node tests/_someTrapper/run.js",
     "nvm": "node tests/nvm.js",
     "pack": "node webpack.config.js"
   },
