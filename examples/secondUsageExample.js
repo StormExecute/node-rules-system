@@ -3,8 +3,6 @@ global.NRS_PATH = NRS_PATH_SRC ? "src/index.js" : "lib/NRS.js";
 
 const NRS = require("../" + NRS_PATH);
 
-//node-fetch can be required at this level
-const fetch = require("node-fetch");
 const nodePath = require("path");
 
 //DONT EXPORT NRS_PASSWORD! USE MATH.RANDOM() AS THE SALT ALWAYS!
@@ -15,6 +13,9 @@ const SECURE_NRS_SESSION = NRS.secureSession(NRS_PASSWORD, "examples/secondUsage
 SECURE_NRS_SESSION.startRecordLogs();
 
 SECURE_NRS_SESSION.enableFullSecure();
+
+//node-fetch MUST be required at this level
+const fetch = require("node-fetch");
 
 SECURE_NRS_SESSION.connections.addDependencyAndPathsToWhiteList(
 	["node-fetch", "examples/secondUsageExample.js"]
