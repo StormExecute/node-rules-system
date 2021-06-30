@@ -1,6 +1,6 @@
 {
   "name": "node-rules-system",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "cotenochek",
   "license": "MIT",
   "description": "Rights Manager, focused mainly on controlling HTTP requests and the file system, so that malicious modules do not cause damage to Your application!",

@@ -34,7 +34,8 @@ If you are using a new ESM syntax (namely a new syntax provided by nodejs or typ
 * [API](#api)
 * [Contacts](#contacts)
 
-<a name="install"></a>
+<div id='install'></div>
+
 # Install
 
 The correct installation is to install directly into the main application, so we do not recommend third-party dependencies to install NRS as a dependency, as this system must be managed by the main executable.
@@ -47,7 +48,8 @@ Subject:
 $ npm install node-rules-system
 ```
 
-<a name="usage"></a>
+<div id='usage'></div>
+
 # Usage
 
 ### Example #0 (Basics):
@@ -248,14 +250,14 @@ DONE! [
 
 ### Example #2 (With node-fetch):
 
+*v1.0.1 UP: Important security notes: node-fetch MUST be required after NRS.enableFullSecure .*
+
 ~/NRS/examples/secondUsageExample.js:
 
 ```javascript
 
 const NRS = require("node-rules-system");
 
-//node-fetch can be required at this level
-const fetch = require("node-fetch");
 const nodePath = require("path");
 
 //DONT EXPORT NRS_PASSWORD! USE MATH.RANDOM() AS THE SALT ALWAYS!
@@ -266,6 +268,9 @@ const SECURE_NRS_SESSION = NRS.secureSession(NRS_PASSWORD, "examples/secondUsage
 SECURE_NRS_SESSION.startRecordLogs();
 
 SECURE_NRS_SESSION.enableFullSecure();
+
+//node-fetch MUST be required at this level
+const fetch = require("node-fetch");
 
 SECURE_NRS_SESSION.connections.addDependencyAndPathsToWhiteList(
 	["node-fetch", "examples/secondUsageExample.js"]
@@ -407,7 +412,8 @@ DONE! [
 ]
 
 ```
-<a name="howitworks"></a>
+<div id='howitworks'></div>
+
 # How it works
 1. NRS overwrites all sorts of native ways to call a request and/or modify the file system.
 2. When a script wants to connect a native method of performing an action, it actually gets a modified function, which can only be accessed by the one who was given rights, based on the path algorithm.
@@ -423,7 +429,8 @@ DONE! [
 
 returnProxy is a special proxy variable of the NRS environment that is returned in cases when the action is blocked. When accessing or calling any properties of this variable, this variable returns itself, which allows you to ignore any errors in the future. For more information, see [source code](https://github.com/StormExecute/node-rules-system/blob/3cd8afbbf7d4f3851c32b266eec56787feb0499d/src/returnProxy.js).
 
-<a name="troubleshooting"></a>
+<div id='troubleshooting'></div>
+
 # Troubleshooting
 
 ### Problem with a sliced path stack
@@ -452,7 +459,8 @@ The point is that NRS by default uses a whitelist of internal nodejs modules tha
 
 The solution to this problem is the **NRS.settings.useIsCallerPathInsteadTrustedAllowList(password, true)** method. Read more in the description of the method.
 
-<a name="debug"></a>
+<div id='debug'></div>
+
 # Debug
 The following flags are used for NRS debug:
 * _--nrs-debugI_: Captures calls with src/integrateFunctionality/*
@@ -462,7 +470,8 @@ The following flags are used for NRS debug:
 * _--nrs-debugO_: Captures calls from places like src/fs/block.js, src/secureSession.js and process/blockBindings.js
 * _--nrs-debugAll_: Enables all debug flags
 
-<a name="api"></a>
+<div id='api'></div>
+
 # API
 
 Types: [HERE!](https://github.com/StormExecute/node-rules-system/blob/master/%40types/index.d.ts)
@@ -1106,7 +1115,8 @@ NRS.module.beforeMainCodeRemove(pass, "identifier")
 
 ```
 
-<a name="contacts"></a>
+<div id='contacts'></div>
+
 # Contacts
 
 **Yandex Mail** - vladimirvsevolodovi@yandex.ru
