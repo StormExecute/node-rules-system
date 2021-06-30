@@ -275,7 +275,6 @@ if(!primordialsStore["NRS_PRIMORDIALS"]) {
 			ObjectDefineProperty: Object.defineProperty,
 			ObjectFreeze: Object.freeze,
 			ObjectAssign: Object.assign,
-			ObjectPrototypeToString: Object.prototype.toString,
 
 			ReflectApply: tempApply,
 
